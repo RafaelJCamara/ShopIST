@@ -3,6 +3,7 @@ package com.example.shopist;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -47,22 +48,22 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String,String> map = new HashMap<>();
         map.put("email","email_do_android");
         map.put("pass","password_do_android");
-        Call<ServerData> call = retrofitInterface.executeServerCall(map);
-        call.enqueue(new Callback<ServerData>() {
+        map.put("username","username_do_android");
+        Call<Void> call = retrofitInterface.executeSignup(map);
+        call.enqueue(new Callback<Void>() {
             //when the server responds to our request
             @Override
-            public void onResponse(Call<ServerData> call, Response<ServerData> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 if(response.code()==200){
                     //server success
-                    ServerData user = response.body();
-                    String user_info = user.getName() + " - " + user.getEmail();
+                    String user_info = "Success";
                     Toast.makeText(MainActivity.this, user_info, Toast.LENGTH_SHORT).show();
                 }
             }
 
             //when the server fails to respond to our request
             @Override
-            public void onFailure(Call<ServerData> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "SERVER ERROR", Toast.LENGTH_SHORT).show();
             }
         });

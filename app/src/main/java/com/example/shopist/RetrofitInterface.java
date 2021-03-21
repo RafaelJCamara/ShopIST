@@ -8,5 +8,8 @@ import retrofit2.http.POST;
 
 public interface RetrofitInterface {
     @POST("/login")
-    Call<ServerData> executeServerCall(@Body HashMap<String,String> map);
+    Call<ServerData> executeLogin(@Body HashMap<String,String> map);
+
+    @POST("/signup")
+    Call<Void> executeSignup(@Body HashMap<String,String> map);
 }
