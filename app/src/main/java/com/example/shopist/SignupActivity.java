@@ -67,6 +67,9 @@ public class SignupActivity extends AppCompatActivity {
                     //go to login activity with intent success message
                     String success_message = "Successfully signed up!";
                     Toast.makeText(SignupActivity.this, success_message, Toast.LENGTH_LONG).show();
+                }else if (response.code() == 404){
+                    String success_message = "Incorrect credentials";
+                    Toast.makeText(SignupActivity.this, success_message, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -97,9 +100,9 @@ public class SignupActivity extends AppCompatActivity {
         map.put("password",password);
 
         //get confirm password
-        EditText confirmPasswordComponent = findViewById(R.id.confirmPasswordSignup);
-        String confirmPassword = confirmPasswordComponent.getText().toString();
-        map.put("confirmPassword",confirmPassword);
+//        EditText confirmPasswordComponent = findViewById(R.id.confirmPasswordSignup);
+//        String confirmPassword = confirmPasswordComponent.getText().toString();
+//        map.put("confirmPassword",confirmPassword);
 
         return map;
     }

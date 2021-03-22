@@ -1,5 +1,6 @@
 package com.example.shopist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -23,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
     private String BASE_URL="http://10.0.2.2:3000";
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleServerRequest() {
+
         HashMap<String, String> map = new HashMap<>();
 
         //get email
@@ -77,24 +80,19 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ServerData> call, Response<ServerData> response) {
                 if (response.code() == 200) {
-                    //server success (credentials match)
-                    //move to main activity screen
-                    ServerData userInfoServer = response.body();
-                    String userInfo = userInfoServer.getName() + " - " + userInfoServer.getEmail();
-                    Toast.makeText(LoginActivity.this, userInfo, Toast.LENGTH_LONG).show();
+                    //matching credentials
+                    Toast.makeText(LoginActivity.this, "Correct credentials!!", Toast.LENGTH_SHORT).show();
                 } else if (response.code() == 404) {
                     //no matching credentials
-                    Toast.makeText(LoginActivity.this, "Wrong credentials!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Wrong credentials!!", Toast.LENGTH_SHORT).show();
                 }
             }
-
             //when the server fails to respond to our request
             @Override
             public void onFailure(Call<ServerData> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void addSignupLinkSettings(){
@@ -109,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 //start activity targeted in the intent
                 startActivity(intent);
-
             }
         });
     }
@@ -121,9 +118,28 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                Toast.makeText(LoginActivity.this, "Main page link", Toast.LENGTH_SHORT).show();
                 //go to main page activity
-
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
+    }
+
+
+
+    private void loginSuccess(Response<ServerData> response){
+//        //server success (credentials match)
+//        ServerData userInfoServer = response.body();
+//        Toast.makeText(LoginActivity.this, "Correct credentials!!", Toast.LENGTH_SHORT).show();
+
+        //create a new intent to main activity screen
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//
+//        //put user information into intent
+//        intent.putExtra("username",userInfoServer.getName());
+//        intent.putExtra("email",userInfoServer.getEmail());
+
+        //start activity targeted in the intent
+        context.startActivity(intent);
     }
 
 }
