@@ -24,7 +24,6 @@ public class LoginActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
     private String BASE_URL="http://10.0.2.2:3000";
-    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<ServerData> call, Response<ServerData> response) {
                 if (response.code() == 200) {
                     //matching credentials
-                    Toast.makeText(LoginActivity.this, "Correct credentials!!", Toast.LENGTH_SHORT).show();
+                    loginSuccess(response);
                 } else if (response.code() == 404) {
                     //no matching credentials
                     Toast.makeText(LoginActivity.this, "Wrong credentials!!", Toast.LENGTH_SHORT).show();
@@ -124,22 +123,19 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void loginSuccess(Response<ServerData> response){
-//        //server success (credentials match)
-//        ServerData userInfoServer = response.body();
-//        Toast.makeText(LoginActivity.this, "Correct credentials!!", Toast.LENGTH_SHORT).show();
+        //server success (credentials match)
+        ServerData userInfoServer = response.body();
 
         //create a new intent to main activity screen
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 //
 //        //put user information into intent
-//        intent.putExtra("username",userInfoServer.getName());
-//        intent.putExtra("email",userInfoServer.getEmail());
+        intent.putExtra("username",userInfoServer.getName());
+        intent.putExtra("email",userInfoServer.getEmail());
 
         //start activity targeted in the intent
-        context.startActivity(intent);
+        startActivity(intent);
     }
 
 }

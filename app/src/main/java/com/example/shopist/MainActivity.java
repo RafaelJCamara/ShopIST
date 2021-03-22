@@ -23,15 +23,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        fillTextView();
+        fillTextView();
     }
 
-//    private void fillTextView(){
-//        TextView textView = findViewById(R.id.textView);
-//        String username = getIntent().getStringExtra("username");
-//        String email = getIntent().getStringExtra("email");
-//        String info = username + " -> " + email;
-//        textView.setText(info);
-//    }
+    private void fillTextView(){
+        TextView textView = findViewById(R.id.textView);
+        String username = getIntent().getStringExtra("username");
+        String email = getIntent().getStringExtra("email");
+        String info = username + " -> " + email;
+        textView.setText(info);
+    }
 
 }
