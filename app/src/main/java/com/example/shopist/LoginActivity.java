@@ -100,9 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         signupLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(LoginActivity.this, "Signup link", Toast.LENGTH_SHORT).show();
                 //go to signup activity
-
                 //create a new intent
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 //start activity targeted in the intent
@@ -116,7 +114,6 @@ public class LoginActivity extends AppCompatActivity {
         mainpageLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(LoginActivity.this, "Main page link", Toast.LENGTH_SHORT).show();
                 //go to main page activity
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
