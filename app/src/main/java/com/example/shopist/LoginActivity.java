@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void addSettings(){
         addButtonSettings();
+        checkSignupOrigin();
         addSignupLinkSettings();
         mainPageLinkSettings();
     }
@@ -136,6 +137,22 @@ public class LoginActivity extends AppCompatActivity {
 
         //start activity targeted in the intent
         startActivity(intent);
+    }
+
+    private void checkSignupOrigin(){
+        //checks if we go to the login activity from a successful signup
+        if(getIntent()!=null){
+            //we came from signup
+            EditText emailComponent = findViewById(R.id.emailLogin);
+            emailComponent.setText(getIntent().getStringExtra("email"));
+
+            EditText passwordComponent = findViewById(R.id.passwordLogin);
+            passwordComponent.setText(getIntent().getStringExtra("password"));
+
+            if(getIntent().getBooleanExtra("fromSignup",false)){
+                Toast.makeText(LoginActivity.this, "Successful signup!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 }

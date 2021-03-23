@@ -1,6 +1,7 @@
 package com.example.shopist;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -57,28 +58,35 @@ public class SignupActivity extends AppCompatActivity {
 
     private void handleServerRequest() {
         HashMap<String, String> map = getFormInfo();
-        Call<Void> call = retrofitInterface.executeSignup(map);
-        call.enqueue(new Callback<Void>() {
-            //when the server responds to our request
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code() == 200) {
-                    //server success
-                    //go to login activity with intent success message
-                    String success_message = "Successfully signed up!";
-                    Toast.makeText(SignupActivity.this, success_message, Toast.LENGTH_LONG).show();
-                }else if (response.code() == 404){
-                    String success_message = "Incorrect credentials";
-                    Toast.makeText(SignupActivity.this, success_message, Toast.LENGTH_LONG).show();
+        String password = map.get("password");
+        String confirmPassword = map.get("confirmPassword");
+        if(password.equals(confirmPassword)){
+            //matching password tuple
+            Call<Void> call = retrofitInterface.executeSignup(map);
+            call.enqueue(new Callback<Void>() {
+                //when the server responds to our request
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.code() == 200) {
+                        //server success
+                        //go to login activity
+                        signupSuccess(map);
+                    }else if (response.code() == 404){
+                        String error_message = "Username or email already exists. Please try to change those!";
+                        Toast.makeText(SignupActivity.this, error_message, Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
-
-            //when the server fails to respond to our request
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(SignupActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                //when the server fails to respond to our request
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(SignupActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else{
+            //no matching password tuple
+            Toast.makeText(SignupActivity.this, "Passwords are not matching!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private HashMap<String, String> getFormInfo() {
@@ -100,11 +108,19 @@ public class SignupActivity extends AppCompatActivity {
         map.put("password",password);
 
         //get confirm password
-//        EditText confirmPasswordComponent = findViewById(R.id.confirmPasswordSignup);
-//        String confirmPassword = confirmPasswordComponent.getText().toString();
-//        map.put("confirmPassword",confirmPassword);
+        EditText confirmPasswordComponent = findViewById(R.id.confirmPasswordSignup);
+        String confirmPassword = confirmPasswordComponent.getText().toString();
+        map.put("confirmPassword",confirmPassword);
 
         return map;
+    }
+
+    private void signupSuccess(HashMap<String,String> map){
+        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+        intent.putExtra("email",map.get("email"));
+        intent.putExtra("password",map.get("password"));
+        intent.putExtra("fromSignup",true);
+        startActivity(intent);
     }
 
 }
