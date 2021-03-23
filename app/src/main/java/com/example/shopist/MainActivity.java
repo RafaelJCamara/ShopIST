@@ -2,6 +2,7 @@ package com.example.shopist;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,15 +24,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        addSettings();
+    }
+
+    private void addSettings(){
         fillTextView();
+        addLogoutButtonLogic();
     }
 
     private void fillTextView(){
         TextView textView = findViewById(R.id.textView);
         String username = getIntent().getStringExtra("username");
         String email = getIntent().getStringExtra("email");
-        String info = username + " -> " + email;
+        String info = "Welcome, ";
+        if(username.length()!=0){
+            info+=username;
+        }else{
+            info+="anonymous person";
+        }
         textView.setText(info);
+    }
+
+    private void addLogoutButtonLogic(){
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                Toast.makeText(MainActivity.this, "Logout with success!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

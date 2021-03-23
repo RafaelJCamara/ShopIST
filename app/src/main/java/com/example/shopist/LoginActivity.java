@@ -148,10 +148,6 @@ public class LoginActivity extends AppCompatActivity {
 
             EditText passwordComponent = findViewById(R.id.passwordLogin);
             passwordComponent.setText(getIntent().getStringExtra("password"));
-
-            if(getIntent().getBooleanExtra("fromSignup",false)){
-                Toast.makeText(LoginActivity.this, "Successful signup!", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
