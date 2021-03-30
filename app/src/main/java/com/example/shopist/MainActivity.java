@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void listOperations(){
         pantryListSettings();
-        shoppingListSettings();
+//        shoppingListSettings();
     }
 
     private void pantryListSettings(){
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                String itemSelected = listToDo.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(),"Product clicked!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Pantry list clicked!",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -133,19 +133,6 @@ public class MainActivity extends AppCompatActivity {
         addPantryListLogic();
     }
 
-    private void fillTextView(){
-        TextView textView = findViewById(R.id.textView);
-        String username = getIntent().getStringExtra("username");
-        String email = getIntent().getStringExtra("email");
-        String info = "Welcome, ";
-        if(username.length()!=0){
-            info+=username;
-        }else{
-            info+="anonymous person";
-        }
-        textView.setText(info);
-    }
-
     private void addLogoutButtonLogic(){
         Button logoutButton = findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -180,15 +167,15 @@ public class MainActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.get_pantry_list,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view).show();
-        handleGetPantryListLogic();
+        handleGetPantryListLogic(view);
     }
 
-    private void handleGetPantryListLogic(){
-        Button getPantryListButton = findViewById(R.id.addPantryListButton);
+    private void handleGetPantryListLogic(View view){
+        Button getPantryListButton = view.findViewById(R.id.addPantryListButton);
         getPantryListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText pantryListId = findViewById(R.id.getPantryListId);
+                EditText pantryListId = view.findViewById(R.id.getPantryListId);
                 String listId = pantryListId.getText().toString();
                 getPantryListFromServer(listId);
             }
@@ -219,9 +206,10 @@ public class MainActivity extends AppCompatActivity {
     private void renderGetPantryList(ListServerData list){
         String listName = list.getListName();
         String listCode = list.getUuid();
-        String finalListInfo = listName+"->"+listCode;
+        String finalListInfo = listName+" -> "+listCode;
         pantryList.add(finalListInfo);
         listOperations();
+        Toast.makeText(MainActivity.this, "List added with success!", Toast.LENGTH_LONG).show();
     }
 
 
@@ -239,15 +227,15 @@ public class MainActivity extends AppCompatActivity {
         View view = getLayoutInflater().inflate(R.layout.create_pantry_list,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view).show();
-        handleCreatePantryListLogic();
+        handleCreatePantryListLogic(view);
     }
 
-    private void handleCreatePantryListLogic(){
-        Button getPantryListButton = findViewById(R.id.finalCreatePantryListButton);
+    private void handleCreatePantryListLogic(View view){
+        Button getPantryListButton = view.findViewById(R.id.finalCreatePantryListButton);
         getPantryListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText pantryListId = findViewById(R.id.newPantryListName);
+                EditText pantryListId = view.findViewById(R.id.newPantryListName);
                 String listName = pantryListId.getText().toString();
                 createPantryListInServer(listName);
             }
@@ -264,8 +252,9 @@ public class MainActivity extends AppCompatActivity {
                 if(response.code()==200){
                     //list retrieved by the server
                     ServerListToken token = response.body();
+                    String tokenContent = token.getListId();
                     //render list in front-end
-                    renderCreatePantryList(token,listName);
+                    renderCreatePantryList(tokenContent,listName);
                 }
             }
 
@@ -276,12 +265,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void renderCreatePantryList(ServerListToken token, String listName){
-        String finalListInfo = listName+"->"+token;
+    private void renderCreatePantryList(String token, String listName){
+        String finalListInfo = listName+" -> "+token;
         pantryList.add(finalListInfo);
         listOperations();
+        Toast.makeText(MainActivity.this, "List created with success!", Toast.LENGTH_LONG).show();
     }
 
+    private void fillTextView(){
+        TextView textView = findViewById(R.id.textView);
+        String username = getIntent().getStringExtra("username");
+        String email = getIntent().getStringExtra("email");
+        String info = "Welcome, ";
+        if(username.length()!=0){
+            info+=username;
+        }else{
+            info+="anonymous person";
+        }
+        textView.setText(info);
+    }
 
 
 }
