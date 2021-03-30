@@ -17,4 +17,10 @@ public interface RetrofitInterface {
 
     @GET
     Call<ListServerData> getList(@Url String url);
+
+    @POST("/list")
+    Call<ServerListToken> executeListCreation(@Body HashMap<String,String> map);
+
+    @POST("/product")
+    Call<Void> createProduct(@Body HashMap<String,String> map);
 }

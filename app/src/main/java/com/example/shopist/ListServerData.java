@@ -7,7 +7,7 @@ public class ListServerData {
     //UUID stands for Universally Unique Identifier
     private String uuid;
     private String name;
-    private LinkedList<ServerProduct> products;
+    private ServerProduct[] products;
 
     public String getListName() {
         return name;
@@ -17,7 +17,7 @@ public class ListServerData {
         return uuid;
     }
 
-    public LinkedList<ServerProduct> getProducts() {
+    public ServerProduct[] getProducts() {
         return products;
     }
 }
