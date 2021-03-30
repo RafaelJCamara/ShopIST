@@ -7,6 +7,7 @@ public class ServerProduct {
     private String name;
     private double price;
     private String description;
+    private int quantity;
 
     public String getName() {
         return name;
@@ -18,5 +19,9 @@ public class ServerProduct {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getQuantity() {
+        return quantity;
     }
 }

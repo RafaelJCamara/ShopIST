@@ -1,10 +1,10 @@
 package com.example.shopist;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,14 +28,18 @@ public class MainActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
     private String BASE_URL="http://10.0.2.2:3000";
-    private ListView productList;
-    private ArrayList<String> products;
+    private ListView pantryLists;
+    private ArrayList<String> pantryList;
+
+    private ListView shoppingLists;
+    private ArrayList<String> shoppingList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        products = new ArrayList<String>();
+        pantryList = new ArrayList<String>();
+        shoppingList = new ArrayList<String>();
         //LIST OPERATIONS
         listOperations();
 
@@ -45,11 +48,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listOperations(){
+        pantryListSettings();
+        shoppingListSettings();
+    }
 
-        listSettings();
+    private void pantryListSettings(){
+        pantrySettings();
 
         //add actionlisterner to each item of the list
-        productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        pantryLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                String itemSelected = listToDo.getItemAtPosition(position).toString();
@@ -58,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void listSettings(){
+    private void pantrySettings(){
         //get list view
-        productList = findViewById(R.id.productList);
+        pantryLists = findViewById(R.id.productList);
 
         //create list adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -71,11 +78,43 @@ public class MainActivity extends AppCompatActivity {
                 //id inside layout
                 android.R.id.text1,
                 //data
-                products
+                pantryList
         );
 
         //add adapter to list
-        productList.setAdapter(adapter);
+        pantryLists.setAdapter(adapter);
+    }
+
+    private void shoppingListSettings(){
+        shoppingSettings();
+        //add actionlisterner to each item of the list
+        shoppingLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                String itemSelected = listToDo.getItemAtPosition(position).toString();
+                Toast.makeText(getApplicationContext(),"Product clicked!",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void shoppingSettings(){
+        //get list view
+        shoppingLists = findViewById(R.id.productList);
+
+        //create list adapter
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                //context
+                getApplicationContext(),
+                //layout to be applied on
+                android.R.layout.simple_list_item_1,
+                //id inside layout
+                android.R.id.text1,
+                //data
+                shoppingList
+        );
+
+        //add adapter to list
+        shoppingLists.setAdapter(adapter);
     }
 
 
@@ -91,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     private void addSettings(){
         fillTextView();
         addLogoutButtonLogic();
-        addSendListLogic();
+        addPantryListLogic();
     }
 
     private void fillTextView(){
@@ -119,25 +158,44 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addSendListLogic(){
+    private void addPantryListLogic(){
         //retrieve list from server
-        retrieveList();
+        retrievePantryList();
+        //create list
+        createPantryList();
     }
 
-    private void retrieveList(){
-        Button getListButton = findViewById(R.id.getList);
+    private void retrievePantryList(){
+        Button getListButton = findViewById(R.id.getPantryListButton);
         getListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //get list id
-                EditText listIDComponent = findViewById(R.id.listaId);
-                String listId = listIDComponent.getText().toString();
-                handleListRetrieval(listId);
+                //open get list dialog
+                handleGetPantryListDialog();
             }
         });
     }
 
-    private void handleListRetrieval(String listId){
+    private void handleGetPantryListDialog(){
+        View view = getLayoutInflater().inflate(R.layout.get_pantry_list,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view).show();
+        handleGetPantryListLogic();
+    }
+
+    private void handleGetPantryListLogic(){
+        Button getPantryListButton = findViewById(R.id.addPantryListButton);
+        getPantryListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText pantryListId = findViewById(R.id.getPantryListId);
+                String listId = pantryListId.getText().toString();
+                getPantryListFromServer(listId);
+            }
+        });
+    }
+
+    private void getPantryListFromServer(String listId){
         String url = "/list/"+listId;
         Call<ListServerData> call = retrofitInterface.getList(url);
         call.enqueue(new Callback<ListServerData>() {
@@ -146,9 +204,8 @@ public class MainActivity extends AppCompatActivity {
                 if(response.code()==200){
                     //list retrieved by the server
                     ListServerData list = response.body();
-
                     //render list in front-end
-                    renderList(list);
+                    renderGetPantryList(list);
                 }
             }
 
@@ -159,25 +216,72 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void renderList(ListServerData list){
-        addProductsToList(list);
-        changeListInfo(list.getListName(), list.getUuid());
+    private void renderGetPantryList(ListServerData list){
+        String listName = list.getListName();
+        String listCode = list.getUuid();
+        String finalListInfo = listName+"->"+listCode;
+        pantryList.add(finalListInfo);
         listOperations();
     }
 
-    private void addProductsToList(ListServerData list){
-        ServerProduct[] listProducts = list.getProducts();
-        for(ServerProduct p:listProducts){
-            String productName = p.getName();
-            String price = String.valueOf(p.getPrice());
-            String description = p.getDescription();
-            products.add(productName+", "+price+" - "+description);
-        }
+
+    private void createPantryList(){
+        Button createPantryListButton = findViewById(R.id.createPantryListButton);
+        createPantryListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleCreatePantryListDialog();
+            }
+        });
     }
 
-    private void changeListInfo(String listName, String listId){
-        TextView listInfo = findViewById(R.id.listInfo);
-        listInfo.setText("List name: "+listName+". List code: "+listId);
+    private void handleCreatePantryListDialog(){
+        View view = getLayoutInflater().inflate(R.layout.create_pantry_list,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view).show();
+        handleCreatePantryListLogic();
     }
+
+    private void handleCreatePantryListLogic(){
+        Button getPantryListButton = findViewById(R.id.finalCreatePantryListButton);
+        getPantryListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText pantryListId = findViewById(R.id.newPantryListName);
+                String listName = pantryListId.getText().toString();
+                createPantryListInServer(listName);
+            }
+        });
+    }
+
+    private void createPantryListInServer(String listName){
+        HashMap<String,String> map = new HashMap<>();
+        map.put("name",listName);
+        Call<ServerListToken> call = retrofitInterface.executeListCreation(map);
+        call.enqueue(new Callback<ServerListToken>() {
+            @Override
+            public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerListToken token = response.body();
+                    //render list in front-end
+                    renderCreatePantryList(token,listName);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerListToken> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void renderCreatePantryList(ServerListToken token, String listName){
+        String finalListInfo = listName+"->"+token;
+        pantryList.add(finalListInfo);
+        listOperations();
+    }
+
+
 
 }
