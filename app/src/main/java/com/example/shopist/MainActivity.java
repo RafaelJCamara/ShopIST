@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void pantrySettings(){
         //get list view
-        pantryLists = findViewById(R.id.productList);
+        pantryLists = findViewById(R.id.pantryList);
 
         //create list adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void shoppingSettings(){
         //get list view
-        shoppingLists = findViewById(R.id.productList);
+        shoppingLists = findViewById(R.id.pantryList);
 
         //create list adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
