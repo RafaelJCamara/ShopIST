@@ -6,11 +6,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,14 +29,55 @@ public class MainActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
     private String BASE_URL="http://10.0.2.2:3000";
+    private ListView productList;
+    private ArrayList<String> products;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        products = new ArrayList<String>();
+        //LIST OPERATIONS
+        listOperations();
+
         initRetrofit();
         addSettings();
     }
+
+    private void listOperations(){
+
+        listSettings();
+
+        //add actionlisterner to each item of the list
+        productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                String itemSelected = listToDo.getItemAtPosition(position).toString();
+                Toast.makeText(getApplicationContext(),"Product clicked!",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void listSettings(){
+        //get list view
+        productList = findViewById(R.id.productList);
+
+        //create list adapter
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                //context
+                getApplicationContext(),
+                //layout to be applied on
+                android.R.layout.simple_list_item_1,
+                //id inside layout
+                android.R.id.text1,
+                //data
+                products
+        );
+
+        //add adapter to list
+        productList.setAdapter(adapter);
+    }
+
 
     private void initRetrofit(){
         //instantiate retrofit settings
@@ -46,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     private void addSettings(){
         fillTextView();
         addLogoutButtonLogic();
-        fillDummyContent();
         addSendListLogic();
     }
 
@@ -100,7 +144,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ListServerData> call, Response<ListServerData> response) {
                 if(response.code()==200){
-                    Toast.makeText(MainActivity.this, "List retrieved with success!", Toast.LENGTH_LONG).show();
+                    //list retrieved by the server
+                    ListServerData list = response.body();
+
+                    //render list in front-end
+                    renderList(list);
                 }
             }
 
@@ -111,69 +159,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void fillDummyContent(){
-        //create list
-        HashMap<String,String> map = new HashMap<String,String>();
-        map.put("name","exampleList");
-        Call<ServerListToken> call = retrofitInterface.executeListCreation(map);
-        call.enqueue(new Callback<ServerListToken>() {
-            @Override
-            public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {
-                if(response.code()==200){
-                    ServerListToken listToken = response.body();
-                    String token = listToken.getListId();
-                    addProducts(token);
-                }
-            }
-            @Override
-            public void onFailure(Call<ServerListToken> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
+    private void renderList(ListServerData list){
+        addProductsToList(list);
+        changeListInfo(list.getListName(), list.getUuid());
+        listOperations();
     }
 
-    private void addProducts(String listID){
-        //create product 1
-        HashMap<String,String> map = new HashMap<String,String>();
-        map.put("name","banana");
-        map.put("price", "5.99" );
-        map.put("description","A simple banana.");
-        map.put("listToken",listID);
-        Call<Void> call = retrofitInterface.createProduct(map);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.code()==200){
-                    Toast.makeText(MainActivity.this, "Product 1 created successfully.", Toast.LENGTH_LONG).show();
-                }
-            }
+    private void addProductsToList(ListServerData list){
+        ServerProduct[] listProducts = list.getProducts();
+        for(ServerProduct p:listProducts){
+            String productName = p.getName();
+            String price = String.valueOf(p.getPrice());
+            String description = p.getDescription();
+            products.add(productName+", "+price+" - "+description);
+        }
+    }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        //create product 2
-        HashMap<String,String> map2 = new HashMap<String,String>();
-        map2.put("name","potato");
-        map2.put("price", "2.99" );
-        map2.put("description","A simple potato.");
-        map2.put("listToken",listID);
-        Call<Void> call2 = retrofitInterface.createProduct(map2);
-        call2.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.code()==200){
-                    Toast.makeText(MainActivity.this, "Product 2 created successfully.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
+    private void changeListInfo(String listName, String listId){
+        TextView listInfo = findViewById(R.id.listInfo);
+        listInfo.setText("List name: "+listName+". List code: "+listId);
     }
 
 }
