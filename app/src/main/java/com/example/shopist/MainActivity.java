@@ -134,13 +134,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillTextView(){
         TextView textView = findViewById(R.id.textView);
-        String username = getIntent().getStringExtra("username");
-        String email = getIntent().getStringExtra("email");
         String info = "Welcome, ";
-        if(username.length()!=0){
-            info+=username;
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if(extras!=null){
+            if(extras.containsKey("username")){
+                info+=intent.getStringExtra("username");
+            }
         }else{
-            info+="anonymous person";
+            info+="anonymous";
         }
         textView.setText(info);
     }
