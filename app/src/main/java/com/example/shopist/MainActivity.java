@@ -191,9 +191,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText pantryListId = view.findViewById(R.id.getPantryListId);
                 String listId = pantryListId.getText().toString();
-                getPantryListFromServer(listId);
+                //check if the list has been added
+                if(hasPantryListHasBeenAdded(listId)){
+                    //list has been added
+                    Toast.makeText(MainActivity.this, "List has already been added.", Toast.LENGTH_LONG).show();
+                }else{
+                    //the list hasn't been added
+                    getPantryListFromServer(listId);
+                }
             }
         });
+    }
+
+    private boolean hasPantryListHasBeenAdded(String listId){
+        for(String listInfo:pantryList){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[1].equals(listId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void getPantryListFromServer(String listId){
@@ -251,9 +268,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText pantryListId = view.findViewById(R.id.newPantryListName);
                 String listName = pantryListId.getText().toString();
-                createPantryListInServer(listName);
+                //check if list had already been created
+                if(hasPantryListHasBeenCreated(listName)){
+                    //list has been created
+                    Toast.makeText(MainActivity.this, "List has already been created.", Toast.LENGTH_LONG).show();
+                }else{
+                    //list has not been created
+                    createPantryListInServer(listName);
+                }
             }
         });
+    }
+
+    private boolean hasPantryListHasBeenCreated(String listName){
+        for(String listInfo:pantryList){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[0].equals(listName)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void createPantryListInServer(String listName){
@@ -320,9 +354,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText pantryListId = view.findViewById(R.id.getPantryListId);
                 String listId = pantryListId.getText().toString();
-                getShoppingListFromServer(listId);
+                //check if the list has been added
+                if(hasShoppingListHasBeenAdded(listId)){
+                    //list has been added
+                    Toast.makeText(MainActivity.this, "List has already been added.", Toast.LENGTH_LONG).show();
+                }else{
+                    //the list hasn't been added
+                    getShoppingListFromServer(listId);
+                }
             }
         });
+    }
+
+    private boolean hasShoppingListHasBeenAdded(String listId){
+        for(String listInfo:shoppingList){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[1].equals(listId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void getShoppingListFromServer(String listId){
@@ -380,9 +431,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText pantryListId = view.findViewById(R.id.newPantryListName);
                 String listName = pantryListId.getText().toString();
-                createShoppingListInServer(listName);
+                //check if list had already been created
+                if(hasShoppingListHasBeenCreated(listName)){
+                    //list has been created
+                    Toast.makeText(MainActivity.this, "List has already been created.", Toast.LENGTH_LONG).show();
+                }else{
+                    //list has not been created
+                    createShoppingListInServer(listName);
+                }
             }
         });
+    }
+
+    private boolean hasShoppingListHasBeenCreated(String listName){
+        for(String listInfo:shoppingList){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[0].equals(listName)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void createShoppingListInServer(String listName){
