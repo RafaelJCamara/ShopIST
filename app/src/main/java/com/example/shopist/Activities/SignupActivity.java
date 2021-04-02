@@ -1,15 +1,17 @@
-package com.example.shopist;
+package com.example.shopist.Activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.shopist.R;
+import com.example.shopist.Server.ServerInteraction.RetrofitInterface;
+import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 
 import java.util.HashMap;
 
@@ -21,25 +23,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private Retrofit retrofit;
-    private RetrofitInterface retrofitInterface;
-    private String BASE_URL = "http://10.0.2.2:3000";
+    private RetrofitManager retrofitManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup);
-        initRetrofit();
+        retrofitManager = new RetrofitManager();
         addSettings();
-    }
-
-    private void initRetrofit() {
-        //instantiate retrofit object
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofitInterface = retrofit.create(RetrofitInterface.class);
     }
 
     private void addSettings() {
@@ -62,7 +53,7 @@ public class SignupActivity extends AppCompatActivity {
         String confirmPassword = map.get("confirmPassword");
         if(password.equals(confirmPassword)){
             //matching password tuple
-            Call<Void> call = retrofitInterface.executeSignup(map);
+            Call<Void> call = retrofitManager.accessRetrofitInterface().executeSignup(map);
             call.enqueue(new Callback<Void>() {
                 //when the server responds to our request
                 @Override
@@ -72,8 +63,7 @@ public class SignupActivity extends AppCompatActivity {
                         //go to login activity
                         signupSuccess(map);
                     }else if (response.code() == 404){
-                        String error_message = "Username or email already exists. Please try to change those!";
-                        Toast.makeText(SignupActivity.this, error_message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignupActivity.this, "Username or email already exists. Please try to change those!", Toast.LENGTH_LONG).show();
                     }
                 }
                 //when the server fails to respond to our request

@@ -1,9 +1,7 @@
-package com.example.shopist;
-
-import java.util.LinkedList;
+package com.example.shopist.Server.ServerResponses;
 
 public class ListServerData {
-    //this class represents the list retrieved by the server
+    //this class represents the list retrieved by the server when a user retrives a list by its code
     //UUID stands for Universally Unique Identifier
     private String uuid;
     private String name;

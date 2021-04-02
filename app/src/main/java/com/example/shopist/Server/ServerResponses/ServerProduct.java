@@ -1,6 +1,4 @@
-package com.example.shopist;
-
-import java.util.LinkedList;
+package com.example.shopist.Server.ServerResponses;
 
 public class ServerProduct {
     //this class represents the products stored in the server
