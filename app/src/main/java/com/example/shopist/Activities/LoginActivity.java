@@ -1,6 +1,5 @@
-package com.example.shopist;
+package com.example.shopist.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +9,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.shopist.R;
+import com.example.shopist.Server.ServerInteraction.RetrofitInterface;
+import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ServerData;
 
 import java.util.HashMap;
 
@@ -21,25 +25,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Retrofit retrofit;
-    private RetrofitInterface retrofitInterface;
-    private String BASE_URL="http://10.0.2.2:3000";
+    private RetrofitManager retrofitManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        initRetrofit();
+        retrofitManager = new RetrofitManager();
         addSettings();
-    }
-
-    private void initRetrofit(){
-        //instantiate retrofit settings
-        retrofit  = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        retrofitInterface = retrofit.create(RetrofitInterface.class);
     }
 
     private void addSettings(){
@@ -60,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleServerRequest() {
-
         HashMap<String, String> map = new HashMap<>();
 
         //get email
@@ -74,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         map.put("email", email);
         map.put("password", password);
 
-        Call<ServerData> call = retrofitInterface.executeLogin(map);
+        Call<ServerData> call = retrofitManager.accessRetrofitInterface().executeLogin(map);
         call.enqueue(new Callback<ServerData>() {
             //when the server responds to our request
             @Override
@@ -93,6 +85,35 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    private void loginSuccess(Response<ServerData> response){
+        //server success (credentials match)
+        ServerData userInfoServer = response.body();
+
+        //create a new intent to main activity screen
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+        //put user information into intent
+        intent.putExtra("username",userInfoServer.getName());
+        intent.putExtra("email",userInfoServer.getEmail());
+
+        //start activity targeted in the intent
+        startActivity(intent);
+    }
+
+    private void checkSignupOrigin(){
+        //checks if we go to the login activity from a successful signup
+        if(getIntent()!=null){
+            //we came from signup
+            //this means we should fill the login fields with the user credentials
+            EditText emailComponent = findViewById(R.id.emailLogin);
+            emailComponent.setText(getIntent().getStringExtra("email"));
+
+            EditText passwordComponent = findViewById(R.id.passwordLogin);
+            passwordComponent.setText(getIntent().getStringExtra("password"));
+        }
     }
 
     private void addSignupLinkSettings(){
@@ -121,31 +142,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loginSuccess(Response<ServerData> response){
-        //server success (credentials match)
-        ServerData userInfoServer = response.body();
-
-        //create a new intent to main activity screen
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//
-//        //put user information into intent
-        intent.putExtra("username",userInfoServer.getName());
-        intent.putExtra("email",userInfoServer.getEmail());
-
-        //start activity targeted in the intent
-        startActivity(intent);
-    }
-
-    private void checkSignupOrigin(){
-        //checks if we go to the login activity from a successful signup
-        if(getIntent()!=null){
-            //we came from signup
-            EditText emailComponent = findViewById(R.id.emailLogin);
-            emailComponent.setText(getIntent().getStringExtra("email"));
-
-            EditText passwordComponent = findViewById(R.id.passwordLogin);
-            passwordComponent.setText(getIntent().getStringExtra("password"));
-        }
-    }
 
 }

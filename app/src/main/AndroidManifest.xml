@@ -12,9 +12,9 @@
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopIST">
-        <activity android:name=".SignupActivity"></activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".Activities.SignupActivity"></activity>
+        <activity android:name=".Activities.MainActivity"></activity>
+        <activity android:name=".Activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

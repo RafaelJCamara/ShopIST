@@ -1,4 +1,8 @@
-package com.example.shopist;
+package com.example.shopist.Server.ServerInteraction;
+
+import com.example.shopist.Server.ServerResponses.ListServerData;
+import com.example.shopist.Server.ServerResponses.ServerData;
+import com.example.shopist.Server.ServerResponses.ServerListToken;
 
 import java.util.HashMap;
 

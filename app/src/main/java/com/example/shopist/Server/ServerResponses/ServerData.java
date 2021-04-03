@@ -1,6 +1,4 @@
-package com.example.shopist;
-
-import com.google.gson.annotations.SerializedName;
+package com.example.shopist.Server.ServerResponses;
 
 public class ServerData {
 
