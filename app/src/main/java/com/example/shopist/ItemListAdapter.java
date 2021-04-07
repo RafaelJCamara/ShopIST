@@ -13,9 +13,9 @@ import java.util.ArrayList;
 public class ItemListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<ItemClass> list;
+    ArrayList<ProductClass> list;
 
-    public ItemListAdapter(Context context, ArrayList<ItemClass> list) {
+    public ItemListAdapter(Context context, ArrayList<ProductClass> list) {
         this.context = context;
         this.list = list;
     }
@@ -38,7 +38,7 @@ public class ItemListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        convertView = LayoutInflater.from(context).inflate(R.layout.row_itemlist, parent,false );
+        convertView = LayoutInflater.from(context).inflate(R.layout.row_productlist, parent,false );
 
         ImageView icon = (ImageView) convertView.findViewById(R.id.item_icon);
         TextView name = (TextView) convertView.findViewById(R.id.item_name);
