@@ -1,4 +1,4 @@
-package com.example.shopist;
+package com.example.shopist.product;
 
 public class ProductClass {
     private String name;

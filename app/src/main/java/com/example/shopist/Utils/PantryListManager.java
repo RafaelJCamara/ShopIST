@@ -1,14 +1,12 @@
 package com.example.shopist.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-
+import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.R;
 
 public class PantryListManager extends ListManager{
@@ -38,6 +36,12 @@ public class PantryListManager extends ListManager{
                 handleCreateListDialog();
             }
         });
+    }
+    
+    public void openItemActivity(String itemInfo){
+        Intent intent = new Intent(context, PantryActivity.class);
+        intent.putExtra("itemInfo", itemInfo);
+        context.startActivity(intent);
     }
 
 }

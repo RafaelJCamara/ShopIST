@@ -1,39 +1,18 @@
 package com.example.shopist.Activities;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.shopist.R;
-import com.example.shopist.Server.ServerInteraction.RetrofitInterface;
-import com.example.shopist.Server.ServerInteraction.RetrofitManager;
-import com.example.shopist.Server.ServerResponses.ListServerData;
-import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Utils.ListManager;
 import com.example.shopist.Utils.PantryListManager;
 import com.example.shopist.Utils.ShoppingListManager;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 Toast.makeText(MainActivity.this, "Logout with success!", Toast.LENGTH_SHORT).show();
+
             }
         });
     }

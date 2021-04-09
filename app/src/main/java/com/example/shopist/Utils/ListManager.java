@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.example.shopist.Activities.MainActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ListServerData;
@@ -75,8 +74,9 @@ public abstract class ListManager {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String itemSelected = listToDo.getItemAtPosition(position).toString();
+                String itemInfo = (String) parent.getAdapter().getItem(position);
                 Toast.makeText(context,"List item clicked!",Toast.LENGTH_SHORT).show();
+                openItemActivity(itemInfo);
             }
         });
     }
@@ -222,11 +222,14 @@ public abstract class ListManager {
         });
     }
 
+    public abstract void openItemActivity(String itemInfo);
+
     private void renderCreateList(String token, String listName){
         String finalListInfo = listName+" -> "+token;
         listContent.add(finalListInfo);
         listSettings();
         Toast.makeText(context, "List created with success!", Toast.LENGTH_LONG).show();
     }
+
 
 }

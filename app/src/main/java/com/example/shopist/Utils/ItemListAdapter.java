@@ -1,4 +1,4 @@
-package com.example.shopist;
+package com.example.shopist.Utils;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.shopist.R;
+import com.example.shopist.product.ProductClass;
 
 import java.util.ArrayList;
 
@@ -48,3 +51,6 @@ public class ItemListAdapter extends BaseAdapter {
         return convertView;
     }
 }
+
+
+
