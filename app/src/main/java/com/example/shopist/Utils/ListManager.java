@@ -177,15 +177,21 @@ public abstract class ListManager {
         getListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //access list name
                 EditText listId = view.findViewById(R.id.newListName);
                 String listName = listId.getText().toString();
+
+                //access list address
+                EditText listAddressComponent = view.findViewById(R.id.listAddress);
+                String listAddress = listAddressComponent.getText().toString();
+
                 //check if list had already been created
                 if(hasListBeenCreated(listName)){
                     //list has been created
                     Toast.makeText(context, "List has already been created.", Toast.LENGTH_LONG).show();
                 }else{
                     //list has not been created
-                    createListInServer(listName);
+                    createListInServer(listName, listAddress);
                 }
             }
         });
@@ -201,7 +207,7 @@ public abstract class ListManager {
         return false;
     }
 
-    public abstract void createListInServer(String listName);
+    public abstract void createListInServer(String listName, String listAddress);
 
 
 //    public void createListInServer(String listName){

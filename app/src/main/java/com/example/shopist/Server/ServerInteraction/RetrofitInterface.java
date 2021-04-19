@@ -43,7 +43,9 @@ public interface RetrofitInterface {
     /*
     * Shopping list routes
     * */
-
+    //create a shopping list
+    @POST("/list/shopping")
+    Call<ServerListToken> executeShoppingListCreation(@Body HashMap<String,String> map);
 
 
     /*

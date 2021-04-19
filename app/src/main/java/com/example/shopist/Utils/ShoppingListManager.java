@@ -45,10 +45,11 @@ public class ShoppingListManager extends ListManager{
     }
 
 
-    public void createListInServer(String listName){
+    public void createListInServer(String listName, String listAddress){
         HashMap<String,String> map = new HashMap<>();
-        map.put("name",listName);
-        Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executePantryListCreation(map);
+        map.put("listName",listName);
+        map.put("address", listAddress);
+        Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executeShoppingListCreation(map);
         call.enqueue(new Callback<ServerListToken>() {
             @Override
             public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {

@@ -47,7 +47,7 @@ public class PantryListManager extends ListManager{
     }
 
 
-    public void createListInServer(String listName){
+    public void createListInServer(String listName, String listAddress){
         HashMap<String,String> map = new HashMap<>();
         map.put("name",listName);
         Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executePantryListCreation(map);
