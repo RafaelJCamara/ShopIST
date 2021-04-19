@@ -50,6 +50,7 @@ public class PantryListManager extends ListManager{
     public void createListInServer(String listName, String listAddress){
         HashMap<String,String> map = new HashMap<>();
         map.put("name",listName);
+        map.put("address", listAddress);
         Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executePantryListCreation(map);
         call.enqueue(new Callback<ServerListToken>() {
             @Override
