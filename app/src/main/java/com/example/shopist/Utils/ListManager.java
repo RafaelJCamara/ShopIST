@@ -49,6 +49,7 @@ public abstract class ListManager {
         addListClickListeners();
     }
 
+    //settings for the list and its adapters
     private void fillListContentSettings(){
         //get list view
         listView = view.findViewById(listResourceID);
@@ -69,6 +70,7 @@ public abstract class ListManager {
         listView.setAdapter(adapter);
     }
 
+    //action when a item of the list is clicked
     private void addListClickListeners(){
         //add actionlisterner to each item of the list
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -199,32 +201,35 @@ public abstract class ListManager {
         return false;
     }
 
-    public void createListInServer(String listName){
-        HashMap<String,String> map = new HashMap<>();
-        map.put("name",listName);
-        Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executeListCreation(map);
-        call.enqueue(new Callback<ServerListToken>() {
-            @Override
-            public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {
-                if(response.code()==200){
-                    //list retrieved by the server
-                    ServerListToken token = response.body();
-                    String tokenContent = token.getListId();
-                    //render list in front-end
-                    renderCreateList(tokenContent,listName);
-                }
-            }
+    public abstract void createListInServer(String listName);
 
-            @Override
-            public void onFailure(Call<ServerListToken> call, Throwable t) {
-                Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+
+//    public void createListInServer(String listName){
+//        HashMap<String,String> map = new HashMap<>();
+//        map.put("name",listName);
+//        Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executeListCreation(map);
+//        call.enqueue(new Callback<ServerListToken>() {
+//            @Override
+//            public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {
+//                if(response.code()==200){
+//                    //list retrieved by the server
+//                    ServerListToken token = response.body();
+//                    String tokenContent = token.getListId();
+//                    //render list in front-end
+//                    renderCreateList(tokenContent,listName);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ServerListToken> call, Throwable t) {
+//                Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//    }
 
     public abstract void openItemActivity(String itemInfo);
 
-    private void renderCreateList(String token, String listName){
+    public void renderCreateList(String token, String listName){
         String finalListInfo = listName+" -> "+token;
         listContent.add(finalListInfo);
         listSettings();

@@ -13,18 +13,49 @@ import retrofit2.http.POST;
 import retrofit2.http.Url;
 
 public interface RetrofitInterface {
+
+    /*
+    * User routes
+    * */
+
     @POST("/user/login")
     Call<ServerData> executeLogin(@Body HashMap<String,String> map);
 
     @POST("/user/signup")
     Call<Void> executeSignup(@Body HashMap<String,String> map);
 
+
+    /*
+    * Pantry list routes
+    * */
+
+
     @GET
     Call<ListServerData> getList(@Url String url);
 
-    @POST("/list")
-    Call<ServerListToken> executeListCreation(@Body HashMap<String,String> map);
+    //create a pantry list
+    @POST("/list/pantry")
+    Call<ServerListToken> executePantryListCreation(@Body HashMap<String,String> map);
+
+
+
+
+    /*
+    * Shopping list routes
+    * */
+
+
+
+    /*
+    * Product routes
+    * */
 
     @POST("/product")
     Call<Void> createProduct(@Body HashMap<String,String> map);
+
+
+
+    /*
+    * Cart routes
+    * */
 }
