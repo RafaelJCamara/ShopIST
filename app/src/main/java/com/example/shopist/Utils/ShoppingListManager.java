@@ -35,7 +35,7 @@ public class ShoppingListManager extends ListManager{
             @Override
             public void onClick(View v) {
                 //open get list dialog
-                handleGetListDialog();
+                //handleGetListDialog();
             }
         });
     }

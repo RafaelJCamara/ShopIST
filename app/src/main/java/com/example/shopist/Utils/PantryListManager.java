@@ -31,52 +31,6 @@ public class PantryListManager extends ListManager{
     }
 
     //depende do tipo de lista
-    public void retrieveList(){
-        Button getListButton = view.findViewById(R.id.getPantryListButton);
-        getListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //open get list dialog
-                handleGetListDialog();
-            }
-        });
-    }
-
-    public void getListFromServer(String listId){
-        Call<ServerPantryList> call = retrofitManager.accessRetrofitInterface().syncPantryList(listId);
-        call.enqueue(new Callback<ServerPantryList>() {
-            @Override
-            public void onResponse(Call<ServerPantryList> call, Response<ServerPantryList> response) {
-                if(response.code()==200){
-                    //list retrieved by the server
-                    ServerPantryList list = response.body();
-                    //render list in front-end
-                    renderGetList(list, listId);
-                }
-            }
-            @Override
-            public void onFailure(Call<ServerPantryList> call, Throwable t) {
-                Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-
-    public void renderGetList(ServerPantryList list, String uuid) {
-        this.pantryProducts = list.getProducts();
-
-        String listName = list.getName();
-        String finalListInfo = listName + " -> " + uuid;
-        listContent.add(finalListInfo);
-        listSettings();
-        Toast.makeText(context, "List added with success!", Toast.LENGTH_LONG).show();
-    }
-
-
-
-
-
-    //depende do tipo de lista
     public void createList(){
         Button createPantryListButton = view.findViewById(R.id.createPantryListButton);
         createPantryListButton.setOnClickListener(new View.OnClickListener() {
@@ -117,8 +71,32 @@ public class PantryListManager extends ListManager{
         Intent intent = new Intent(context, PantryActivity.class);
         intent.putExtra("itemInfo", itemInfo);
         //pass pantry products to be rendered
+        getUpdatedProducts(itemInfo);
         intent.putExtra("mylist",this.pantryProducts);
         context.startActivity(intent);
+    }
+
+    private void getUpdatedProducts(String itemInfo){
+        String[] listComponents = itemInfo.split(" -> ");
+        Call<ServerPantryList> call = retrofitManager.accessRetrofitInterface().syncPantryList(listComponents[1].trim());
+        call.enqueue(new Callback<ServerPantryList>() {
+            @Override
+            public void onResponse(Call<ServerPantryList> call, Response<ServerPantryList> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerPantryList list = response.body();
+                    finalUpdate(list.getProducts());
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerPantryList> call, Throwable t) {
+                Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    
+    private void finalUpdate(ArrayList<ServerPantryProduct> products){
+        this.pantryProducts = products;
     }
 
 }

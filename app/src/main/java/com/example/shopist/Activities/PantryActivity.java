@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class PantryActivity extends AppCompatActivity {
     private RetrofitManager retrofitManager;
 
     public ListView listView;
-    public ArrayList<String> listContent = new ArrayList<String>();
+    private ArrayList<String> listContent = new ArrayList<String>();
 
     private String listId;
 
@@ -44,7 +45,7 @@ public class PantryActivity extends AppCompatActivity {
 
     /*
     ##########################
-    ### initial setting ###
+    ### initial settings ###
     ##########################
      */
 
@@ -89,13 +90,27 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void fillPantryProductList(){
-        Intent intent = getIntent();
-        ArrayList<ServerPantryProduct> prods = (ArrayList<ServerPantryProduct>) intent.getSerializableExtra("mylist");
-        for(ServerPantryProduct p :prods){
-            String productInfo = p.getName()+"; "+p.getDescription();
-            Toast.makeText(getApplicationContext(),productInfo ,Toast.LENGTH_SHORT).show();
-            listContent.add(productInfo);
-        }
+        //ask the server for information
+        Call<ServerPantryList> call = retrofitManager.accessRetrofitInterface().syncPantryList(listId);
+        call.enqueue(new Callback<ServerPantryList>() {
+            @Override
+            public void onResponse(Call<ServerPantryList> call, Response<ServerPantryList> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerPantryList list = response.body();
+                    //render list in front-end
+                    for(ServerPantryProduct prod : list.getProducts()){
+                        String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
+                        Toast.makeText(PantryActivity.this, productInfo, Toast.LENGTH_LONG).show();
+                        listContent.add(productInfo);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerPantryList> call, Throwable t) {
+                Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
         fillListContentSettings();
     }
 
@@ -177,6 +192,9 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast.makeText(getApplicationContext(),"Product added with success." ,Toast.LENGTH_SHORT).show();
+
+                //update the products in the frontend
+                renderNewProduct(productName,productDescription,productNeeded,productStock);
             }
 
             @Override
@@ -184,6 +202,13 @@ public class PantryActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    private void renderNewProduct(String productName, String productDescription, String needed, String stock){
+        String productInfo = productName+"; "+productDescription+"; Needed: "+needed+" ; "+"Stock: "+stock;
+        listContent.add(productInfo);
+        fillListContentSettings();
     }
 
 

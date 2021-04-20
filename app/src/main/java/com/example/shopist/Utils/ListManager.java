@@ -26,7 +26,6 @@ public abstract class ListManager {
     public LayoutInflater layoutInflater;
     public RetrofitManager retrofitManager;
 
-
     public ListManager(Context context, View view, int listID, LayoutInflater layoutInflater){
         this.context = context;
         this.view = view;
@@ -77,57 +76,9 @@ public abstract class ListManager {
     }
 
     public void addListLogic(){
-        //retrieve list from server
-        retrieveList();
         //create list
         createList();
     }
-
-    //depende do tipo de lista
-    public abstract void retrieveList();
-
-
-    public void handleGetListDialog(){
-        View v = layoutInflater.inflate(R.layout.get_list,null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setView(v).show();
-        handleGetListLogic(v);
-    }
-
-    //depende do tipo de lista
-    public void handleGetListLogic(View view){
-        Button getListButton = view.findViewById(R.id.addListButton);
-        getListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText listID = view.findViewById(R.id.getListId);
-                String listId = listID.getText().toString();
-                //check if the list has been added
-                if(hasListBeenAdded(listId)){
-                    //list has been added
-                    Toast.makeText(context, "List has already been added.", Toast.LENGTH_LONG).show();
-                }else{
-                    //the list hasn't been added
-                    getListFromServer(listId);
-                }
-            }
-        });
-    }
-
-    public boolean hasListBeenAdded(String listId){
-        for(String listInfo:listContent){
-            String[] listComponents = listInfo.split(" -> ");
-            if(listComponents[1].equals(listId)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public abstract void getListFromServer(String listId);
-
-
-
 
     //depende do tipo de lista
     public abstract void createList();
