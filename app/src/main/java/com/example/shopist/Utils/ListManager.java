@@ -14,15 +14,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
-import com.example.shopist.Server.ServerResponses.ListServerData;
-import com.example.shopist.Server.ServerResponses.ServerListToken;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public abstract class ListManager {
     public ListView listView;
@@ -131,35 +124,10 @@ public abstract class ListManager {
         return false;
     }
 
-    public void getListFromServer(String listId){
-        String url = "/list/"+listId;
-        Call<ListServerData> call = retrofitManager.accessRetrofitInterface().getList(url);
-        call.enqueue(new Callback<ListServerData>() {
-            @Override
-            public void onResponse(Call<ListServerData> call, Response<ListServerData> response) {
-                if(response.code()==200){
-                    //list retrieved by the server
-                    ListServerData list = response.body();
-                    //render list in front-end
-                    renderGetList(list);
-                }
-            }
+    public abstract void getListFromServer(String listId);
 
-            @Override
-            public void onFailure(Call<ListServerData> call, Throwable t) {
-                Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
-    private void renderGetList(ListServerData list){
-        String listName = list.getListName();
-        String listCode = list.getUuid();
-        String finalListInfo = listName+" -> "+listCode;
-        listContent.add(finalListInfo);
-        listSettings();
-        Toast.makeText(context, "List added with success!", Toast.LENGTH_LONG).show();
-    }
+
 
     //depende do tipo de lista
     public abstract void createList();

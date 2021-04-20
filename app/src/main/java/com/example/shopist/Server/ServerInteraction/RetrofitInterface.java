@@ -1,8 +1,9 @@
 package com.example.shopist.Server.ServerInteraction;
 
-import com.example.shopist.Server.ServerResponses.ListServerData;
 import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
+import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 
 import java.util.HashMap;
 
@@ -30,10 +31,6 @@ public interface RetrofitInterface {
     * Pantry list routes
     * */
 
-
-    @GET
-    Call<ListServerData> getList(@Url String url);
-
     //create a pantry list
     @POST("/list/pantry")
     Call<ServerListToken> executePantryListCreation(@Body HashMap<String,String> map);
@@ -43,6 +40,8 @@ public interface RetrofitInterface {
     Call<Void> addProductToPantry(@Path("id") String listId, @Body HashMap<String,String> map);
 
     //get a specific pantry list
+    @GET("/list/pantry/{id}")
+    Call<ServerPantryList> syncPantryList(@Path("id") String listId);
 
 
     /*
@@ -54,6 +53,8 @@ public interface RetrofitInterface {
     Call<ServerListToken> executeShoppingListCreation(@Body HashMap<String,String> map);
 
     //get a specific shopping list
+    @GET("/list/shopping/{id}")
+    Call<ServerShoppingList> syncShoppingList(@Path("id") String listId);
 
 
     /*

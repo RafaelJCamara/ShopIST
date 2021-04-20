@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
+import com.example.shopist.Server.ServerResponses.ServerPantryList;
 
 import java.util.HashMap;
 
@@ -34,6 +35,38 @@ public class PantryListManager extends ListManager{
             }
         });
     }
+
+    public void getListFromServer(String listId){
+        Call<ServerPantryList> call = retrofitManager.accessRetrofitInterface().syncPantryList(listId);
+        call.enqueue(new Callback<ServerPantryList>() {
+            @Override
+            public void onResponse(Call<ServerPantryList> call, Response<ServerPantryList> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerPantryList list = response.body();
+                    //render list in front-end
+                    renderGetList(list, listId);
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerPantryList> call, Throwable t) {
+                Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    public void renderGetList(ServerPantryList list, String uuid) {
+        String listName = list.getName();
+        String finalListInfo = listName + " -> " + uuid;
+        listContent.add(finalListInfo);
+        listSettings();
+        Toast.makeText(context, "List added with success!", Toast.LENGTH_LONG).show();
+    }
+
+
+
+
 
     //depende do tipo de lista
     public void createList(){
