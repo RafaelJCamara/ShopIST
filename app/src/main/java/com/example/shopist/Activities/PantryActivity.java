@@ -1,9 +1,12 @@
 package com.example.shopist.Activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,31 +15,34 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitInterface;
+import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Utils.ItemListAdapter;
 import com.example.shopist.product.ProductClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class PantryActivity extends AppCompatActivity {
 
-    private Retrofit retrofit;
-    private RetrofitInterface retrofitInterface;
+    private RetrofitManager retrofitManager;
 
     private ArrayList<ProductClass> productList;
     private ListView itemListView;
     private ItemListAdapter itemListAdapter;
-
+    private String listId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        retrofitManager = new RetrofitManager();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
-
         productList = new ArrayList<ProductClass>();
-
         handleProductListDialog();
     }
 
@@ -44,11 +50,11 @@ public class PantryActivity extends AppCompatActivity {
 
         String listInfo = getIntent().getStringExtra("itemInfo");
         String [] values = listInfo.split("->");
-
         TextView listNameView = findViewById(R.id.listName);
         TextView listCodeView = findViewById(R.id.listCode);
         listNameView.setText(values[0]);
-        listCodeView.setText(values[1]);
+        listId = values[1];
+        listCodeView.setText(listId);
     }
 
     private void handleProductListDialog(){
@@ -61,20 +67,7 @@ public class PantryActivity extends AppCompatActivity {
         itemListView = findViewById(R.id.itemList);
         itemListAdapter = new ItemListAdapter(this, productList);
         itemListView.setAdapter(itemListAdapter);
-
         fillTextView();
-
-
-        /*
-        //add actionlisterner to each item of the list
-        itemListView.setOnItemClickListener(new itemListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemSelected = listToDo.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(),"Item list clicked!",Toast.LENGTH_SHORT).show();
-            }
-        });
-        */
     }
 
     private void addProductLogic(){
@@ -94,72 +87,76 @@ public class PantryActivity extends AppCompatActivity {
     ##########################
      */
 
-    private void handleCreateProductDialog(){
+    public void handleCreateProductDialog(){
         View view = getLayoutInflater().inflate(R.layout.create_product,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view).show();
         createProductLogic(view);
     }
 
-
-    private void createProductLogic(View view) {
+    public void createProductLogic(View view){
         Button createProductButton = view.findViewById(R.id.CreateProductButton);
-
-        TextView productNameView = view.findViewById(R.id.edit_product_name);
-        TextView productPriceView = view.findViewById(R.id.edit_product_price);
-        TextView productDescriptionView = view.findViewById(R.id.edit_product_description);
-
         createProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String productName = productNameView.getText().toString();
-                String productPrice = productPriceView.getText().toString();
-                String productDescription = productDescriptionView.getText().toString();
-
-                createProductInServer(productName, productPrice, productDescription);
+                handlePantryListProductCreation(view);
             }
         });
     }
 
-    private void createProductInServer(String productName, String productPrice, String productDescription){
+
+    public void handlePantryListProductCreation(View view){
+        //product name
+        EditText productNameComponent = view.findViewById(R.id.edit_product_name);
+        String productName = productNameComponent.getText().toString();
+        Toast.makeText(getApplicationContext(),productName ,Toast.LENGTH_SHORT).show();
+
+        //product description
+        EditText productDescriptionComponent = view.findViewById(R.id.edit_product_description);
+        String productDescription = productDescriptionComponent.getText().toString();
+        Toast.makeText(getApplicationContext(),productDescription ,Toast.LENGTH_SHORT).show();
+
+        //product barcode
+        EditText productBarcodeComponent = view.findViewById(R.id.productBarcode);
+        String productBarcode = productBarcodeComponent.getText().toString();
+        Toast.makeText(getApplicationContext(),productBarcode ,Toast.LENGTH_SHORT).show();
+
+        //product stock
+        EditText productStockComponent = view.findViewById(R.id.productStockQuantity);
+        String productStockQuantity = productStockComponent.getText().toString();
+        Toast.makeText(getApplicationContext(),productStockQuantity ,Toast.LENGTH_SHORT).show();
+
+        //product needed
+        EditText productNeededComponent = view.findViewById(R.id.productNeededQuantity);
+        String productNeededQuantity = productNeededComponent.getText().toString();
+        Toast.makeText(getApplicationContext(),productNeededQuantity ,Toast.LENGTH_SHORT).show();
+
+        //create product in the server
+        createProductInServer(productName, productDescription, productBarcode, productStockQuantity, productNeededQuantity);
+    }
+
+
+
+    public void createProductInServer(String productName, String productDescription, String productBarcode, String productStock, String productNeeded){
         HashMap<String,String> map = new HashMap<>();
         map.put("name",productName);
-        map.put("price",productPrice);
         map.put("description", productDescription);
+        map.put("barcode", productBarcode);
+        map.put("stock", productStock);
+        map.put("needed", productNeeded);
 
-        /*
-        Call<Void> call = retrofitInterface.createProduct(map);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().addProductToPantry(listId,map);
         call.enqueue(new Callback<Void>() {
-            //when the server responds to our request
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code() == 200) {
-                    //server success
-                    //go to login activity
-                    //signupSuccess(map);
-                }else if (response.code() == 404){
-                    String error_message = "Username or email already exists. Please try to change those!";
-                    //Toast.makeText(SignupActivity.this, error_message, Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(getApplicationContext(),"Product add with success." ,Toast.LENGTH_SHORT).show();
             }
-            //when the server fails to respond to our request
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                //Toast.makeText(SignupActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
             }
         });
-         */
-
-
     }
 
-
-    /*
-    item_Class_test = new ProductClass("laranja");
-                item_Class_test.setImage(R.drawable.orange);
-                productList.add(item_Class_test);
-
-                itemListAdapter.notifyDataSetChanged();
-
-     */
 }
