@@ -1,5 +1,6 @@
 package com.example.shopist.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,11 @@ public class ShoppingListManager extends ListManager{
 
     public ShoppingListManager(Context context, View view, int listID, LayoutInflater layoutInflater) {
         super(context, view, listID, layoutInflater);
+    }
+
+    public static ShoppingListManager createShoppingListManager(View view) {
+        return new ShoppingListManager(view.getContext(), view,
+                R.id.shoppingList, (LayoutInflater) view.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE ));
     }
 
     //depende do tipo de lista

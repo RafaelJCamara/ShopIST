@@ -17,6 +17,11 @@ public class PantryListManager extends ListManager{
         super(context, view, listID, layoutInflater);
     }
 
+    public static PantryListManager createPantryListManager(View view) {
+        return new PantryListManager(view.getContext(), view,
+                R.id.pantryList, (LayoutInflater) view.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE ));
+    }
+
     //depende do tipo de lista
     public void retrieveList(){
         Button getListButton = view.findViewById(R.id.getPantryListButton);
