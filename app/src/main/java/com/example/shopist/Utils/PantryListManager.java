@@ -2,6 +2,7 @@ package com.example.shopist.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +12,10 @@ import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -19,6 +23,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PantryListManager extends ListManager{
+
+    public ArrayList<ServerPantryProduct> pantryProducts;
 
     public PantryListManager(Context context, View view, int listID, LayoutInflater layoutInflater) {
         super(context, view, listID, layoutInflater);
@@ -57,6 +63,8 @@ public class PantryListManager extends ListManager{
 
 
     public void renderGetList(ServerPantryList list, String uuid) {
+        this.pantryProducts = list.getProducts();
+
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
         listContent.add(finalListInfo);
@@ -108,6 +116,8 @@ public class PantryListManager extends ListManager{
     public void openItemActivity(String itemInfo){
         Intent intent = new Intent(context, PantryActivity.class);
         intent.putExtra("itemInfo", itemInfo);
+        //pass pantry products to be rendered
+        intent.putExtra("mylist",this.pantryProducts);
         context.startActivity(intent);
     }
 

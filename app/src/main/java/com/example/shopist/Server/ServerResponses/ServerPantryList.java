@@ -9,13 +9,13 @@ public class ServerPantryList {
     private String name;
 
     //products that belong to the pantry
-    private ServerPantryProduct[] products;
+    private ArrayList<ServerPantryProduct> products;
 
     public String getName() {
         return name;
     }
 
-    public ServerPantryProduct[] getProducts() {
+    public ArrayList<ServerPantryProduct> getProducts() {
         return products;
     }
 }

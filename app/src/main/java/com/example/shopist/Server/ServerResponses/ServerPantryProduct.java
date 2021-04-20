@@ -1,6 +1,8 @@
 package com.example.shopist.Server.ServerResponses;
 
-public class ServerPantryProduct {
+import java.io.Serializable;
+
+public class ServerPantryProduct implements Serializable {
     //this class represents the products stored in the server in the pantry environment
     //this product has no price, since it is not attached to a store
 

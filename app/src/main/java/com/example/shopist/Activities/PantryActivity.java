@@ -1,12 +1,12 @@
 package com.example.shopist.Activities;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,40 +14,71 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.shopist.R;
-import com.example.shopist.Server.ServerInteraction.RetrofitInterface;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
-import com.example.shopist.Server.ServerResponses.ServerListToken;
-import com.example.shopist.Utils.ItemListAdapter;
-import com.example.shopist.product.ProductClass;
+import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class PantryActivity extends AppCompatActivity {
 
     private RetrofitManager retrofitManager;
 
-    private ArrayList<ProductClass> productList;
-    private ListView itemListView;
-    private ItemListAdapter itemListAdapter;
+    public ListView listView;
+    public ArrayList<String> listContent = new ArrayList<String>();
+
     private String listId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        retrofitManager = new RetrofitManager();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
-        productList = new ArrayList<ProductClass>();
+        retrofitManager = new RetrofitManager();
         handleProductListDialog();
     }
 
-    private void fillTextView(){
+    /*
+    ##########################
+    ### initial setting ###
+    ##########################
+     */
 
+    private void handleProductListDialog(){
+        productListSettings();
+        fillPantryProductList();
+        addProductLogic();
+    }
+
+    private void productListSettings() {
+        //configure product list and adapter
+        fillListContentSettings();
+        fillTextView();
+    }
+
+    //settings for the list and its adapters
+    private void fillListContentSettings(){
+        //get list view
+        listView = findViewById(R.id.productListInfo);
+
+        //create list adapter
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                //context
+                PantryActivity.this,
+                android.R.layout.simple_list_item_1,
+                //data
+                listContent
+        );
+
+        //add adapter to list
+        listView.setAdapter(adapter);
+    }
+
+    private void fillTextView(){
         String listInfo = getIntent().getStringExtra("itemInfo");
         String [] values = listInfo.split("->");
         TextView listNameView = findViewById(R.id.listName);
@@ -57,18 +88,23 @@ public class PantryActivity extends AppCompatActivity {
         listCodeView.setText(listId);
     }
 
-    private void handleProductListDialog(){
-        productListSettings();
-        addProductLogic();
+    private void fillPantryProductList(){
+        Intent intent = getIntent();
+        ArrayList<ServerPantryProduct> prods = (ArrayList<ServerPantryProduct>) intent.getSerializableExtra("mylist");
+        for(ServerPantryProduct p :prods){
+            String productInfo = p.getName()+"; "+p.getDescription();
+            Toast.makeText(getApplicationContext(),productInfo ,Toast.LENGTH_SHORT).show();
+            listContent.add(productInfo);
+        }
+        fillListContentSettings();
     }
 
-    private void productListSettings() {
-        //configure product list and adapter
-        itemListView = findViewById(R.id.itemList);
-        itemListAdapter = new ItemListAdapter(this, productList);
-        itemListView.setAdapter(itemListAdapter);
-        fillTextView();
-    }
+
+    /*
+    ##########################
+    ### create new product ###
+    ##########################
+     */
 
     private void addProductLogic(){
         Button addProcuctButton = findViewById(R.id.addProductButton);
@@ -76,16 +112,9 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 handleCreateProductDialog();
-                Toast.makeText(getApplicationContext(),"addProductButton" ,Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    /*
-    ##########################
-    ### create new product ###
-    ##########################
-     */
 
     public void handleCreateProductDialog(){
         View view = getLayoutInflater().inflate(R.layout.create_product,null);
@@ -135,8 +164,6 @@ public class PantryActivity extends AppCompatActivity {
         createProductInServer(productName, productDescription, productBarcode, productStockQuantity, productNeededQuantity);
     }
 
-
-
     public void createProductInServer(String productName, String productDescription, String productBarcode, String productStock, String productNeeded){
         HashMap<String,String> map = new HashMap<>();
         map.put("name",productName);
@@ -149,7 +176,7 @@ public class PantryActivity extends AppCompatActivity {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(getApplicationContext(),"Product add with success." ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Product added with success." ,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -158,5 +185,6 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
     }
+
 
 }

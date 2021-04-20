@@ -9,8 +9,11 @@ import android.widget.Toast;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
+import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -18,6 +21,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ShoppingListManager extends ListManager{
+    
+    public ServerShoppingProduct[] shoppingProducts;
 
     public ShoppingListManager(Context context, View view, int listID, LayoutInflater layoutInflater) {
         super(context, view, listID, layoutInflater);
@@ -56,8 +61,9 @@ public class ShoppingListManager extends ListManager{
         });
     }
 
-
     public void renderGetList(ServerShoppingList list, String uuid) {
+        this.shoppingProducts = list.getProducts();
+
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
         listContent.add(finalListInfo);
@@ -65,8 +71,6 @@ public class ShoppingListManager extends ListManager{
         Toast.makeText(context, "List added with success!", Toast.LENGTH_LONG).show();
     }
 
-
-    
 
     //depende do tipo de lista
     public void createList(){
