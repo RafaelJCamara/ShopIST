@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         ServerData userInfoServer = response.body();
 
         //create a new intent to main activity screen
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
 
         //put user information into intent
         intent.putExtra("username",userInfoServer.getName());
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //go to main page activity
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
                 startActivity(intent);
             }
         });
