@@ -3,5 +3,5 @@
     <string name="title_activity_main2">MainActivity</string>
     <string name="title_pantries">Pantries</string>
     <string name="title_shopping">Shopping</string>
-    <string name="title_user">User</string>
+    <string name="title_cart">Cart</string>
 </resources>

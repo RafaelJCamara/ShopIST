@@ -1,4 +1,4 @@
-package com.example.shopist.Activities.ui.user;
+package com.example.shopist.Activities.ui.cart;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.shopist.R;
 
-public class UserFragment extends Fragment {
+public class CartFragment extends Fragment {
 
-    private UserViewModel userViewModel;
+    private CartViewModel cartViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        userViewModel =
-                new ViewModelProvider(this).get(UserViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_user, container, false);
-        final TextView textView = root.findViewById(R.id.text_user);
-        userViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        cartViewModel =
+                new ViewModelProvider(this).get(CartViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_cart, container, false);
+        final TextView textView = root.findViewById(R.id.text_cart);
+        cartViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

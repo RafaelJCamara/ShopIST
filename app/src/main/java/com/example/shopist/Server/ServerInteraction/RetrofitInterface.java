@@ -13,10 +13,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Url;
 
 public interface RetrofitInterface {
-    @POST("/user/login")
+    @POST("/cart/login")
     Call<ServerData> executeLogin(@Body HashMap<String,String> map);
 
-    @POST("/user/signup")
+    @POST("/cart/signup")
     Call<Void> executeSignup(@Body HashMap<String,String> map);
 
     @GET

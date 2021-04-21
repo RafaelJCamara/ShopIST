@@ -1,16 +1,16 @@
-package com.example.shopist.Activities.ui.user;
+package com.example.shopist.Activities.ui.cart;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class UserViewModel extends ViewModel {
+public class CartViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public UserViewModel() {
+    public CartViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is user fragment");
+        mText.setValue("This is cart fragment");
     }
 
     public LiveData<String> getText() {
