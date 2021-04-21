@@ -1,18 +1,11 @@
 package com.example.shopist.Activities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import com.example.shopist.Activities.ui.pantries.PantriesFragment;
-import com.example.shopist.Activities.ui.shopping.ShoppingFragment;
-import com.example.shopist.Activities.ui.user.UserFragment;
 import com.example.shopist.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -30,10 +23,9 @@ public class MainActivityNav extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_pantries, R.id.navigation_shopping, R.id.navigation_user)
+                R.id.navigation_pantries, R.id.navigation_shopping, R.id.navigation_cart)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
     }
 

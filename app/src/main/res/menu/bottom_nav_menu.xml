@@ -12,8 +12,8 @@
         android:title="@string/title_shopping" />
 
     <item
-        android:id="@+id/navigation_user"
-        android:icon="@drawable/ic_user_black"
-        android:title="@string/title_user" />
+        android:id="@+id/navigation_cart"
+        android:icon="@drawable/ic_cart_black"
+        android:title="@string/title_cart" />
 
 </menu>

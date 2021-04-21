@@ -19,7 +19,7 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_navigation_pantries_to_navigation_user"
-            app:destination="@id/navigation_user"
+            app:destination="@id/navigation_cart"
             app:enterAnim="@anim/fragment_fade_enter"
             app:exitAnim="@anim/fragment_fade_exit"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -40,7 +40,7 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_navigation_shopping_to_navigation_user"
-            app:destination="@id/navigation_user"
+            app:destination="@id/navigation_cart"
             app:enterAnim="@anim/fragment_fade_enter"
             app:exitAnim="@anim/fragment_fade_exit"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
@@ -48,10 +48,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_user"
-        android:name="com.example.shopist.Activities.ui.user.UserFragment"
-        android:label="@string/title_user"
-        tools:layout="@layout/fragment_user" >
+        android:id="@+id/navigation_cart"
+        android:name="com.example.shopist.Activities.ui.cart.CartFragment"
+        android:label="@string/title_cart"
+        tools:layout="@layout/fragment_cart">
         <action
             android:id="@+id/action_navigation_user_to_navigation_shopping"
             app:destination="@id/navigation_shopping"
