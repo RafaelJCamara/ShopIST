@@ -18,6 +18,7 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Utils.ListManager;
 import com.example.shopist.Utils.MainLogicManager;
 import com.example.shopist.Utils.PantryListManager;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     public ListView pantryListView;
     public ArrayList<String> pantryListContent;
 
+    public ListView shoppingListView;
+    public ArrayList<String> shoppingListContent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
         retrofitManager = new RetrofitManager();
         pantryListContent = new ArrayList<>();
-
+        shoppingListContent = new ArrayList<>();
 
         //LIST OPERATIONS
         pantryListSettings();
+        shoppingListSettings();
         addSettings();
         listProperties();
     }
@@ -88,10 +93,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 /*
-    ##########################
-    ### to be moved later ###
-    ### button logic ###
-    ##########################
+    #####################################################
+    ### BELOW to be moved later ###
+    ### create and get button logic for both lists ###
+    #####################################################
      */
 
 
@@ -101,7 +106,16 @@ public class MainActivity extends AppCompatActivity {
         createPantryList();
 
         //shopping list
+        retrieveShoppingList();
+        createShoppingList();
     }
+
+
+   /*
+    ##########################
+    ### pantry list ###
+    ##########################
+     */
 
     /*
     * Retrieve pantry list
@@ -194,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
-                Toast.makeText(MainActivity.this,"List item clicked!",Toast.LENGTH_SHORT).show();
                 openPantryItemActivity(itemInfo);
             }
         });
@@ -204,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, PantryActivity.class);
         intent.putExtra("itemInfo", itemInfo);
         //pass pantry products to be rendered
+        intent.putExtra("products", this.shoppingListContent);
         startActivity(intent);
     }
 
@@ -315,5 +329,207 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, "List created with success!", Toast.LENGTH_LONG).show();
     }
 
+
+    /*
+    ##########################
+    ### shopping list ###
+    ##########################
+     */
+
+    public void shoppingListSettings(){
+        fillShoppingListContentSettings();
+        addShoppingListClickListeners();
+    }
+
+    private void fillShoppingListContentSettings(){
+        //get list view
+        shoppingListView = findViewById(R.id.shoppingList);
+
+        //create list adapter
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                //context
+                MainActivity.this,
+                //layout to be applied on
+                android.R.layout.simple_list_item_1,
+                //data
+                shoppingListContent
+        );
+
+        //add adapter to list
+        shoppingListView.setAdapter(adapter);
+    }
+
+    private void addShoppingListClickListeners(){
+        //add actionlisterner to each item of the list
+        shoppingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String itemInfo = (String) parent.getAdapter().getItem(position);
+                Toast.makeText(MainActivity.this,"List item clicked!",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void retrieveShoppingList(){
+        Button getListButton = findViewById(R.id.getShoppingListButton);
+        getListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //open get list dialog
+                handleGetShoppingListDialog();
+            }
+        });
+    }
+
+    public void handleGetShoppingListDialog(){
+        View v = getLayoutInflater().inflate(R.layout.get_list,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(v).show();
+        handleGetShoppingListLogic(v);
+    }
+
+    public void handleGetShoppingListLogic(View view){
+        Button getListButton = view.findViewById(R.id.addListButton);
+        getListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText listID = view.findViewById(R.id.getListId);
+                String listId = listID.getText().toString();
+                //check if the list has been added
+                if(hasShoppingListBeenCreatedById(listId)){
+                    //list has been added
+                    Toast.makeText(MainActivity.this, "List has already been added.", Toast.LENGTH_LONG).show();
+                }else{
+                    //the list hasn't been added
+                    getShoppingListFromServer(listId);
+                }
+            }
+        });
+    }
+
+    public void getShoppingListFromServer(String listId){
+        Call<ServerShoppingList> call = retrofitManager.accessRetrofitInterface().syncShoppingList(listId);
+        call.enqueue(new Callback<ServerShoppingList>() {
+            @Override
+            public void onResponse(Call<ServerShoppingList> call, Response<ServerShoppingList> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerShoppingList list = response.body();
+                    //render list in front-end
+                    renderShoppingGetList(list, listId);
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerShoppingList> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void renderShoppingGetList(ServerShoppingList list, String uuid) {
+        String listName = list.getName();
+        String finalListInfo = listName + " -> " + uuid;
+        shoppingListContent.add(finalListInfo);
+        shoppingListSettings();
+        Toast.makeText(MainActivity.this, "List added with success!", Toast.LENGTH_LONG).show();
+    }
+
+
+    /*
+     * Create shopping list
+     * */
+
+    public void createShoppingList(){
+        Button createPantryListButton = findViewById(R.id.createShoppingListButton);
+        createPantryListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleCreateShoppingListDialog();
+            }
+        });
+    }
+
+    public void handleCreateShoppingListDialog(){
+        View view = getLayoutInflater().inflate(R.layout.create_list,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(view).show();
+        handleCreateShoppingListLogic(view);
+    }
+
+    public void handleCreateShoppingListLogic(View view){
+        Button getListButton = view.findViewById(R.id.createListButton);
+        getListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //access list name
+                EditText listId = view.findViewById(R.id.newListName);
+                String listName = listId.getText().toString();
+
+                //access list address
+                EditText listAddressComponent = view.findViewById(R.id.listAddress);
+                String listAddress = listAddressComponent.getText().toString();
+
+                //check if list had already been created
+                if(hasShoppingListBeenCreatedByName(listName)){
+                    //list has been created
+                    Toast.makeText(MainActivity.this, "List has already been created.", Toast.LENGTH_LONG).show();
+                }else{
+                    //list has not been created
+                    createShoppingListInServer(listName, listAddress);
+                }
+            }
+        });
+    }
+
+    public boolean hasShoppingListBeenCreatedByName(String listName){
+        for(String listInfo:shoppingListContent){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[0].equals(listName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasShoppingListBeenCreatedById(String listId){
+        for(String listInfo:shoppingListContent){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[1].equals(listId)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void createShoppingListInServer(String listName, String listAddress){
+        HashMap<String,String> map = new HashMap<>();
+        map.put("listName",listName);
+        map.put("address", listAddress);
+        Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executeShoppingListCreation(map);
+        call.enqueue(new Callback<ServerListToken>() {
+            @Override
+            public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerListToken token = response.body();
+                    String tokenContent = token.getListId();
+                    //render list in front-end
+                    renderCreateShoppingList(tokenContent,listName);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerListToken> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void renderCreateShoppingList(String token, String listName){
+        String finalListInfo = listName+" -> "+token;
+        shoppingListContent.add(finalListInfo);
+        shoppingListSettings();
+        Toast.makeText(MainActivity.this, "List created with success!", Toast.LENGTH_LONG).show();
+    }
 
 }

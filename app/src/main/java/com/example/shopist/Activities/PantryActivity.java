@@ -40,7 +40,10 @@ public class PantryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
+        //add pantry products to list view
         handleProductListDialog();
+        //add all shopping lists to list view
+        addAllShoppingLists();
     }
 
     /*
@@ -115,6 +118,13 @@ public class PantryActivity extends AppCompatActivity {
             listContent.add(productInfo);
         }
         fillListContentSettings();
+    }
+
+    private void addAllShoppingLists(){
+        ArrayList<String> shoppingLists = (ArrayList<String>) getIntent().getSerializableExtra("products");
+        for(String s : shoppingLists){
+            Toast.makeText(getApplicationContext(),s ,Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -211,6 +221,5 @@ public class PantryActivity extends AppCompatActivity {
         listContent.add(productInfo);
         fillListContentSettings();
     }
-
 
 }
