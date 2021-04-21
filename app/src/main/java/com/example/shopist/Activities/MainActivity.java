@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 Toast.makeText(MainActivity.this, "Logout with success!", Toast.LENGTH_SHORT).show();
-
             }
         });
     }
@@ -216,8 +215,7 @@ public class MainActivity extends AppCompatActivity {
     public void openPantryItemActivity(String itemInfo){
         Intent intent = new Intent(MainActivity.this, PantryActivity.class);
         intent.putExtra("itemInfo", itemInfo);
-        //pass pantry products to be rendered
-        intent.putExtra("products", this.shoppingListContent);
+        intent.putExtra("shoppingLists", this.shoppingListContent);
         startActivity(intent);
     }
 

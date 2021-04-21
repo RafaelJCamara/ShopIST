@@ -3,8 +3,10 @@ package com.example.shopist.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,11 +14,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
+import com.example.shopist.Utils.Adapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,15 +40,16 @@ public class PantryActivity extends AppCompatActivity {
 
     private String listId;
 
+        private RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
+
         //add pantry products to list view
         handleProductListDialog();
-        //add all shopping lists to list view
-        addAllShoppingLists();
     }
 
     /*
@@ -61,6 +67,8 @@ public class PantryActivity extends AppCompatActivity {
     private void productListSettings() {
         //configure product list and adapter
         fillListContentSettings();
+        //add product click listener
+        addProductListClickListener();
         fillTextView();
     }
 
@@ -81,6 +89,54 @@ public class PantryActivity extends AppCompatActivity {
         //add adapter to list
         listView.setAdapter(adapter);
     }
+
+    private void addProductListClickListener(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String itemInfo = (String) parent.getAdapter().getItem(position);
+                handleProductDetailDialog(itemInfo);
+            }
+        });
+    }
+
+    private void handleProductDetailDialog(String itemInfo){
+        View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
+        builder.setView(view).show();
+        handleBuyInShopsLogic(view, itemInfo);
+    }
+
+    private void handleBuyInShopsLogic(View view, String itemInfo){
+        String[] prodInfo = itemInfo.split(";");
+
+        TextView productNameDetail = view.findViewById(R.id.productNameDetail);
+        productNameDetail.setText(prodInfo[0]);
+
+        TextView productDescriptionDetail = view.findViewById(R.id.productDescriptionDetail);
+        productDescriptionDetail.setText(prodInfo[1]);
+
+        TextView productStockDetail = view.findViewById(R.id.productStockDetail);
+        productStockDetail.setText(prodInfo[3]);
+
+        TextView productNeededDetail = view.findViewById(R.id.neededProductDetail);
+        productNeededDetail.setText(prodInfo[2]);
+
+        fillListViewWithShoppingLists(view);
+    }
+
+    private void fillListViewWithShoppingLists(View view){
+        ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
+        this.recyclerView = view.findViewById(R.id.shopListDetail);
+
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        this.recyclerView.setLayoutManager(layoutManager);
+        this.recyclerView.setHasFixedSize(true);
+        Adapter adapter = new Adapter(shopList);
+        recyclerView.setAdapter(adapter);
+    }
+
 
     private void fillTextView(){
         String listInfo = getIntent().getStringExtra("itemInfo");
@@ -119,14 +175,6 @@ public class PantryActivity extends AppCompatActivity {
         }
         fillListContentSettings();
     }
-
-    private void addAllShoppingLists(){
-        ArrayList<String> shoppingLists = (ArrayList<String>) getIntent().getSerializableExtra("products");
-        for(String s : shoppingLists){
-            Toast.makeText(getApplicationContext(),s ,Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     /*
     ##########################
