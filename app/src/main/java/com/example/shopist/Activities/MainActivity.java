@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Utils.ListManager;
 import com.example.shopist.Utils.MainLogicManager;
@@ -23,6 +24,7 @@ import com.example.shopist.Utils.PantryListManager;
 import com.example.shopist.Utils.ShoppingListManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //LIST OPERATIONS
-        listSettings();
+        pantryListSettings();
         addSettings();
         listProperties();
     }
@@ -96,10 +98,14 @@ public class MainActivity extends AppCompatActivity {
     public void listProperties(){
         //pantry lists
         retrievePantryList();
+        createPantryList();
 
         //shopping list
     }
 
+    /*
+    * Retrieve pantry list
+    * */
 
     //depende do tipo de lista
     public void retrievePantryList(){
@@ -173,11 +179,11 @@ public class MainActivity extends AppCompatActivity {
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
         pantryListContent.add(finalListInfo);
-        listSettings();
+        pantryListSettings();
         Toast.makeText(MainActivity.this, "List added with success!", Toast.LENGTH_LONG).show();
     }
 
-    public void listSettings(){
+    public void pantryListSettings(){
         fillPantryListContentSettings();
         addPantryListClickListeners();
     }
@@ -218,6 +224,95 @@ public class MainActivity extends AppCompatActivity {
 
         //add adapter to list
         pantryListView.setAdapter(adapter);
+    }
+
+
+    /*
+     * Create pantry list
+     * */
+
+    //depende do tipo de lista
+    public void createPantryList(){
+        Button createPantryListButton = findViewById(R.id.createPantryListButton);
+        createPantryListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleCreatePantryListDialog();
+            }
+        });
+    }
+
+    public void handleCreatePantryListDialog(){
+        View view = getLayoutInflater().inflate(R.layout.create_list,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(view).show();
+        handleCreatePantryListLogic(view);
+    }
+
+    public void handleCreatePantryListLogic(View view){
+        Button getListButton = view.findViewById(R.id.createListButton);
+        getListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //access list name
+                EditText listId = view.findViewById(R.id.newListName);
+                String listName = listId.getText().toString();
+
+                //access list address
+                EditText listAddressComponent = view.findViewById(R.id.listAddress);
+                String listAddress = listAddressComponent.getText().toString();
+
+                //check if list had already been created
+                if(hasPantryListBeenCreated(listName)){
+                    //list has been created
+                    Toast.makeText(MainActivity.this, "List has already been created.", Toast.LENGTH_LONG).show();
+                }else{
+                    //list has not been created
+                    createPantryListInServer(listName, listAddress);
+                }
+            }
+        });
+    }
+
+    public boolean hasPantryListBeenCreated(String listName){
+        for(String listInfo:pantryListContent){
+            String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[0].equals(listName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void createPantryListInServer(String listName, String listAddress){
+        HashMap<String,String> map = new HashMap<>();
+        map.put("name",listName);
+        map.put("address", listAddress);
+        Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executePantryListCreation(map);
+        call.enqueue(new Callback<ServerListToken>() {
+            @Override
+            public void onResponse(Call<ServerListToken> call, Response<ServerListToken> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ServerListToken token = response.body();
+                    String tokenContent = token.getListId();
+                    //render list in front-end
+                    renderCreatedPantryList(tokenContent,listName);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerListToken> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void renderCreatedPantryList(String token, String listName){
+        String finalListInfo = listName+" -> "+token;
+        pantryListContent.add(finalListInfo);
+        pantryListSettings();
+        Toast.makeText(MainActivity.this, "List created with success!", Toast.LENGTH_LONG).show();
     }
 
 

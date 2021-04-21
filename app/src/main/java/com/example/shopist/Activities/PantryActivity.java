@@ -98,12 +98,7 @@ public class PantryActivity extends AppCompatActivity {
                 if(response.code()==200){
                     //list retrieved by the server
                     ServerPantryList list = response.body();
-                    //render list in front-end
-                    for(ServerPantryProduct prod : list.getProducts()){
-                        String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
-                        Toast.makeText(PantryActivity.this, productInfo, Toast.LENGTH_LONG).show();
-                        listContent.add(productInfo);
-                    }
+                    renderLists(list.getProducts());
                 }
             }
             @Override
@@ -111,6 +106,14 @@ public class PantryActivity extends AppCompatActivity {
                 Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void renderLists(ArrayList<ServerPantryProduct> list){
+        for(ServerPantryProduct prod : list){
+            String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
+            Toast.makeText(PantryActivity.this, productInfo, Toast.LENGTH_LONG).show();
+            listContent.add(productInfo);
+        }
         fillListContentSettings();
     }
 
@@ -147,7 +150,6 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
     }
-
 
     public void handlePantryListProductCreation(View view){
         //product name
@@ -203,7 +205,6 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void renderNewProduct(String productName, String productDescription, String needed, String stock){
         String productInfo = productName+"; "+productDescription+"; Needed: "+needed+" ; "+"Stock: "+stock;
