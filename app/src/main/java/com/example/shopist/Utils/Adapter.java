@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,11 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
     private List<String> shopList;
+    private List<String> selectedShopping;
+
 
     public Adapter(List<String> shopList){
         this.shopList = shopList;
@@ -30,9 +34,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        for(String s:shopList){
+            String s = shopList.get(position);
             holder.checkBox.setText(s);
-        }
     }
 
     @Override
@@ -40,14 +43,21 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
         return shopList.size();
     }
 
+    public List<String> getSelectedShopping(){
+        return this.selectedShopping;
+    }
+
+
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         CheckBox checkBox;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.shopStore);
+            checkBox = (CheckBox) itemView.findViewById(R.id.shopStore);
         }
+        
     }
 
 }

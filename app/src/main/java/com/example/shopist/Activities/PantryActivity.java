@@ -1,6 +1,5 @@
 package com.example.shopist.Activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -135,7 +134,26 @@ public class PantryActivity extends AppCompatActivity {
         this.recyclerView.setHasFixedSize(true);
         Adapter adapter = new Adapter(shopList);
         recyclerView.setAdapter(adapter);
+
+        //click events
+
+
+        //addSaveButtonLogic(adapter, view);
     }
+
+    private void addSaveButtonLogic(Adapter adapter, View view){
+        Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<String> getSelectedShops = adapter.getSelectedShopping();
+                for(String s: getSelectedShops){
+                    Toast.makeText(view.getContext(), s,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
 
     private void fillTextView(){
