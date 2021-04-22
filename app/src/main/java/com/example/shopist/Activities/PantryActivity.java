@@ -1,12 +1,10 @@
 package com.example.shopist.Activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +23,6 @@ import com.example.shopist.Utils.Adapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -113,8 +110,6 @@ public class PantryActivity extends AppCompatActivity {
         listId = values[1];
         listCodeView.setText(listId);
     }
-
-
 
     private void handleProductDetailDialog(String itemInfo){
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);

@@ -61,6 +61,8 @@ public interface RetrofitInterface {
     Call<ServerShoppingList> syncShoppingList(@Path("id") String listId);
 
 
+
+
     /*
     * Product routes
     * */

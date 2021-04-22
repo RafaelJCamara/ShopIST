@@ -19,10 +19,6 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
-import com.example.shopist.Utils.ListManager;
-import com.example.shopist.Utils.MainLogicManager;
-import com.example.shopist.Utils.PantryListManager;
-import com.example.shopist.Utils.ShoppingListManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -363,10 +359,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
-                Toast.makeText(MainActivity.this,"List item clicked!",Toast.LENGTH_SHORT).show();
+                openShoppingItemActivity(itemInfo);
             }
         });
     }
+
+    public void openShoppingItemActivity(String itemInfo){
+        Intent intent = new Intent(MainActivity.this, ShopActivity.class);
+        intent.putExtra("itemInfo", itemInfo);
+        startActivity(intent);
+    }
+
 
     public void retrieveShoppingList(){
         Button getListButton = findViewById(R.id.getShoppingListButton);

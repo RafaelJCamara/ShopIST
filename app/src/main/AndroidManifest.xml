@@ -14,6 +14,7 @@
         android:theme="@style/Theme.ShopIST">
         <activity android:name=".Activities.SignupActivity"></activity>
         <activity android:name=".Activities.PantryActivity"></activity>
+        <activity android:name=".Activities.ShopActivity"></activity>
         <activity android:name=".Activities.MainActivity"></activity>
         <activity android:name=".Activities.LoginActivity">
             <intent-filter>
