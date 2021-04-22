@@ -1,6 +1,7 @@
 package com.example.shopist.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -39,13 +40,17 @@ public class PantryActivity extends AppCompatActivity {
 
     private String listId;
 
-        private RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+
+    private ArrayList<ServerPantryProduct> existingPantryProducts;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
+        existingPantryProducts = new ArrayList<ServerPantryProduct>();
 
         //add pantry products to list view
         handleProductListDialog();
@@ -99,6 +104,18 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
+    private void fillTextView(){
+        String listInfo = getIntent().getStringExtra("itemInfo");
+        String [] values = listInfo.split("->");
+        TextView listNameView = findViewById(R.id.listName);
+        TextView listCodeView = findViewById(R.id.listCode);
+        listNameView.setText(values[0]);
+        listId = values[1];
+        listCodeView.setText(listId);
+    }
+
+
+
     private void handleProductDetailDialog(String itemInfo){
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
@@ -121,10 +138,10 @@ public class PantryActivity extends AppCompatActivity {
         TextView productNeededDetail = view.findViewById(R.id.neededProductDetail);
         productNeededDetail.setText(prodInfo[2]);
 
-        fillListViewWithShoppingLists(view);
+        fillListViewWithShoppingLists(view, itemInfo);
     }
 
-    private void fillListViewWithShoppingLists(View view){
+    private void fillListViewWithShoppingLists(View view, String itemInfo){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
@@ -135,35 +152,68 @@ public class PantryActivity extends AppCompatActivity {
         Adapter adapter = new Adapter(shopList);
         recyclerView.setAdapter(adapter);
 
-        //click events
-
-
-        //addSaveButtonLogic(adapter, view);
+        addSaveButtonLogic(adapter, view, itemInfo);
     }
 
-    private void addSaveButtonLogic(Adapter adapter, View view){
+    private void addSaveButtonLogic(Adapter adapter, View view, String itemInfo){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> getSelectedShops = adapter.getSelectedShopping();
-                for(String s: getSelectedShops){
-                    Toast.makeText(view.getContext(), s,Toast.LENGTH_SHORT).show();
-                }
+                ArrayList<String> getSelectedShops = adapter.getSelectedShopping();
+//                for(String s: getSelectedShops){
+//                    Toast.makeText(view.getContext(), s,Toast.LENGTH_SHORT).show();
+//                }
+                sendUpdateToServer(getSelectedShops, view, itemInfo);
             }
         });
     }
 
+    private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, String itemInfo){
+        String finalShops = "";
+        for(String s: getSelectedShops){
+            String[] shopInfo = s.split("->");
+            finalShops+=shopInfo[1]+",";
+        }
+//        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
+        TextView productNeededComponent = view.findViewById(R.id.neededProductDetail);
+        String[] productNeeded = productNeededComponent.getText().toString().split(":");
 
-    private void fillTextView(){
-        String listInfo = getIntent().getStringExtra("itemInfo");
-        String [] values = listInfo.split("->");
-        TextView listNameView = findViewById(R.id.listName);
-        TextView listCodeView = findViewById(R.id.listCode);
-        listNameView.setText(values[0]);
-        listId = values[1];
-        listCodeView.setText(listId);
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("productId", getProductIdFromList(itemInfo));
+        map.put("shops", finalShops);
+        map.put("needed",productNeeded[1].trim());
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().updatePantry(listId,map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(getApplicationContext(),"Updated with success." ,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private String getProductIdFromList(String itemInfo){
+        String productId ="";
+        for(ServerPantryProduct prod:this.existingPantryProducts){
+            String[] prodInfo = itemInfo.split(";");
+            String[] productNeeded = prodInfo[2].trim().split(":");
+            String[] productStock = prodInfo[3].trim().split(":");
+
+            if(prodInfo[0].trim().equals(prod.getName()) && prodInfo[1].trim().equals(prod.getDescription())
+                && productNeeded[1].trim().equals(String.valueOf(prod.getNeeded())) && productStock[1].trim().equals(String.valueOf(prod.getStock()))
+            ){
+                productId+=prod.getProductId();
+            }
+        }
+        return productId;
     }
 
     private void fillPantryProductList(){
@@ -186,9 +236,9 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void renderLists(ArrayList<ServerPantryProduct> list){
+        this.existingPantryProducts = list;
         for(ServerPantryProduct prod : list){
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
-            Toast.makeText(PantryActivity.this, productInfo, Toast.LENGTH_LONG).show();
             listContent.add(productInfo);
         }
         fillListContentSettings();
@@ -231,27 +281,22 @@ public class PantryActivity extends AppCompatActivity {
         //product name
         EditText productNameComponent = view.findViewById(R.id.edit_product_name);
         String productName = productNameComponent.getText().toString();
-        Toast.makeText(getApplicationContext(),productName ,Toast.LENGTH_SHORT).show();
 
         //product description
         EditText productDescriptionComponent = view.findViewById(R.id.edit_product_description);
         String productDescription = productDescriptionComponent.getText().toString();
-        Toast.makeText(getApplicationContext(),productDescription ,Toast.LENGTH_SHORT).show();
 
         //product barcode
         EditText productBarcodeComponent = view.findViewById(R.id.productBarcode);
         String productBarcode = productBarcodeComponent.getText().toString();
-        Toast.makeText(getApplicationContext(),productBarcode ,Toast.LENGTH_SHORT).show();
 
         //product stock
         EditText productStockComponent = view.findViewById(R.id.productStockQuantity);
         String productStockQuantity = productStockComponent.getText().toString();
-        Toast.makeText(getApplicationContext(),productStockQuantity ,Toast.LENGTH_SHORT).show();
 
         //product needed
         EditText productNeededComponent = view.findViewById(R.id.productNeededQuantity);
         String productNeededQuantity = productNeededComponent.getText().toString();
-        Toast.makeText(getApplicationContext(),productNeededQuantity ,Toast.LENGTH_SHORT).show();
 
         //create product in the server
         createProductInServer(productName, productDescription, productBarcode, productStockQuantity, productNeededQuantity);

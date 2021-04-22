@@ -43,6 +43,10 @@ public interface RetrofitInterface {
     @GET("/list/pantry/{id}")
     Call<ServerPantryList> syncPantryList(@Path("id") String listId);
 
+    //update a product to the pantry list (ex. when you change where to buy a product)
+    @POST("/list/pantry/{id}/update")
+    Call<Void> updatePantry(@Path("id") String listId, @Body HashMap<String,String> map);
+
 
     /*
     * Shopping list routes
