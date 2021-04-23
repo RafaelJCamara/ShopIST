@@ -50,7 +50,7 @@ public class ItemListAdapter extends BaseAdapter {
 
         //String productInfo = productName+"; "+productDescription+"; Needed: "+needed+" ; "+"Stock: "+stock;
 
-        name.setText(list.get(position).getName()+"; +"+list.get(position).getDescription()+";Needed: "+ list.get(position).getNeeded()+"Stock: "+list.get(position).getStock());
+        name.setText(list.get(position).getName()+": +"+list.get(position).getDescription()+"; Needed: "+ list.get(position).getNeeded()+" Stock: "+list.get(position).getStock());
         return convertView;
     }
 }

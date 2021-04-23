@@ -182,7 +182,8 @@ public class PantryActivity extends AppCompatActivity {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(getApplicationContext(),"Updated with success." ,Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(getApplicationContext(),"Updated with success. TEST :"+response ,Toast.LENGTH_SHORT).show();
             }
 
             @Override

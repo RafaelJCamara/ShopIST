@@ -1,5 +1,7 @@
 package com.example.shopist.Product;
 
+import com.example.shopist.R;
+
 public class Product {
 
     private String name;
@@ -14,6 +16,7 @@ public class Product {
         this.description=description;
         this.stock=stock;
         this.needed=needed;
+        this.image= R.drawable.box;
     }
 
     public String getName() {
@@ -31,8 +34,7 @@ public class Product {
         this.description = description; }
 
     public int getImage() {
-
-        return image;
+        return this.image;
     }
 
     public void setImage(int image) {
@@ -53,11 +55,5 @@ public class Product {
 
     public void setNeeded(int needed) {
         this.needed = needed;
-    }
-
-    public String toString()
-    {
-        //return name + " " + age + " " + college + " " + course + " " + address;
-        return "";
     }
 }
