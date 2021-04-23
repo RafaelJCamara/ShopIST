@@ -6,19 +6,19 @@
 
     <ImageView
         android:id="@+id/item_icon"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:src="@drawable/ic_launcher_foreground"/>
+        android:layout_width="46dp"
+        android:layout_height="50dp"
+        android:src="@drawable/box" />
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="300dp"
+        android:layout_width="352dp"
         android:layout_height="match_parent"
         android:layout_weight="35"
         android:paddingHorizontal="10px"
         android:paddingVertical="40px"
         android:text="Item_name"
-        android:textAlignment="center"
-        android:textSize="25dp" />
+        android:textAlignment="textStart"
+        android:textSize="18sp" />
 
 </LinearLayout>

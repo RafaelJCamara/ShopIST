@@ -3,7 +3,6 @@ package com.example.shopist.Activities;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -20,6 +19,9 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Utils.Adapter;
+import com.example.shopist.Utils.ItemListAdapter;
+import com.example.shopist.Product.Product;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,13 +35,16 @@ public class PantryActivity extends AppCompatActivity {
     private RetrofitManager retrofitManager;
 
     public ListView listView;
-    private ArrayList<String> listContent = new ArrayList<String>();
+    private ArrayList<Product> productsList = new ArrayList<Product>();
 
     private String listId;
 
     private RecyclerView recyclerView;
 
     private ArrayList<ServerPantryProduct> existingPantryProducts;
+
+    private ItemListAdapter itemListAdapter;
+
 
 
     @Override
@@ -79,23 +84,17 @@ public class PantryActivity extends AppCompatActivity {
         listView = findViewById(R.id.productListInfo);
 
         //create list adapter
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                //context
-                PantryActivity.this,
-                android.R.layout.simple_list_item_1,
-                //data
-                listContent
-        );
+        itemListAdapter = new ItemListAdapter(this, productsList);
 
         //add adapter to list
-        listView.setAdapter(adapter);
+        listView.setAdapter(itemListAdapter);
     }
 
     private void addProductListClickListener(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemInfo = (String) parent.getAdapter().getItem(position);
+                Product itemInfo = (Product) parent.getAdapter().getItem(position);
                 handleProductDetailDialog(itemInfo);
             }
         });
@@ -111,32 +110,31 @@ public class PantryActivity extends AppCompatActivity {
         listCodeView.setText(listId);
     }
 
-    private void handleProductDetailDialog(String itemInfo){
+    private void handleProductDetailDialog(Product itemInfo){
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
         builder.setView(view).show();
         handleBuyInShopsLogic(view, itemInfo);
     }
 
-    private void handleBuyInShopsLogic(View view, String itemInfo){
-        String[] prodInfo = itemInfo.split(";");
+    private void handleBuyInShopsLogic(View view, Product itemInfo){
 
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
-        productNameDetail.setText(prodInfo[0]);
+        productNameDetail.setText(itemInfo.getName());
 
         TextView productDescriptionDetail = view.findViewById(R.id.productDescriptionDetail);
-        productDescriptionDetail.setText(prodInfo[1]);
+        productDescriptionDetail.setText(itemInfo.getDescription());
 
         TextView productStockDetail = view.findViewById(R.id.productStockDetail);
-        productStockDetail.setText(prodInfo[3]);
+        productStockDetail.setText(String.valueOf(itemInfo.getStock()));
 
         TextView productNeededDetail = view.findViewById(R.id.neededProductDetail);
-        productNeededDetail.setText(prodInfo[2]);
+        productNeededDetail.setText(String.valueOf(itemInfo.getNeeded()));
 
         fillListViewWithShoppingLists(view, itemInfo);
     }
 
-    private void fillListViewWithShoppingLists(View view, String itemInfo){
+    private void fillListViewWithShoppingLists(View view, Product itemInfo){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
@@ -150,7 +148,7 @@ public class PantryActivity extends AppCompatActivity {
         addSaveButtonLogic(adapter, view, itemInfo);
     }
 
-    private void addSaveButtonLogic(Adapter adapter, View view, String itemInfo){
+    private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,7 +162,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, String itemInfo){
+    private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, Product itemInfo){
         String finalShops = "";
         for(String s: getSelectedShops){
             String[] shopInfo = s.split("->");
@@ -195,15 +193,12 @@ public class PantryActivity extends AppCompatActivity {
 
     }
 
-    private String getProductIdFromList(String itemInfo){
+    private String getProductIdFromList(Product itemInfo){
         String productId ="";
         for(ServerPantryProduct prod:this.existingPantryProducts){
-            String[] prodInfo = itemInfo.split(";");
-            String[] productNeeded = prodInfo[2].trim().split(":");
-            String[] productStock = prodInfo[3].trim().split(":");
 
-            if(prodInfo[0].trim().equals(prod.getName()) && prodInfo[1].trim().equals(prod.getDescription())
-                && productNeeded[1].trim().equals(String.valueOf(prod.getNeeded())) && productStock[1].trim().equals(String.valueOf(prod.getStock()))
+            if(itemInfo.getName().trim().equals(prod.getName()) && itemInfo.getDescription().trim().equals(prod.getDescription())
+                && String.valueOf(itemInfo.getNeeded()).trim().equals(String.valueOf(prod.getNeeded())) && String.valueOf(itemInfo.getStock()).trim().equals(String.valueOf(prod.getStock()))
             ){
                 productId+=prod.getProductId();
             }
@@ -233,8 +228,9 @@ public class PantryActivity extends AppCompatActivity {
     private void renderLists(ArrayList<ServerPantryProduct> list){
         this.existingPantryProducts = list;
         for(ServerPantryProduct prod : list){
+            Product product = new Product(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
-            listContent.add(productInfo);
+            productsList.add(product);
         }
         fillListContentSettings();
     }
@@ -323,8 +319,8 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void renderNewProduct(String productName, String productDescription, String needed, String stock){
-        String productInfo = productName+"; "+productDescription+"; Needed: "+needed+" ; "+"Stock: "+stock;
-        listContent.add(productInfo);
+        Product product = new Product(productName, productDescription, Integer.parseInt(needed), Integer.parseInt(stock));
+        productsList.add(product);
         fillListContentSettings();
     }
 
