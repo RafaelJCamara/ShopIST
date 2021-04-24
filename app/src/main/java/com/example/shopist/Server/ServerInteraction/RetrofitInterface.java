@@ -12,7 +12,6 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Url;
 
 public interface RetrofitInterface {
 
@@ -47,6 +46,10 @@ public interface RetrofitInterface {
     @POST("/list/pantry/{id}/update")
     Call<Void> updatePantry(@Path("id") String listId, @Body HashMap<String,String> map);
 
+    //consume a product from a pantry list
+    @POST("/list/pantry/{id}/consume")
+    Call<Void> consumeProductPantry(@Path("id") String listId, @Body HashMap<String, String> map);
+
 
     /*
     * Shopping list routes
@@ -76,4 +79,13 @@ public interface RetrofitInterface {
     /*
     * Cart routes
     * */
+
+
+    /*
+     * Store routes
+     * */
+
+    @POST("/store/updateProduct")
+    Call<Void> updateProductAtStore(@Body HashMap<String,String> map);
+
 }

@@ -148,6 +148,7 @@ public class PantryActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         addSaveButtonLogic(adapter, view, itemInfo);
+        addConsumeProductLogic(view, itemInfo);
     }
 
     private void addSaveButtonLogic(Adapter adapter, View view, String itemInfo){
@@ -156,13 +157,44 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ArrayList<String> getSelectedShops = adapter.getSelectedShopping();
-//                for(String s: getSelectedShops){
-//                    Toast.makeText(view.getContext(), s,Toast.LENGTH_SHORT).show();
-//                }
                 sendUpdateToServer(getSelectedShops, view, itemInfo);
             }
         });
     }
+
+    private void addConsumeProductLogic(View view, String itemInfo){
+        Button consumeProductButton = view.findViewById(R.id.consumeProductAtPantry);
+        consumeProductButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get amount to be consumed
+                EditText amountToBeConsumed = view.findViewById(R.id.amountToConsume);
+                consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString());
+            }
+        });
+    }
+
+
+    private void consumeProductsInServer(String itemInfo, String quantityConsumed){
+        HashMap<String, String> map = new HashMap<String, String>();
+        String[] prodInfo = itemInfo.split(";");
+        map.put("name", prodInfo[0].trim());
+        map.put("quantity", quantityConsumed);
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().consumeProductPantry(listId,map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(getApplicationContext(),"Updated with success." ,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, String itemInfo){
         String finalShops = "";
