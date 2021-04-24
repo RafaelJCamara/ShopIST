@@ -1,5 +1,6 @@
 package com.example.shopist.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
@@ -54,6 +56,13 @@ public class ShopActivity extends AppCompatActivity {
         retrofitManager = new RetrofitManager();
         existingPantryProducts = new ArrayList<ServerShoppingProduct>();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        listContent.clear();
         //add shopping products to list view
         handleProductListDialog();
     }
@@ -210,6 +219,12 @@ public class ShopActivity extends AppCompatActivity {
             }
         }
         return productId;
+    }
+
+    public void onGoToCartButtonPressed(View view) {
+        Intent intent = new Intent(ShopActivity.this, CartActivity.class);
+        intent.putExtra("shoppingListId", listId);
+        startActivity(intent);
     }
 
 }

@@ -12,13 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopIST"
         android:usesCleartextTraffic="true">
+        <activity android:name=".Activities.ui.cart.CartActivity"></activity>
         <activity
             android:name=".Activities.MainActivityNav"
-            android:label="@string/title_activity_main2"></activity>
+            android:label="@string/title_activity_main2" />
         <activity android:name=".Activities.SignupActivity" />
         <activity android:name=".Activities.MainActivity" />
-        <activity android:name=".Activities.PantryActivity"></activity>
-        <activity android:name=".Activities.ShopActivity"></activity>
+        <activity android:name=".Activities.PantryActivity" />
+        <activity android:name=".Activities.ShopActivity" />
         <activity android:name=".Activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

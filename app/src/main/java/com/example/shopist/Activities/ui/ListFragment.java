@@ -9,11 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.shopist.Utils.ListManager;
+//import com.example.shopist.Utils.ListManager;
 
 public abstract class ListFragment extends Fragment {
 
-    protected ListManager listManager;
+    //protected ListManager listManager;
 
     @Nullable
     @Override
@@ -25,11 +25,11 @@ public abstract class ListFragment extends Fragment {
     }
 
     protected void listOperations(){
-        listManager.listSettings();
+        /*listManager.listSettings();*/
     }
 
     protected void addSettings(){
-        listManager.addListLogic();
+        /*listManager.addListLogic();*/
     }
 
 }

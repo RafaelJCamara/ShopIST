@@ -1,7 +1,6 @@
 package com.example.shopist.Server.ServerInteraction;
 
-import com.example.shopist.Server.ServerResponses.CartServerData;
-import com.example.shopist.Server.ServerResponses.ListServerData;
+import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
@@ -14,7 +13,6 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Url;
 
 public interface RetrofitInterface {
 
@@ -25,7 +23,7 @@ public interface RetrofitInterface {
     @POST("/user/login")
     Call<ServerData> executeLogin(@Body HashMap<String,String> map);
 
-    @POST("/cart/signup")
+    @POST("/user/signup")
     Call<Void> executeSignup(@Body HashMap<String,String> map);
 
 
@@ -80,11 +78,11 @@ public interface RetrofitInterface {
     /*
     * Cart routes
     * */
-    @GET
-    Call<CartServerData> getCart(@Url String url);
+    @GET("/cart/{shoppingListId}")
+    Call<ServerCart> getCart(@Path("shoppingListId") String shoppingListId);
 
-    @POST
-    Call<Void> checkoutCart(@Url String url);
+    @POST("/cart/{shoppingListId}")
+    Call<Void> checkoutCart(@Path("shoppingListId") String shoppingListId);
 
     /*
      * Store routes
