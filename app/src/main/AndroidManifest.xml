@@ -17,6 +17,8 @@
             android:label="@string/title_activity_main2"></activity>
         <activity android:name=".Activities.SignupActivity" />
         <activity android:name=".Activities.MainActivity" />
+        <activity android:name=".Activities.PantryActivity"></activity>
+        <activity android:name=".Activities.ShopActivity"></activity>
         <activity android:name=".Activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
