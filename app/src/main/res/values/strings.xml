@@ -4,4 +4,5 @@
     <string name="title_pantries">Pantries</string>
     <string name="title_shopping">Shopping</string>
     <string name="title_cart">Cart</string>
+    <string name="cart_checkout">Cart Checkout</string>
 </resources>
