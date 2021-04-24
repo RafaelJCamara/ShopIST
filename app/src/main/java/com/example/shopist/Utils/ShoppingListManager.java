@@ -2,17 +2,27 @@ package com.example.shopist.Utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.R;
+import com.example.shopist.Server.ServerResponses.ListServerData;
+
+import java.util.concurrent.Callable;
 
 public class ShoppingListManager extends ListManager{
+
+    private Intent gotoCart;
+
+    private Callable<Void> viewItemClickCallback;
 
     public ShoppingListManager(Context context, View view, int listID, LayoutInflater layoutInflater) {
         super(context, view, listID, layoutInflater);
@@ -46,4 +56,14 @@ public class ShoppingListManager extends ListManager{
         });
     }
 
+    @Override
+    protected void addListClickListeners() {
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+
+            ListServerData shoppingList = (ListServerData) parent.getItemAtPosition(position);
+            gotoCart.putExtra("shoppingListId", shoppingList.getUuid());
+            viewItemClickCallback.;
+
+        });
+    }
 }

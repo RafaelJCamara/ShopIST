@@ -30,13 +30,6 @@ public class ShoppingFragment extends ListFragment {
         listManager = ShoppingListManager.createShoppingListManager(root);
         super.onCreateView(inflater, container, savedInstanceState);
 
-        //final TextView textView = root.findViewById(R.id.text_shopping);
-        shoppingViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                //textView.setText(s);
-            }
-        });
         return root;
     }
 }

@@ -49,7 +49,7 @@
 
     <fragment
         android:id="@+id/navigation_cart"
-        android:name="com.example.shopist.Activities.ui.cart.CartFragment"
+        android:name="com.example.shopist.Activities.ui.cart.CartActivity"
         android:label="@string/title_cart"
         tools:layout="@layout/fragment_cart">
         <action

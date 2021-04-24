@@ -18,21 +18,24 @@ import retrofit2.Response;
 
 public class CartListManager extends ListManager{
 
+    private final int shoppingListId;
+
     private CartViewModel viewModel;
 
-    public CartListManager(Context context, View view, int listID, LayoutInflater layoutInflater, CartViewModel viewModel) {
+    public CartListManager(Context context, View view, int listID, LayoutInflater layoutInflater, CartViewModel viewModel, int shoppingListId) {
         super(context, view, listID, layoutInflater);
         this.viewModel = viewModel;
+        this.shoppingListId = shoppingListId;
     }
 
-    public static CartListManager createCartListManager(View view, CartViewModel viewModel) {
+    public static CartListManager createCartListManager(View view, CartViewModel viewModel, int shoppingListId) {
         return new CartListManager(view.getContext(), view,
-                R.id.cartList, (LayoutInflater) view.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE ), viewModel);
+                R.id.cartList, (LayoutInflater) view.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE ), viewModel, shoppingListId);
     }
 
     //depende do tipo de lista
     public void retrieveList(){
-        String url = "/cart/"+ /* replace with shoppingListId */ 1;
+        String url = "/cart/" + this.shoppingListId;
         Call<CartServerData> call = retrofitManager.accessRetrofitInterface().getCart(url);
         call.enqueue(new Callback<CartServerData>() {
             @Override
@@ -69,7 +72,7 @@ public class CartListManager extends ListManager{
     }
 
     public void handleCheckoutCartLogic() {
-        String url = "/cart/" + /* replace with shoppingListId */ 1;
+        String url = "/cart/" + this.shoppingListId;
         Call<Void> call = retrofitManager.accessRetrofitInterface().checkoutCart(url);
         call.enqueue(new Callback<Void>() {
             @Override

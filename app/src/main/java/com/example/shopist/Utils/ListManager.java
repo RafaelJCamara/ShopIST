@@ -70,7 +70,7 @@ public abstract class ListManager {
         listView.setAdapter(adapter);
     }
 
-    private void addListClickListeners(){
+    protected void addListClickListeners(){
         //add actionlisterner to each item of the list
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
