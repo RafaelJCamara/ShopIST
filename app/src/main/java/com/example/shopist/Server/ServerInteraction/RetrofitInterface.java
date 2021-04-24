@@ -1,5 +1,6 @@
 package com.example.shopist.Server.ServerInteraction;
 
+import com.example.shopist.Server.ServerResponses.CartServerData;
 import com.example.shopist.Server.ServerResponses.ListServerData;
 import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
@@ -27,4 +28,11 @@ public interface RetrofitInterface {
 
     @POST("/product")
     Call<Void> createProduct(@Body HashMap<String,String> map);
+
+    @GET
+    Call<CartServerData> getCart(@Url String url);
+
+    @POST
+    Call<Void> checkoutCart(@Url String url);
+
 }

@@ -6,14 +6,17 @@ import androidx.lifecycle.ViewModel;
 
 public class CartViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<Double> total;
 
     public CartViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is cart fragment");
+        total = new MutableLiveData<>();
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<Double> getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total.setValue(total > -1 ? total : null);
     }
 }
