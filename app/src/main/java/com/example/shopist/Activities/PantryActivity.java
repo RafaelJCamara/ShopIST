@@ -1,6 +1,7 @@
 package com.example.shopist.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -177,8 +178,7 @@ public class PantryActivity extends AppCompatActivity {
 
     private void consumeProductsInServer(String itemInfo, String quantityConsumed){
         HashMap<String, String> map = new HashMap<String, String>();
-        String[] prodInfo = itemInfo.split(";");
-        map.put("name", prodInfo[0].trim());
+        map.put("productId", getProductIdFromList(itemInfo));
         map.put("quantity", quantityConsumed);
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().consumeProductPantry(listId,map);
@@ -193,6 +193,35 @@ public class PantryActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
             }
         });
+        updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed);
+    }
+
+
+    private void updateInFrontendPantryAfterConsumed(String itemInfo, String quantityConsumed){
+        String[] prodInfo = itemInfo.split(";");
+        Log.i("Beginning","*******");
+        Log.i("Beginning",prodInfo[0]);
+        Log.i("Beginning",prodInfo[1]);
+        Log.i("Beginning",prodInfo[2]);
+        Log.i("Beginning",prodInfo[3]);
+        Log.i("Beginning","*******");
+        String finalS = null;
+        int index = -1;
+        for(int i=0;i!=this.listContent.size();i++){
+            if(listContent.get(i).split(";")[0].equals(prodInfo[0])){
+                int needed = Integer.parseInt(prodInfo[2].split(":")[1]) + Integer.parseInt(quantityConsumed);
+                int stock = Integer.parseInt(prodInfo[3].split(":")[1]) - Integer.parseInt(quantityConsumed);
+                finalS = prodInfo[0]+";"+prodInfo[1]+";"+"Needed:"+needed+";"+"Stock:"+stock;
+                index = i;
+            }
+        }
+
+        Log.i("Beginning",String.valueOf(index));
+        Log.i("Beginning",finalS);
+
+        listContent.set(index,finalS);
+
+        fillListContentSettings();
     }
 
 
