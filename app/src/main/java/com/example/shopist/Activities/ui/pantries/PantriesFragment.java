@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,8 @@ public class PantriesFragment extends ListFragment {
     
     private View root;
 
+    private AlertDialog dialog;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_pantries, container, false);
@@ -49,7 +52,6 @@ public class PantriesFragment extends ListFragment {
 
         //LIST OPERATIONS
         pantryListSettings();
-        addSettings();
         retrievePantryList();
         createPantryList();
 
@@ -93,7 +95,8 @@ public class PantriesFragment extends ListFragment {
     public void handleGetPantryListDialog(){
         View v = getLayoutInflater().inflate(R.layout.get_list,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(root.getContext());
-        builder.setView(v).show();
+        dialog = builder.setView(v).create();
+        dialog.show();
         handleGetPantryListLogic(v);
     }
 
@@ -112,6 +115,7 @@ public class PantriesFragment extends ListFragment {
                 }else{
                     //the list hasn't been added
                     getPantryListFromServer(listId);
+                    dialog.dismiss();
                 }
             }
         });
@@ -194,6 +198,9 @@ public class PantriesFragment extends ListFragment {
 
         //add adapter to list
         pantryListView.setAdapter(adapter);
+
+        TextView empty= root.findViewById(R.id.empty);
+        pantryListView.setEmptyView(empty);
     }
 
 
@@ -215,7 +222,8 @@ public class PantriesFragment extends ListFragment {
     public void handleCreatePantryListDialog(){
         View view = getLayoutInflater().inflate(R.layout.create_list,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(root.getContext());
-        builder.setView(view).show();
+        dialog = builder.setView(view).create();
+        dialog.show();
         handleCreatePantryListLogic(view);
     }
 
@@ -239,6 +247,7 @@ public class PantriesFragment extends ListFragment {
                 }else{
                     //list has not been created
                     createPantryListInServer(listName, listAddress);
+                    dialog.dismiss();
                 }
             }
         });

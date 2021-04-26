@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,6 +43,8 @@ public class ShoppingFragment extends ListFragment {
     
     private View root;
 
+    private AlertDialog dialog;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         shoppingViewModel =
@@ -55,6 +58,8 @@ public class ShoppingFragment extends ListFragment {
         retrofitManager = new RetrofitManager();
         shoppingListContent = new ArrayList<>();
 
+        //LIST OPERATIONS
+        shoppingListSettings();
         retrieveShoppingList();
         createShoppingList();
 
@@ -82,6 +87,10 @@ public class ShoppingFragment extends ListFragment {
 
         //add adapter to list
         shoppingListView.setAdapter(adapter);
+
+        TextView empty= root.findViewById(R.id.empty);
+        shoppingListView.setEmptyView(empty);
+
     }
 
     private void addShoppingListClickListeners(){
@@ -116,7 +125,8 @@ public class ShoppingFragment extends ListFragment {
     public void handleGetShoppingListDialog(){
         View v = getLayoutInflater().inflate(R.layout.get_list,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(root.getContext());
-        builder.setView(v).show();
+        dialog = builder.setView(v).create();
+        dialog.show();
         handleGetShoppingListLogic(v);
     }
 
@@ -134,6 +144,7 @@ public class ShoppingFragment extends ListFragment {
                 }else{
                     //the list hasn't been added
                     getShoppingListFromServer(listId);
+                    dialog.dismiss();
                 }
             }
         });
@@ -184,7 +195,8 @@ public class ShoppingFragment extends ListFragment {
     public void handleCreateShoppingListDialog(){
         View view = getLayoutInflater().inflate(R.layout.create_list,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(root.getContext());
-        builder.setView(view).show();
+        dialog = builder.setView(view).create();
+        dialog.show();
         handleCreateShoppingListLogic(view);
     }
 
@@ -208,6 +220,7 @@ public class ShoppingFragment extends ListFragment {
                 }else{
                     //list has not been created
                     createShoppingListInServer(listName, listAddress);
+                    dialog.dismiss();
                 }
             }
         });

@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         ServerData userInfoServer = response.body();
 
         //create a new intent to main activity screen
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
 
         //put cart information into intent
         intent.putExtra("username",userInfoServer.getName());
