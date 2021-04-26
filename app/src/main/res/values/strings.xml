@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">ShopIST</string>
+    <string name="title_activity_main2">MainActivity</string>
+    <string name="title_pantries">Pantries</string>
+    <string name="title_shopping">Shopping</string>
+    <string name="title_cart">Cart</string>
+    <string name="cart_checkout">Cart Checkout</string>
+    <string name="title_activity_cart">CartActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="get">Get</string>
+    <string name="create">Create</string>
+    <string name="title_shopping_lists">Shopping Lists</string>
+    <string name="empty_shopping_lists">There are no shopping lists. Try getting by id or creating a new one.</string>
+    <string name="empty_pantry_lists">There are no pantry lists. Try getting by id or creating a new one.</string>
+    <string name="title_pantry_lists">Pantry Lists</string>
 </resources>

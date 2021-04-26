@@ -3,6 +3,7 @@ package com.example.shopist.Activities;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -146,6 +147,7 @@ public class PantryActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         addSaveButtonLogic(adapter, view, itemInfo);
+        addConsumeProductLogic(view, itemInfo);
     }
 
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
@@ -161,6 +163,68 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void addConsumeProductLogic(View view, String itemInfo){
+        Button consumeProductButton = view.findViewById(R.id.consumeProductAtPantry);
+        consumeProductButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get amount to be consumed
+                EditText amountToBeConsumed = view.findViewById(R.id.amountToConsume);
+                consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString());
+            }
+        });
+    }
+
+
+    private void consumeProductsInServer(String itemInfo, String quantityConsumed){
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("productId", getProductIdFromList(itemInfo));
+        map.put("quantity", quantityConsumed);
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().consumeProductPantry(listId,map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(getApplicationContext(),"Updated with success." ,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+            }
+        });
+        updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed);
+    }
+
+
+    private void updateInFrontendPantryAfterConsumed(String itemInfo, String quantityConsumed){
+        String[] prodInfo = itemInfo.split(";");
+        Log.i("Beginning","*******");
+        Log.i("Beginning",prodInfo[0]);
+        Log.i("Beginning",prodInfo[1]);
+        Log.i("Beginning",prodInfo[2]);
+        Log.i("Beginning",prodInfo[3]);
+        Log.i("Beginning","*******");
+        String finalS = null;
+        int index = -1;
+        for(int i=0;i!=this.productsList.size();i++){
+            if(productsList.get(i).split(";")[0].equals(prodInfo[0])){
+                int needed = Integer.parseInt(prodInfo[2].split(":")[1]) + Integer.parseInt(quantityConsumed);
+                int stock = Integer.parseInt(prodInfo[3].split(":")[1]) - Integer.parseInt(quantityConsumed);
+                finalS = prodInfo[0]+";"+prodInfo[1]+";"+"Needed:"+needed+";"+"Stock:"+stock;
+                index = i;
+            }
+        }
+
+        Log.i("Beginning",String.valueOf(index));
+        Log.i("Beginning",finalS);
+
+        listContent.set(index,finalS);
+
+        fillListContentSettings();
+    }
+
 
     private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, Product itemInfo){
         String finalShops = "";
@@ -182,8 +246,7 @@ public class PantryActivity extends AppCompatActivity {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-
-                Toast.makeText(getApplicationContext(),"Updated with success. TEST :"+response ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Updated with success." ,Toast.LENGTH_SHORT).show();
             }
 
             @Override

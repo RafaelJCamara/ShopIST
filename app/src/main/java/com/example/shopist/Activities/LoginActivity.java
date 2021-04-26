@@ -90,9 +90,9 @@ public class LoginActivity extends AppCompatActivity {
         ServerData userInfoServer = response.body();
 
         //create a new intent to main activity screen
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
 
-        //put user information into intent
+        //put cart information into intent
         intent.putExtra("username",userInfoServer.getName());
         intent.putExtra("email",userInfoServer.getEmail());
 
@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         //checks if we go to the login activity from a successful signup
         if(getIntent()!=null){
             //we came from signup
-            //this means we should fill the login fields with the user credentials
+            //this means we should fill the login fields with the cart credentials
             EditText emailComponent = findViewById(R.id.emailLogin);
             emailComponent.setText(getIntent().getStringExtra("email"));
 
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //go to main page activity
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
                 startActivity(intent);
             }
         });

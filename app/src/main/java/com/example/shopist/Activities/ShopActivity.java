@@ -1,5 +1,6 @@
 package com.example.shopist.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
@@ -22,6 +24,8 @@ import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
 import com.example.shopist.Utils.Adapter;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,12 +45,24 @@ public class ShopActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
+    private ArrayList<ServerShoppingProduct> existingPantryProducts;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shop_activity);
         retrofitManager = new RetrofitManager();
+        existingPantryProducts = new ArrayList<ServerShoppingProduct>();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        listContent.clear();
         //add shopping products to list view
         handleProductListDialog();
     }
@@ -88,7 +104,7 @@ public class ShopActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
                 Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
-                //handleProductDetailDialog(itemInfo);
+                handleProductDetailDialog(itemInfo);
             }
         });
     }
@@ -113,8 +129,9 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     private void renderLists(ArrayList<ServerShoppingProduct> list){
+        this.existingPantryProducts = list;
         for(ServerShoppingProduct prod : list){
-            String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded();
+            String productInfo=prod.getName()+"; Needed:"+prod.getNeeded();
             listContent.add(productInfo);
         }
         fillListContentSettings();
@@ -130,6 +147,84 @@ public class ShopActivity extends AppCompatActivity {
         listCodeView.setText(listId);
     }
 
+    private void handleProductDetailDialog(String itemInfo){
+        View view = getLayoutInflater().inflate(R.layout.update_product_store,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
+        builder.setView(view).show();
+        handleProductUpdateInShopLogic(view, itemInfo);
+    }
 
+    private void handleProductUpdateInShopLogic(View view, String itemInfo){
+        String[] prodInfo = itemInfo.split(";");
+
+        TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
+        productNameInStore.setText(prodInfo[0].trim());
+
+        //add save button
+        Button saveProductInfoButton = view.findViewById(R.id.saveProductInfoAtStore);
+        saveProductInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get quantity in store
+                EditText productQuantityStoreComponent = view.findViewById(R.id.productQuantityInStore);
+                String productQuantityStore = productQuantityStoreComponent.getText().toString();
+
+                //get price in store
+                EditText productPriceStoreComponent = view.findViewById(R.id.productPriceInStore);
+                String productPriceStore = productPriceStoreComponent.getText().toString();
+
+                Toast.makeText(ShopActivity.this, "Product clicked... "+productQuantityStore+" "+productPriceStore, Toast.LENGTH_SHORT).show();
+
+
+                //update information in server
+                updateProductInfo(productQuantityStore, productPriceStore, itemInfo);
+            }
+        });
+
+    }
+
+    private void updateProductInfo(String quantity, String price, String itemInfo){
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("productQuantity", quantity);
+        map.put("productPrice", price);
+        map.put("shoppingListId", listId);
+        map.put("productId", getProductIdFromList(itemInfo));
+        
+        Call<Void> call = retrofitManager.accessRetrofitInterface().updateProductAtStore(map);
+        call.enqueue(new Callback<Void>() {
+            //when the server responds to our request
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(ShopActivity.this, "Product updated with success.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private String getProductIdFromList(String itemInfo){
+        String productId ="";
+        for(ServerShoppingProduct prod:this.existingPantryProducts){
+            String[] prodInfo = itemInfo.split(";");
+            String[] productNeeded = prodInfo[1].trim().split(":");
+
+            if(prodInfo[0].trim().equals(prod.getName()) &&
+                    productNeeded[1].trim().equals(String.valueOf(prod.getNeeded()))
+            ){
+                productId+=prod.getProductId();
+            }
+        }
+        return productId;
+    }
+
+    public void onGoToCartButtonPressed(View view) {
+        Intent intent = new Intent(ShopActivity.this, CartActivity.class);
+        intent.putExtra("shoppingListId", listId);
+        startActivity(intent);
+    }
 
 }
