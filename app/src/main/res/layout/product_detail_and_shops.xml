@@ -10,11 +10,10 @@
         android:id="@+id/productNameDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="PRODUCT NAME"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.069"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Product Name"
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,32 +21,29 @@
         android:id="@+id/productDescriptionDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="PRODUCT DESCRIPTION"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.062"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="[description]"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/productNameDetail" />
+        app:layout_constraintTop_toBottomOf="@+id/productDescriptionText" />
 
     <TextView
         android:id="@+id/productStockDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="STOCK"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.223"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/productDescriptionDetail" />
+        android:text="[stock]"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/productStockText"
+        app:layout_constraintTop_toTopOf="@+id/productStockText" />
 
     <TextView
         android:id="@+id/productStockText"
-        android:layout_width="58dp"
-        android:layout_height="21dp"
-        android:layout_marginTop="36dp"
-        android:text="STOCK:"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.045"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Stock:"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/productDescriptionDetail" />
 
@@ -55,32 +51,30 @@
         android:id="@+id/productDescriptionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="PRODUCT DESCRIPTION:"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.062"
+        android:text="Product description"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/productNameDetail" />
 
     <TextView
-        android:id="@+id/neededProductDetail"
+        android:id="@+id/productNeededDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="NEEDED"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.228"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/productStockDetail" />
+        android:text="[needed]"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/neededProductText"
+        app:layout_constraintTop_toTopOf="@+id/neededProductText" />
 
     <TextView
         android:id="@+id/neededProductText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="NEEDED:"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.044"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Needed:"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/productStockDetail" />
 
@@ -88,24 +82,20 @@
         android:id="@+id/productShoppingDetailSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shopListDetail"
-        app:layout_constraintVertical_bias="0.069" />
+        app:layout_constraintTop_toBottomOf="@+id/amountToConsume" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shopListDetail"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="7dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/availableShoppingListText2"
-        app:layout_constraintVertical_bias="0.016" />
+        app:layout_constraintTop_toBottomOf="@+id/availableShoppingListText2" />
 
     <ImageView
         android:id="@+id/icon"
@@ -119,51 +109,44 @@
 
     <TextView
         android:id="@+id/availableShoppingListText"
-        android:layout_width="199dp"
-        android:layout_height="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Available Shopping list:"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/neededProductDetail" />
+        app:layout_constraintTop_toBottomOf="@+id/neededProductText" />
 
     <TextView
         android:id="@+id/availableShoppingListText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:text="Select to add to list"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/availableShoppingListText" />
 
     <Button
         android:id="@+id/consumeProductAtPantry"
-        android:layout_width="120dp"
-        android:layout_height="37dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
         android:text="Consume"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.054"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shopListDetail"
-        app:layout_constraintVertical_bias="0.691" />
+        app:layout_constraintStart_toEndOf="@+id/amountToConsume"
+        app:layout_constraintTop_toTopOf="@+id/amountToConsume" />
 
     <EditText
         android:id="@+id/amountToConsume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Amount to consume"
         android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.079"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/shopListDetail"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/shopListDetail" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

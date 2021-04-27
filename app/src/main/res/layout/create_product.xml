@@ -13,12 +13,12 @@
         <EditText
             android:id="@+id/productBarcode"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="Barcode"
             android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.079"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/barcode" />
 
@@ -26,12 +26,11 @@
             android:id="@+id/barcode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
             android:fontFamily="sans-serif-condensed"
             android:text="Barcode"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.048"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_product_description" />
 
@@ -39,38 +38,33 @@
             android:id="@+id/photo_button"
             android:layout_width="110dp"
             android:layout_height="48dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="576dp"
+            android:layout_marginEnd="32dp"
             android:text="Photo"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.508"
-            app:layout_constraintStart_toEndOf="@+id/product_name_text"
-            app:layout_constraintTop_toBottomOf="@+id/create_product_text" />
+            app:layout_constraintTop_toTopOf="@+id/CreateProductButton" />
 
         <TextView
             android:id="@+id/product_name_text"
-            android:layout_width="147dp"
-            android:layout_height="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-condensed"
             android:text="Product Name"
-            android:textSize="24sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/create_product_text" />
 
         <EditText
             android:id="@+id/edit_product_name"
-            android:layout_width="283dp"
-            android:layout_height="49dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="Name"
             android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.066"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/product_name_text" />
 
@@ -78,37 +72,35 @@
             android:id="@+id/product_description_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
             android:fontFamily="sans-serif-condensed"
             android:text="Product Description"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.071"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_product_name" />
 
         <EditText
             android:id="@+id/edit_product_description"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="Product description"
             android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.069"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/product_description_text" />
 
         <TextView
             android:id="@+id/create_product_text"
-            android:layout_width="270dp"
-            android:layout_height="52dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-black"
             android:text="Create Product"
-            android:textSize="36sp"
+            android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,68 +108,61 @@
 
         <Button
             android:id="@+id/CreateProductButton"
-            android:layout_width="117dp"
-            android:layout_height="57dp"
-            android:layout_marginTop="388dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
             android:fontFamily="sans-serif-black"
             android:text="Create"
             android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.017"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_product_description" />
+            app:layout_constraintTop_toBottomOf="@+id/productNeededQuantity" />
 
         <TextView
             android:id="@+id/productStock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
             android:text="Product stock"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/productStockQuantity"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.049"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productBarcode"
-            app:layout_constraintVertical_bias="0.681" />
+            app:layout_constraintTop_toBottomOf="@+id/productBarcode" />
 
         <EditText
             android:id="@+id/productStockQuantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="240dp"
+            android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="Stock"
             android:inputType="number"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.079"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productStock" />
 
         <TextView
             android:id="@+id/productNeeded"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
             android:text="Product needed"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/productNeededQuantity"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.051"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productStockQuantity"
-            app:layout_constraintVertical_bias="0.653" />
+            app:layout_constraintTop_toBottomOf="@+id/productStockQuantity" />
 
         <EditText
             android:id="@+id/productNeededQuantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="140dp"
+            android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="Needed"
             android:inputType="number"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.069"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productNeeded" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

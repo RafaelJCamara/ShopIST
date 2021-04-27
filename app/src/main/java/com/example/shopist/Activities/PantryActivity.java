@@ -1,9 +1,9 @@
 package com.example.shopist.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -129,7 +129,7 @@ public class PantryActivity extends AppCompatActivity {
         TextView productStockDetail = view.findViewById(R.id.productStockDetail);
         productStockDetail.setText(String.valueOf(itemInfo.getStock()));
 
-        TextView productNeededDetail = view.findViewById(R.id.neededProductDetail);
+        TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
         productNeededDetail.setText(String.valueOf(itemInfo.getNeeded()));
 
         fillListViewWithShoppingLists(view, itemInfo);
@@ -138,7 +138,6 @@ public class PantryActivity extends AppCompatActivity {
     private void fillListViewWithShoppingLists(View view, Product itemInfo){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
-
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         this.recyclerView.setLayoutManager(layoutManager);
@@ -164,20 +163,23 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void addConsumeProductLogic(View view, String itemInfo){
+    private void addConsumeProductLogic(View view, Product itemInfo){
         Button consumeProductButton = view.findViewById(R.id.consumeProductAtPantry);
         consumeProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //get amount to be consumed
                 EditText amountToBeConsumed = view.findViewById(R.id.amountToConsume);
-                consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString());
+                if(Integer.parseInt(amountToBeConsumed.getText().toString()) <= itemInfo.getStock())
+                    consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString(), view);
+                else
+                    Toast.makeText(getApplicationContext(),"Not enough stock" ,Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
-    private void consumeProductsInServer(String itemInfo, String quantityConsumed){
+    private void consumeProductsInServer(Product itemInfo, String quantityConsumed, View view){
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("productId", getProductIdFromList(itemInfo));
         map.put("quantity", quantityConsumed);
@@ -194,33 +196,40 @@ public class PantryActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
             }
         });
-        updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed);
+        updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed, view);
     }
 
 
-    private void updateInFrontendPantryAfterConsumed(String itemInfo, String quantityConsumed){
-        String[] prodInfo = itemInfo.split(";");
+    private void updateInFrontendPantryAfterConsumed(Product itemInfo, String quantityConsumed, View view){
         Log.i("Beginning","*******");
-        Log.i("Beginning",prodInfo[0]);
-        Log.i("Beginning",prodInfo[1]);
-        Log.i("Beginning",prodInfo[2]);
-        Log.i("Beginning",prodInfo[3]);
+        Log.i("Beginning",itemInfo.getName());
+        Log.i("Beginning",itemInfo.getDescription());
+        Log.i("Beginning",String.valueOf(itemInfo.getNeeded()));
+        Log.i("Beginning",String.valueOf(itemInfo.getStock()));
         Log.i("Beginning","*******");
         String finalS = null;
         int index = -1;
         for(int i=0;i!=this.productsList.size();i++){
-            if(productsList.get(i).split(";")[0].equals(prodInfo[0])){
-                int needed = Integer.parseInt(prodInfo[2].split(":")[1]) + Integer.parseInt(quantityConsumed);
-                int stock = Integer.parseInt(prodInfo[3].split(":")[1]) - Integer.parseInt(quantityConsumed);
-                finalS = prodInfo[0]+";"+prodInfo[1]+";"+"Needed:"+needed+";"+"Stock:"+stock;
+            if(productsList.get(i).getName().equals(itemInfo.getName())){
+                int needed = itemInfo.getNeeded() + Integer.parseInt(quantityConsumed);
+                int stock = itemInfo.getStock() - Integer.parseInt(quantityConsumed);
+                itemInfo.setNeeded(needed);
+                itemInfo.setStock(stock);
+                finalS = itemInfo.getName()+";"+itemInfo.getDescription()+";"+"Needed:"+needed+";"+"Stock:"+stock;
                 index = i;
+                Product product = new Product(itemInfo.getName(), itemInfo.getDescription(), stock, needed);
+                productsList.set(index,product);
+
+                TextView productStockDetail = view.findViewById(R.id.productStockDetail);
+                productStockDetail.setText(String.valueOf(stock));
+
+                TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
+                productNeededDetail.setText(String.valueOf(needed));
             }
         }
 
         Log.i("Beginning",String.valueOf(index));
         Log.i("Beginning",finalS);
-
-        listContent.set(index,finalS);
 
         fillListContentSettings();
     }
@@ -234,7 +243,7 @@ public class PantryActivity extends AppCompatActivity {
         }
 //        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
-        TextView productNeededComponent = view.findViewById(R.id.neededProductDetail);
+        TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
         String[] productNeeded = productNeededComponent.getText().toString().split(":");
 
         HashMap<String,String> map = new HashMap<String,String>();
@@ -262,7 +271,7 @@ public class PantryActivity extends AppCompatActivity {
         for(ServerPantryProduct prod:this.existingPantryProducts){
 
             if(itemInfo.getName().trim().equals(prod.getName()) && itemInfo.getDescription().trim().equals(prod.getDescription())
-                && String.valueOf(itemInfo.getNeeded()).trim().equals(String.valueOf(prod.getNeeded())) && String.valueOf(itemInfo.getStock()).trim().equals(String.valueOf(prod.getStock()))
+            //String.valueOf(itemInfo.getNeeded()).trim().equals(String.valueOf(prod.getNeeded())) && String.valueOf(itemInfo.getStock()).trim().equals(String.valueOf(prod.getStock())
             ){
                 productId+=prod.getProductId();
             }
@@ -291,6 +300,7 @@ public class PantryActivity extends AppCompatActivity {
 
     private void renderLists(ArrayList<ServerPantryProduct> list){
         this.existingPantryProducts = list;
+        productsList = new ArrayList<Product>();
         for(ServerPantryProduct prod : list){
             Product product = new Product(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
@@ -318,16 +328,19 @@ public class PantryActivity extends AppCompatActivity {
     public void handleCreateProductDialog(){
         View view = getLayoutInflater().inflate(R.layout.create_product,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(view).show();
-        createProductLogic(view);
+        builder.setView(view);
+        AlertDialog alert = builder.create();
+        alert.show();
+        createProductLogic(view, alert);
     }
 
-    public void createProductLogic(View view){
+    public void createProductLogic(View view, AlertDialog builder){
         Button createProductButton = view.findViewById(R.id.CreateProductButton);
         createProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 handlePantryListProductCreation(view);
+                builder.cancel();
             }
         });
     }
@@ -383,8 +396,9 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void renderNewProduct(String productName, String productDescription, String needed, String stock){
-        Product product = new Product(productName, productDescription, Integer.parseInt(needed), Integer.parseInt(stock));
+        Product product = new Product(productName, productDescription, Integer.parseInt(stock), Integer.parseInt(needed));
         productsList.add(product);
+        fillPantryProductList();
         fillListContentSettings();
     }
 
