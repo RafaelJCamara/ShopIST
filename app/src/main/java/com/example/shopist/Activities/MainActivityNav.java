@@ -7,18 +7,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.shopist.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivityNav extends AppCompatActivity {
+import com.example.shopist.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-    private int startingPosition;
+public class MainActivityNav extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
