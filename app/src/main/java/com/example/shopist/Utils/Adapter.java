@@ -1,5 +1,6 @@
 package com.example.shopist.Utils;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
 
     public Adapter(List<String> shopList){
+        Log.i("Beginning","*****adapter");
         this.shopList = shopList;
         selectedShopping = new ArrayList<>();
+        for(String s : shopList){
+            Log.i("Beginning",s);
+        }
     }
 
     @NonNull
@@ -36,8 +41,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            String s = shopList.get(position);
-            holder.checkBox.setText(s);
+        String s = shopList.get(position);
+        holder.checkBox.setText(s);
+        Log.i("Message", "ShopList:" +s);
     }
 
     @Override

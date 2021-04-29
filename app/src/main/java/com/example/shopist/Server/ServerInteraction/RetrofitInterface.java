@@ -6,6 +6,7 @@ import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -63,6 +64,10 @@ public interface RetrofitInterface {
     //get a specific shopping list
     @GET("/list/shopping/{id}")
     Call<ServerShoppingList> syncShoppingList(@Path("id") String listId);
+
+    //get all shopping lists in server (TEMPORARY)
+    @GET("/list/shopping")
+    Call<ArrayList<ServerShoppingList>> syncAllShoppingList();
 
 
 

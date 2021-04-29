@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -19,11 +20,14 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
+import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Utils.Adapter;
+
 import com.example.shopist.Utils.ItemListAdapter;
 import com.example.shopist.Product.Product;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,6 +41,7 @@ public class PantryActivity extends AppCompatActivity {
 
     public ListView listView;
     private ArrayList<Product> productsList = new ArrayList<Product>();
+    private ArrayList<String> shoppingLists = new ArrayList<String>();
 
     private String listId;
 
@@ -54,6 +59,8 @@ public class PantryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
         existingPantryProducts = new ArrayList<ServerPantryProduct>();
+        getAllShopListFromServer();
+
 
         //add pantry products to list view
         handleProductListDialog();
@@ -136,18 +143,47 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void fillListViewWithShoppingLists(View view, Product itemInfo){
-        ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
+        //ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
+        Log.i("before set adapter", "*******");
+        for(String s: shoppingLists){
+            Log.i("before set adapter", s);
+        }
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.setHasFixedSize(true);
-        Adapter adapter = new Adapter(shopList);
+
+        Adapter adapter = new Adapter(shoppingLists);
         recyclerView.setAdapter(adapter);
 
         addSaveButtonLogic(adapter, view, itemInfo);
         addConsumeProductLogic(view, itemInfo);
     }
+
+
+    private void getAllShopListFromServer() {
+        Log.i("msg pantry act","*******");
+        Call<ArrayList<ServerShoppingList>> call = retrofitManager.accessRetrofitInterface().syncAllShoppingList();
+        call.enqueue(new Callback<ArrayList<ServerShoppingList>>() {
+            @Override
+            public void onResponse(Call<ArrayList<ServerShoppingList>> call, Response<ArrayList<ServerShoppingList>> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ArrayList<ServerShoppingList> lists = response.body();
+                    for(ServerShoppingList list : lists){
+                        shoppingLists.add(list.getName() + "->"+list.getUuid());
+                        Log.i("msg pantry act",list.getName() + " PA");
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ArrayList<ServerShoppingList>> call, Throwable t) {
+                Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
@@ -243,13 +279,11 @@ public class PantryActivity extends AppCompatActivity {
         }
 //        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
-        TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
-        String[] productNeeded = productNeededComponent.getText().toString().split(":");
 
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productId", getProductIdFromList(itemInfo));
         map.put("shops", finalShops);
-        map.put("needed",productNeeded[1].trim());
+        map.put("needed",String.valueOf(itemInfo.getNeeded()));
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().updatePantry(listId,map);
         call.enqueue(new Callback<Void>() {
@@ -382,7 +416,6 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast.makeText(getApplicationContext(),"Product added with success." ,Toast.LENGTH_SHORT).show();
-                Log.i("Beginning","*******");
 
                 //update the products in the frontend
                 renderNewProduct(productName,productDescription,productNeeded,productStock);
@@ -401,4 +434,5 @@ public class PantryActivity extends AppCompatActivity {
         fillPantryProductList();
         fillListContentSettings();
     }
+
 }
