@@ -14,10 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.shopist.Activities.MainActivity;
 import com.example.shopist.Activities.ShopActivity;
 import com.example.shopist.Activities.ui.ListFragment;
 import com.example.shopist.R;
@@ -25,8 +26,8 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,29 +40,30 @@ public class ShoppingFragment extends ListFragment {
     public RetrofitManager retrofitManager;
 
     public ListView shoppingListView;
-    public ArrayList<String> shoppingListContent;
     
     private View root;
 
     private AlertDialog dialog;
+    private static final String LIST_BUNDLE_KEY = "shoppingListContent";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         shoppingViewModel =
-                new ViewModelProvider(this).get(ShoppingViewModel.class);
+                new ViewModelProvider(requireActivity()).get(ShoppingViewModel.class);
         root = inflater.inflate(R.layout.fragment_shopping, container, false);
 
-        /*listManager = ShoppingListManager.createShoppingListManager(root);
-        super.onCreateView(inflater, container, savedInstanceState);
-        */
-
         retrofitManager = new RetrofitManager();
-        shoppingListContent = new ArrayList<>();
 
-        //LIST OPERATIONS
-        shoppingListSettings();
-        retrieveShoppingList();
-        createShoppingList();
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        shoppingViewModel.getShoppingListContent().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(@Nullable List<String> s) {
+                shoppingListSettings();
+                retrieveShoppingList();
+                createShoppingList();
+            }
+        });
 
         return root;
     }
@@ -82,7 +84,7 @@ public class ShoppingFragment extends ListFragment {
                 //layout to be applied on
                 android.R.layout.simple_list_item_1,
                 //data
-                shoppingListContent
+                shoppingViewModel.getShoppingListContent().getValue()
         );
 
         //add adapter to list
@@ -172,7 +174,7 @@ public class ShoppingFragment extends ListFragment {
     public void renderShoppingGetList(ServerShoppingList list, String uuid) {
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
-        shoppingListContent.add(finalListInfo);
+        shoppingViewModel.addToShoppingListContent(finalListInfo);
         shoppingListSettings();
         Toast.makeText(root.getContext(), "List added with success!", Toast.LENGTH_LONG).show();
     }
@@ -227,7 +229,7 @@ public class ShoppingFragment extends ListFragment {
     }
 
     public boolean hasShoppingListBeenCreatedByName(String listName){
-        for(String listInfo:shoppingListContent){
+        for(String listInfo:shoppingViewModel.getShoppingListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[0].equals(listName)){
                 return true;
@@ -237,7 +239,7 @@ public class ShoppingFragment extends ListFragment {
     }
 
     public boolean hasShoppingListBeenCreatedById(String listId){
-        for(String listInfo:shoppingListContent){
+        for(String listInfo:shoppingViewModel.getShoppingListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[1].equals(listId)){
                 return true;
@@ -272,7 +274,7 @@ public class ShoppingFragment extends ListFragment {
 
     public void renderCreateShoppingList(String token, String listName){
         String finalListInfo = listName+" -> "+token;
-        shoppingListContent.add(finalListInfo);
+        shoppingViewModel.addToShoppingListContent(finalListInfo);
         shoppingListSettings();
         Toast.makeText(root.getContext(), "List created with success!", Toast.LENGTH_LONG).show();
     }

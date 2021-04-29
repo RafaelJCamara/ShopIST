@@ -14,10 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.shopist.Activities.MainActivity;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Activities.ui.ListFragment;
 import com.example.shopist.R;
@@ -27,6 +28,7 @@ import com.example.shopist.Server.ServerResponses.ServerPantryList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,36 +39,34 @@ public class PantriesFragment extends ListFragment {
     public RetrofitManager retrofitManager;
 
     public ListView pantryListView;
-    public ArrayList<String> pantryListContent;
+    //public List<String> pantryListContent;
+
+    private PantriesViewModel pantriesViewModel;
     
     private View root;
 
     private AlertDialog dialog;
+    private static final String LIST_BUNDLE_KEY = "pantryListContent";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_pantries, container, false);
 
         retrofitManager = new RetrofitManager();
-        pantryListContent = new ArrayList<>();
 
-        //LIST OPERATIONS
-        pantryListSettings();
-        retrievePantryList();
-        createPantryList();
+        pantriesViewModel =
+                new ViewModelProvider(requireActivity()).get(PantriesViewModel.class);
 
-        /*pantriesViewModel =
-                new ViewModelProvider(this).get(PantriesViewModel.class);
-        listManager = PantryListManager.createPantryListManager(root);
         super.onCreateView(inflater, container, savedInstanceState);
 
-        //final TextView textView = root.findViewById(R.id.text_pantries);
-        pantriesViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        pantriesViewModel.getPantryListContent().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                //textView.setText(s);
+            public void onChanged(@Nullable List<String> s) {
+                pantryListSettings();
+                retrievePantryList();
+                createPantryList();
             }
-        });*/
+        });
         return root;
     }
 
@@ -122,7 +122,7 @@ public class PantriesFragment extends ListFragment {
     }
 
     public boolean hasListBeenAdded(String listId){
-        for(String listInfo:pantryListContent){
+        for(String listInfo: pantriesViewModel.getPantryListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[1].equals(listId)){
                 return true;
@@ -153,7 +153,7 @@ public class PantriesFragment extends ListFragment {
     public void renderGetList(ServerPantryList list, String uuid) {
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
-        pantryListContent.add(finalListInfo);
+        pantriesViewModel.addToPantryListContent(finalListInfo);
         pantryListSettings();
         Toast.makeText(root.getContext(), "List added with success!", Toast.LENGTH_LONG).show();
     }
@@ -193,7 +193,7 @@ public class PantriesFragment extends ListFragment {
                 //layout to be applied on
                 android.R.layout.simple_list_item_1,
                 //data
-                pantryListContent
+                pantriesViewModel.getPantryListContent().getValue()
         );
 
         //add adapter to list
@@ -254,7 +254,7 @@ public class PantriesFragment extends ListFragment {
     }
 
     public boolean hasPantryListBeenCreated(String listName){
-        for(String listInfo:pantryListContent){
+        for(String listInfo:pantriesViewModel.getPantryListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[0].equals(listName)){
                 return true;
@@ -289,7 +289,7 @@ public class PantriesFragment extends ListFragment {
 
     public void renderCreatedPantryList(String token, String listName){
         String finalListInfo = listName+" -> "+token;
-        pantryListContent.add(finalListInfo);
+        pantriesViewModel.addToPantryListContent(finalListInfo);
         pantryListSettings();
         Toast.makeText(root.getContext(), "List created with success!", Toast.LENGTH_LONG).show();
     }
