@@ -309,11 +309,10 @@ public class PantryActivity extends AppCompatActivity {
         fillListContentSettings();
     }
 
-    /*
-    ##########################
-    ### create new product ###
-    ##########################
-     */
+    //##########################
+    //### create new product ###
+    //##########################
+
 
     private void addProductLogic(){
         Button addProcuctButton = findViewById(R.id.addProductButton);
@@ -383,6 +382,7 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast.makeText(getApplicationContext(),"Product added with success." ,Toast.LENGTH_SHORT).show();
+                Log.i("Beginning","*******");
 
                 //update the products in the frontend
                 renderNewProduct(productName,productDescription,productNeeded,productStock);
@@ -401,5 +401,4 @@ public class PantryActivity extends AppCompatActivity {
         fillPantryProductList();
         fillListContentSettings();
     }
-
 }
