@@ -65,7 +65,7 @@ public class PantryActivity extends AppCompatActivity {
     private static final int PERMISSION_CODE = 1;
     private static final int PICK_IMAGE = 1;
     String filePath;
-
+    String currentUploadedPhoto;
 
 
     @Override
@@ -401,6 +401,7 @@ public class PantryActivity extends AppCompatActivity {
         map.put("barcode", productBarcode);
         map.put("stock", productStock);
         map.put("needed", productNeeded);
+        map.put("imageUrl", currentUploadedPhoto);
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().addProductToPantry(listId,map);
         call.enqueue(new Callback<Void>() {
@@ -522,8 +523,7 @@ public class PantryActivity extends AppCompatActivity {
             }
             @Override
             public void onSuccess(String requestId, Map resultData) {
-                String photoURL = resultData.get("url").toString();
-                Toast.makeText(getApplicationContext(), photoURL, Toast.LENGTH_SHORT).show();
+                currentUploadedPhoto = resultData.get("url").toString();
             }
             @Override
             public void onError(String requestId, ErrorInfo error) {
@@ -533,6 +533,9 @@ public class PantryActivity extends AppCompatActivity {
             }
         }).dispatch();
     }
+
+
+
 
 
 }
