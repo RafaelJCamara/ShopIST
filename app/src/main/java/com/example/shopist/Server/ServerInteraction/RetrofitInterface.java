@@ -4,6 +4,7 @@ import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 
 import java.util.HashMap;
@@ -74,6 +75,10 @@ public interface RetrofitInterface {
 
     @POST("/product")
     Call<Void> createProduct(@Body HashMap<String,String> map);
+
+    @GET("/product/{productName}/getUrl")
+    Call<ServerProductImageUrl> getProductImageUrl(@Path("productName") String imageUrl);
+
 
     /*
     * Cart routes

@@ -97,16 +97,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/availableShoppingListText2" />
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="116dp"
-        android:layout_height="106dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/box" />
-
     <TextView
         android:id="@+id/availableShoppingListText"
         android:layout_width="wrap_content"
@@ -148,5 +138,15 @@
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shopListDetail" />
+
+    <ImageView
+        android:id="@+id/productImageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/box" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

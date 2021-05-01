@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
@@ -33,6 +35,7 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
+import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Utils.Adapter;
 import com.example.shopist.Utils.ImageManager;
 import com.example.shopist.Utils.ItemListAdapter;
@@ -166,7 +169,32 @@ public class PantryActivity extends AppCompatActivity {
 
         addSaveButtonLogic(adapter, view, itemInfo);
         addConsumeProductLogic(view, itemInfo);
+        renderProductImage(view, itemInfo);
     }
+
+
+    private void renderProductImage(View view, Product itemInfo){
+        Call<ServerProductImageUrl> call = retrofitManager.accessRetrofitInterface().getProductImageUrl(itemInfo.getName());
+        call.enqueue(new Callback<ServerProductImageUrl>() {
+            @Override
+            public void onResponse(Call<ServerProductImageUrl> call, Response<ServerProductImageUrl> response) {
+                String url = response.body().getImageUrl();
+                renderImage(view, url);
+            }
+
+            @Override
+            public void onFailure(Call<ServerProductImageUrl> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void renderImage(View view, String url){
+        ImageView imageView = view.findViewById(R.id.productImageView);
+        Glide.with(getApplicationContext()).load(url).into(imageView);
+    }
+
+
 
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
