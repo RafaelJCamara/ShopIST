@@ -184,7 +184,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-
+    //Should return just the shopping list associated with the user/pantryLists
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
