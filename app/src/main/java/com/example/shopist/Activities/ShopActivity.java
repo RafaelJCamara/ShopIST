@@ -55,7 +55,6 @@ public class ShopActivity extends AppCompatActivity {
         setContentView(R.layout.shop_activity);
         retrofitManager = new RetrofitManager();
         existingPantryProducts = new ArrayList<ServerShoppingProduct>();
-
     }
 
     @Override
@@ -103,7 +102,7 @@ public class ShopActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
-                Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
                 handleProductDetailDialog(itemInfo);
             }
         });
@@ -174,7 +173,6 @@ public class ShopActivity extends AppCompatActivity {
                 String productPriceStore = productPriceStoreComponent.getText().toString();
 
                 Toast.makeText(ShopActivity.this, "Product clicked... "+productQuantityStore+" "+productPriceStore, Toast.LENGTH_SHORT).show();
-
 
                 //update information in server
                 updateProductInfo(productQuantityStore, productPriceStore, itemInfo);
