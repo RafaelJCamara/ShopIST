@@ -1,6 +1,13 @@
 package com.example.shopist.Activities;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,22 +17,31 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Utils.Adapter;
+import com.example.shopist.Utils.ImageManager;
 import com.example.shopist.Utils.ItemListAdapter;
 import com.example.shopist.Product.Product;
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +61,10 @@ public class PantryActivity extends AppCompatActivity {
     private ArrayList<ServerPantryProduct> existingPantryProducts;
 
     private ItemListAdapter itemListAdapter;
+
+    private static final int PERMISSION_CODE = 1;
+    private static final int PICK_IMAGE = 1;
+    String filePath;
 
 
 
@@ -70,7 +90,6 @@ public class PantryActivity extends AppCompatActivity {
         fillPantryProductList();
         addProductLogic();
     }
-
     private void productListSettings() {
         //configure product list and adapter
         fillListContentSettings();
@@ -332,7 +351,12 @@ public class PantryActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
         createProductLogic(view, alert);
+        takeProductPhotoSettings(view);
     }
+
+    /*
+    * Create product logic
+    * */
 
     public void createProductLogic(View view, AlertDialog builder){
         Button createProductButton = view.findViewById(R.id.CreateProductButton);
@@ -401,5 +425,114 @@ public class PantryActivity extends AppCompatActivity {
         fillPantryProductList();
         fillListContentSettings();
     }
+
+
+    /*
+    * Upload photo
+    * */
+
+    public void takeProductPhotoSettings(View view){
+        addPhotoLogic(view);
+//        addUploadLogic();
+    }
+
+    private void addPhotoLogic(View view){
+        Map config = new HashMap();
+        config.put("cloud_name", "dy5jqy5fw");
+        config.put("api_key", "941312846299731");
+        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
+        MediaManager.init(getApplicationContext(), config);
+        addPhotoButtonLogic(view);
+    }
+    private void addPhotoButtonLogic(View view){
+        Button photoButton = view.findViewById(R.id.photo_button);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //request permission to access external storage
+                requestPermission();
+            }
+        });
+    }
+    private void requestPermission(){
+        if(ContextCompat.checkSelfPermission
+                (getApplicationContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+        ){
+            accessTheGallery();
+        } else {
+            ActivityCompat.requestPermissions(
+                    PantryActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_CODE
+            );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode== PERMISSION_CODE){
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                accessTheGallery();
+            }else {
+                Toast.makeText(getApplicationContext(), "permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void accessTheGallery(){
+        Intent i = new Intent(
+                Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        );
+        i.setType("image/*");
+        startActivityForResult(i, PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //get the image’s file location
+        filePath = getRealPathFromUri(data.getData(), PantryActivity.this);
+        addUploadLogic();
+    }
+    private String getRealPathFromUri(Uri imageUri, Activity activity){
+        Cursor cursor = activity.getContentResolver().query(imageUri, null,  null, null, null);
+        if(cursor==null) {
+            return imageUri.getPath();
+        }else{
+            cursor.moveToFirst();
+            int idx =  cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(idx);
+        }
+    }
+
+    private void addUploadLogic(){
+        uploadToCloudinary(filePath);
+    }
+
+    private void uploadToCloudinary(String filePath) {
+        MediaManager.get().upload(filePath).callback(new UploadCallback() {
+            @Override
+            public void onStart(String requestId) {
+            }
+            @Override
+            public void onProgress(String requestId, long bytes, long totalBytes) {
+            }
+            @Override
+            public void onSuccess(String requestId, Map resultData) {
+                String photoURL = resultData.get("url").toString();
+                Toast.makeText(getApplicationContext(), photoURL, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onError(String requestId, ErrorInfo error) {
+            }
+            @Override
+            public void onReschedule(String requestId, ErrorInfo error) {
+            }
+        }).dispatch();
+    }
+
 
 }
