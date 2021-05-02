@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,6 +31,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
@@ -37,9 +43,10 @@ import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Utils.Adapter;
-import com.example.shopist.Utils.ImageManager;
+import com.example.shopist.Utils.ImageCacheManager;
 import com.example.shopist.Utils.ItemListAdapter;
 import com.example.shopist.Product.Product;
+import com.example.shopist.Utils.ProdImage;
 
 
 import java.util.ArrayList;
@@ -69,6 +76,9 @@ public class PantryActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1;
     String filePath;
     String currentUploadedPhoto;
+
+    //testing purposes while we don't fix retriving the correct product info from server
+    private ArrayList<ProdImage> productAndImage = new ArrayList<ProdImage>();
 
 
     @Override
@@ -174,24 +184,98 @@ public class PantryActivity extends AppCompatActivity {
 
 
     private void renderProductImage(View view, Product itemInfo){
-        Call<ServerProductImageUrl> call = retrofitManager.accessRetrofitInterface().getProductImageUrl(itemInfo.getName());
-        call.enqueue(new Callback<ServerProductImageUrl>() {
-            @Override
-            public void onResponse(Call<ServerProductImageUrl> call, Response<ServerProductImageUrl> response) {
-                String url = response.body().getImageUrl();
-                renderImage(view, url);
-            }
+        String imageUrl = accessProuductImageUrl(itemInfo.getName());
 
-            @Override
-            public void onFailure(Call<ServerProductImageUrl> call, Throwable t) {
-                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+        //check if product is cached
+        if(ImageCacheManager.checkIfImageIsCached(imageUrl)){
+            Log.d("imageLoading","PRODUCT IMAGE IN CACHE");
+           //in cache
+            Bitmap imageContent = ImageCacheManager.retrieveBitmapContent(imageUrl);
+            renderFromBitmapContent(imageContent, view);
+        }else{
+            Log.d("imageLoading","PRODUCT IMAGE NOT IN CACHE");
+            //not in cache
+            renderProductImageFromServer(view,itemInfo);
+        }
+    }
+
+    private void renderFromBitmapContent(Bitmap bitmap, View view){
+        ImageView imageView = view.findViewById(R.id.productImageView);
+        imageView.setImageBitmap(bitmap);
+        Toast.makeText(getApplicationContext(),"CURRENT CACHE SIZE (in kB): "+ImageCacheManager.getCurrentCacheSize() ,Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean checkIfIsInList(Product itemInfo){
+        for(ProdImage pi : this.productAndImage){
+            if(pi.getProductName().equals(itemInfo.getName())){
+                return true;
             }
-        });
+        }
+        return false;
+    }
+
+    private String accessProuductImageUrl(String productName){
+        String url="";
+        for(ProdImage pi : this.productAndImage){
+            if(pi.getProductName().equals(productName)){
+                url = pi.getProductImageUrl();
+                break;
+            }
+        }
+        return url;
+    }
+
+    private void renderProductImageFromServer(View view, Product itemInfo){
+        //check if the product image url is currently in small info cache
+        //currently we are storing in a list, but we will change for a cache system
+        if(checkIfIsInList(itemInfo)){
+            //info in cache, retrieve from it
+            String url = accessProuductImageUrl(itemInfo.getName());
+            renderImage(view, url);
+        }else{
+            //ask server for image url
+            Call<ServerProductImageUrl> call = retrofitManager.accessRetrofitInterface().getProductImageUrl(itemInfo.getName());
+            call.enqueue(new Callback<ServerProductImageUrl>() {
+                @Override
+                public void onResponse(Call<ServerProductImageUrl> call, Response<ServerProductImageUrl> response) {
+                    String url = response.body().getImageUrl();
+                    productAndImage.add(new ProdImage(itemInfo.getName(),url));
+                    renderImage(view, url);
+                }
+
+                @Override
+                public void onFailure(Call<ServerProductImageUrl> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void renderImage(View view, String url){
         ImageView imageView = view.findViewById(R.id.productImageView);
-        Glide.with(getApplicationContext()).load(url).into(imageView);
+        //the below configuration is telling Glide to not use cache
+        //we want to use our own cache (not theirs)
+        Glide
+                .with(getApplicationContext())
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
+                        //add photo to cache
+                        ImageCacheManager.addPhotoToCache(url, bitmap);
+                        Log.d("imageLoading","PRODUCT PHOTO ADDED TO CACHE SUCCESSFULY.");
+                        imageView.setImageBitmap(bitmap);
+                        Toast.makeText(getApplicationContext(),"CURRENT CACHE SIZE (in kB): "+ImageCacheManager.getCurrentCacheSize() ,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
     }
 
 
@@ -552,6 +636,7 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String requestId, Map resultData) {
                 currentUploadedPhoto = resultData.get("url").toString();
+                Toast.makeText(getApplicationContext(), currentUploadedPhoto, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onError(String requestId, ErrorInfo error) {
@@ -561,9 +646,5 @@ public class PantryActivity extends AppCompatActivity {
             }
         }).dispatch();
     }
-
-
-
-
 
 }
