@@ -2,6 +2,7 @@ package com.example.shopist.Server.ServerInteraction;
 
 import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerData;
+import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
@@ -95,5 +96,15 @@ public interface RetrofitInterface {
 
     @POST("/store/updateProduct")
     Call<Void> updateProductAtStore(@Body HashMap<String,String> map);
+
+
+    /*
+    *   Queue waiting times
+    * */
+    @POST("/store/{storeId}/initCheckoutProcess")
+    Call<ServerInitCheckoutToken> initCheckoutProcess(@Path("storeId") String storeId, @Body HashMap<String,String> map);
+
+    @POST("/store/{storeId}/endCheckoutProcess")
+    Call<Void> endCheckoutProcess(@Path("storeId") String storeId, @Body HashMap<String,String> map);
 
 }
