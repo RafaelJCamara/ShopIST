@@ -34,9 +34,6 @@ import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
 
 public class MainActivityNav extends AppCompatActivity {
 
-    //one way to know in which store we are at the moment
-    public static String currentStore = "";
-
     //beacon related attributes
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;

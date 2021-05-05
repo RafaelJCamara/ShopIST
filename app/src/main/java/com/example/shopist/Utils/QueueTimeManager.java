@@ -27,13 +27,14 @@ public class QueueTimeManager {
 
     public void initCheckoutProcess(){
 
-        //to do
-        int numberOfMyCartItems = 1;
+        PublicInfoManager.setCurrentStoreId("1");
+        PublicInfoManager.setCurrentNumberItemsInCart((int)Math.ceil(Math.random()*20));
 
         HashMap<String,String> map = new HashMap<>();
-        map.put("numberItemsCart", String.valueOf(numberOfMyCartItems));
+        map.put("numberItemsCart", String.valueOf(PublicInfoManager.getCurrentNumberItemsInCart()));
 
-        Call<ServerInitCheckoutToken> call = retrofitManager.accessRetrofitInterface().initCheckoutProcess("1",map);
+        Call<ServerInitCheckoutToken> call = retrofitManager.accessRetrofitInterface()
+                .initCheckoutProcess(PublicInfoManager.getCurrentStoreId(),map);
 
 
         call.enqueue(new Callback<ServerInitCheckoutToken>() {
