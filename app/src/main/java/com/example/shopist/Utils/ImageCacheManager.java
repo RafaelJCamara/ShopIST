@@ -26,14 +26,17 @@ public class ImageCacheManager {
 
     //represents the cache size (10MB for testing purposes)
 //    private final static int cacheSize = 10 * 1024 * 1024;
-        private final static int cacheSize = 10 * 1024 * 1024;
+    private final static int cacheSize = 10 * 1024 * 1024;
 
 
     //the string is intended to represent the image url at the server
     //the Bitmap is intended to represent the image itself
-    private static LruCache<String, Bitmap> bitmapCache = new LruCache<String, Bitmap>(cacheSize);
+    private static LruCache<String, Bitmap> bitmapCache;
 
     public static LruCache<String, Bitmap> getLruInstance(){
+        if(bitmapCache==null){
+            bitmapCache = new LruCache<String, Bitmap>(cacheSize);
+        }
         return bitmapCache;
     }
 

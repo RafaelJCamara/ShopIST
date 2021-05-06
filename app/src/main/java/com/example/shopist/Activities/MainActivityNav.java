@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -21,6 +22,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.shopist.R;
 import com.example.shopist.Utils.SimWifiP2pBroadcastReceiver;
+import com.example.shopist.Utils.WifiStatusReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
@@ -41,7 +43,6 @@ public class MainActivityNav extends AppCompatActivity {
     private SimWifiP2pBroadcastReceiver mReceiver;
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             mManager = new SimWifiP2pManager(new Messenger(service));
@@ -56,6 +57,10 @@ public class MainActivityNav extends AppCompatActivity {
             mBound = false;
         }
     };
+    private WifiStatusReceiver wifiStatusReceiver;
+
+    public static boolean withWifi = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +78,7 @@ public class MainActivityNav extends AppCompatActivity {
         fillTextView();
         addLogoutButtonLogic();
         initWifiDirectSettings();
+        initWifiSettings();
     }
 
     @Override
@@ -96,6 +102,12 @@ public class MainActivityNav extends AppCompatActivity {
         Intent intent = new Intent(MainActivityNav.this, SimWifiP2pService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mBound = true;
+    }
+
+    private void initWifiSettings(){
+        wifiStatusReceiver = new WifiStatusReceiver();
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(wifiStatusReceiver, intentFilter);
     }
 
 
