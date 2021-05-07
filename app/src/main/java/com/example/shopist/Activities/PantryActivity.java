@@ -42,12 +42,14 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
-import com.example.shopist.Utils.Adapter;
-import com.example.shopist.Utils.ImageCacheManager;
-import com.example.shopist.Utils.ItemListAdapter;
+import com.example.shopist.Utils.Other.Adapter;
+import com.example.shopist.Utils.CacheManager.ImageCacheManager;
+import com.example.shopist.Utils.Other.ItemListAdapter;
 import com.example.shopist.Product.Product;
-import com.example.shopist.Utils.ProdImage;
+import com.example.shopist.Utils.Other.ProdImage;
 
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -301,10 +303,24 @@ public class PantryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //get amount to be consumed
                 EditText amountToBeConsumed = view.findViewById(R.id.amountToConsume);
-                if(Integer.parseInt(amountToBeConsumed.getText().toString()) <= itemInfo.getStock())
-                    consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString(), view);
-                else
-                    Toast.makeText(getApplicationContext(),"Not enough stock" ,Toast.LENGTH_SHORT).show();
+                if (Integer.parseInt(amountToBeConsumed.getText().toString()) <= itemInfo.getStock()) {
+                    if(MainActivityNav.withWifi){
+                        //there is wifi
+                        //consume product in server
+                        consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString(), view);
+                    }else{
+                        //there is no wifi
+                        TextView listNameComponent = findViewById(R.id.listName);
+                        String listName = listNameComponent.getText().toString();
+                        //consume product locally
+                        MainActivityNav.smallDataCacheManager.consumeProductFromPantry(listName,itemInfo.getName());
+                        //render update on frontend
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Not enough stock", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
     }

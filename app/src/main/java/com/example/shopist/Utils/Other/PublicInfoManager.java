@@ -1,4 +1,4 @@
-package com.example.shopist.Utils;
+package com.example.shopist.Utils.Other;
 
 public class PublicInfoManager {
     //this class contains important info for crowdsourcing purposes

@@ -21,18 +21,14 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.shopist.R;
-import com.example.shopist.Utils.SimWifiP2pBroadcastReceiver;
-import com.example.shopist.Utils.WifiStatusReceiver;
+import com.example.shopist.Utils.CacheManager.SmallDataCacheManager;
+import com.example.shopist.Utils.WaitTimeManager.SimWifiP2pBroadcastReceiver;
+import com.example.shopist.Utils.OfflineManager.WifiStatusReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
-import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
-import pt.inesc.termite.wifidirect.SimWifiP2pManager;
-import pt.inesc.termite.wifidirect.SimWifiP2pManager.Channel;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
-import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
-import pt.inesc.termite.wifidirect.SimWifiP2pManager.PeerListListener;
 
 public class MainActivityNav extends AppCompatActivity {
 
@@ -60,7 +56,7 @@ public class MainActivityNav extends AppCompatActivity {
     private WifiStatusReceiver wifiStatusReceiver;
 
     public static boolean withWifi = true;
-
+    public static SmallDataCacheManager smallDataCacheManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +70,8 @@ public class MainActivityNav extends AppCompatActivity {
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
+
+        smallDataCacheManager = new SmallDataCacheManager();
 
         fillTextView();
         addLogoutButtonLogic();

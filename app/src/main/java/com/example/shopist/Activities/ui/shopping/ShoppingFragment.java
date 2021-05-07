@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.ShopActivity;
 import com.example.shopist.Activities.ui.ListFragment;
 import com.example.shopist.R;
@@ -145,7 +146,14 @@ public class ShoppingFragment extends ListFragment {
                     Toast.makeText(root.getContext(), "List has already been added.", Toast.LENGTH_LONG).show();
                 }else{
                     //the list hasn't been added
-                    getShoppingListFromServer(listId);
+                    if(MainActivityNav.withWifi){
+                        //there is Wifi
+                        //get list from the server
+                        getShoppingListFromServer(listId);
+                    }else{
+                        Toast.makeText(root.getContext(), "Please connect yourself to Wifi before making this operation.", Toast.LENGTH_LONG).show();
+                    }
+
                     dialog.dismiss();
                 }
             }
@@ -221,7 +229,17 @@ public class ShoppingFragment extends ListFragment {
                     Toast.makeText(root.getContext(), "List has already been created.", Toast.LENGTH_LONG).show();
                 }else{
                     //list has not been created
-                    createShoppingListInServer(listName, listAddress);
+                    if(MainActivityNav.withWifi){
+                        //there is wifi
+                        //create list at server
+                        createShoppingListInServer(listName, listAddress);
+                    }else{
+                        //there is no Wifi
+                        //do changes in local cache
+                        MainActivityNav.smallDataCacheManager.createShoppingList(listName,listAddress);
+                        //render offline content in frontend
+                    }
+                    
                     dialog.dismiss();
                 }
             }

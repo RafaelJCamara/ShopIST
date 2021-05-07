@@ -1,12 +1,11 @@
-package com.example.shopist.Utils;
+package com.example.shopist.Utils.WaitTimeManager;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
-import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Utils.Other.PublicInfoManager;
 
 import java.util.HashMap;
 

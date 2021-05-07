@@ -1,4 +1,4 @@
-package com.example.shopist.Utils;
+package com.example.shopist.Utils.CacheManager;
 
 import android.content.Intent;
 import android.os.Bundle;

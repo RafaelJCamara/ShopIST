@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Activities.ui.ListFragment;
 import com.example.shopist.R;
@@ -114,7 +115,14 @@ public class PantriesFragment extends ListFragment {
                     Toast.makeText(root.getContext(), "List has already been added.", Toast.LENGTH_LONG).show();
                 }else{
                     //the list hasn't been added
-                    getPantryListFromServer(listId);
+
+                    if(MainActivityNav.withWifi){
+                        //there is Wifi
+                        //get list from the server
+                        getPantryListFromServer(listId);
+                    }else{
+                        Toast.makeText(root.getContext(), "Please connect yourself to Wifi before making this operation.", Toast.LENGTH_LONG).show();
+                    }
                     dialog.dismiss();
                 }
             }
@@ -246,7 +254,18 @@ public class PantriesFragment extends ListFragment {
                     Toast.makeText(root.getContext(), "List has already been created.", Toast.LENGTH_LONG).show();
                 }else{
                     //list has not been created
-                    createPantryListInServer(listName, listAddress);
+                    if(MainActivityNav.withWifi){
+                        //there is Wifi
+                        //create list in server
+                        createPantryListInServer(listName, listAddress);
+                    }else{
+                        //there is no Wifi
+                        //do changes in local cache
+                        MainActivityNav.smallDataCacheManager.createPantryList(listName, listAddress);
+                        //render offline content in frontend
+
+                    }
+
                     dialog.dismiss();
                 }
             }

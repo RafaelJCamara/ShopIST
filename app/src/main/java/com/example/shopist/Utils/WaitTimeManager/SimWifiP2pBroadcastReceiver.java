@@ -1,11 +1,10 @@
-package com.example.shopist.Utils;
+package com.example.shopist.Utils.WaitTimeManager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.example.shopist.Activities.MainActivity;
 import com.example.shopist.Activities.MainActivityNav;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;

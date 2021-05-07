@@ -13,19 +13,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
-import com.example.shopist.Server.ServerResponses.ServerPantryList;
-import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
-import com.example.shopist.Utils.Adapter;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
