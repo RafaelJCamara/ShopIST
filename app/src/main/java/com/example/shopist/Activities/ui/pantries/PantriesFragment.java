@@ -26,7 +26,7 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
-import com.example.shopist.Server.ServerResponses.ServerUserPantryList;
+import com.example.shopist.Server.ServerResponses.ServerUserList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,18 +80,19 @@ public class PantriesFragment extends ListFragment {
      */
 
     public void fillExistingPantryLists(){
-
-        Call<ServerUserPantryList> call = retrofitManager.accessRetrofitInterface().getUserCurrentPantryLists(MainActivityNav.currentUserId);
-        call.enqueue(new Callback<ServerUserPantryList>() {
+        //clean previous content
+        pantriesViewModel.clearContent();
+        Call<ServerUserList> call = retrofitManager.accessRetrofitInterface().getUserCurrentPantryLists(MainActivityNav.currentUserId);
+        call.enqueue(new Callback<ServerUserList>() {
             @Override
-            public void onResponse(Call<ServerUserPantryList> call, Response<ServerUserPantryList> response) {
+            public void onResponse(Call<ServerUserList> call, Response<ServerUserList> response) {
                 if(response.code()==200){
-                    String[] currentLists = response.body().getUserPantryLists();
+                    String[] currentLists = response.body().getUserList();
                     renderCurrentLists(currentLists);
                 }
             }
             @Override
-            public void onFailure(Call<ServerUserPantryList> call, Throwable t) {
+            public void onFailure(Call<ServerUserList> call, Throwable t) {
                 Toast.makeText(root.getContext(), "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
             }
         });

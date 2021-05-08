@@ -26,6 +26,7 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
+import com.example.shopist.Server.ServerResponses.ServerUserList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,7 @@ public class ShoppingFragment extends ListFragment {
                 shoppingListSettings();
                 retrieveShoppingList();
                 createShoppingList();
+                fillExistingShoppingLists();
             }
         });
 
@@ -188,6 +190,34 @@ public class ShoppingFragment extends ListFragment {
     }
 
 
+    public void fillExistingShoppingLists(){
+        //clean previous content
+        shoppingViewModel.clearContent();
+        Call<ServerUserList> call = retrofitManager.accessRetrofitInterface().getUserCurrentShoppingLists(MainActivityNav.currentUserId);
+        call.enqueue(new Callback<ServerUserList>() {
+            @Override
+            public void onResponse(Call<ServerUserList> call, Response<ServerUserList> response) {
+                if(response.code()==200){
+                    String[] currentLists = response.body().getUserList();
+                    renderCurrentLists(currentLists);
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerUserList> call, Throwable t) {
+                Toast.makeText(root.getContext(), "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void renderCurrentLists(String[] currentLists){
+        for(int i=0;i!=currentLists.length;i++){
+            shoppingViewModel.addToShoppingListContent(currentLists[i]);
+        }
+        shoppingListSettings();
+        Toast.makeText(root.getContext(), "Current lists rendered with success!", Toast.LENGTH_LONG).show();
+    }
+
+
     /*
      * Create shopping list
      * */
@@ -270,6 +300,7 @@ public class ShoppingFragment extends ListFragment {
         HashMap<String,String> map = new HashMap<>();
         map.put("listName",listName);
         map.put("address", listAddress);
+        map.put("userId", MainActivityNav.currentUserId);
         Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executeShoppingListCreation(map);
         call.enqueue(new Callback<ServerListToken>() {
             @Override

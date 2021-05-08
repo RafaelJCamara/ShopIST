@@ -7,7 +7,7 @@ import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
-import com.example.shopist.Server.ServerResponses.ServerUserPantryList;
+import com.example.shopist.Server.ServerResponses.ServerUserList;
 
 import java.util.HashMap;
 
@@ -55,8 +55,8 @@ public interface RetrofitInterface {
     Call<Void> consumeProductPantry(@Path("id") String listId, @Body HashMap<String, String> map);
 
     //get existing pantry lists for the user
-    @GET("/list/pantry/userLists/{userId}")
-    Call<ServerUserPantryList> getUserCurrentPantryLists(@Path("userId") String userId);
+    @GET("/list/shopping/userLists/{userId}")
+    Call<ServerUserList> getUserCurrentShoppingLists(@Path("userId") String userId);
 
     /*
     * Shopping list routes
@@ -69,6 +69,10 @@ public interface RetrofitInterface {
     //get a specific shopping list
     @GET("/list/shopping/{id}")
     Call<ServerShoppingList> syncShoppingList(@Path("id") String listId);
+
+    //get existing pantry lists for the user
+    @GET("/list/pantry/userLists/{userId}")
+    Call<ServerUserList> getUserCurrentPantryLists(@Path("userId") String userId);
 
 
     /*
