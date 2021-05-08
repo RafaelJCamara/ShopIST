@@ -95,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         //put cart information into intent
         intent.putExtra("username",userInfoServer.getName());
         intent.putExtra("email",userInfoServer.getEmail());
+        intent.putExtra("userId",userInfoServer.getUserId());
 
         //start activity targeted in the intent
         startActivity(intent);

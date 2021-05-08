@@ -87,6 +87,7 @@ public class PantryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
+        setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
         existingPantryProducts = new ArrayList<ServerPantryProduct>();
 

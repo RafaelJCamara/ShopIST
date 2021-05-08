@@ -6,6 +6,7 @@ public class ServerData {
 
     private String name;
     private String email;
+    private String userId;
 
     public String getName() {
         return name;
@@ -13,5 +14,9 @@ public class ServerData {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 }

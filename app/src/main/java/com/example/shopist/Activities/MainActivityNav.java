@@ -54,7 +54,7 @@ public class MainActivityNav extends AppCompatActivity {
         }
     };
     private WifiStatusReceiver wifiStatusReceiver;
-
+    public static String currentUserId;
     public static boolean withWifi = true;
     public static SmallDataCacheManager smallDataCacheManager;
 
@@ -122,6 +122,7 @@ public class MainActivityNav extends AppCompatActivity {
             info+="anonymous";
         }
         textView.setText(info);
+        currentUserId = intent.getStringExtra("userId");
     }
 
     private void addLogoutButtonLogic(){
