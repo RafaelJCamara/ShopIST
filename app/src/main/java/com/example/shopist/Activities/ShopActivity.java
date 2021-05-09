@@ -53,7 +53,7 @@ public class ShopActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shop_activity);
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(this);
         existingPantryProducts = new ArrayList<ServerShoppingProduct>();
 
     }

@@ -26,7 +26,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup);
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(this);
         addSettings();
     }
 

@@ -33,7 +33,7 @@ public class CartActivity extends AppCompatActivity {
 
     private Context context;
 
-    private RetrofitManager retrofitManager = new RetrofitManager();
+    private RetrofitManager retrofitManager = new RetrofitManager(this);
 
     private String shoppingListId;
 

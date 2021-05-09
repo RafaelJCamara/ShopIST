@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(this);
         addSettings();
     }
 
@@ -73,13 +73,15 @@ public class LoginActivity extends AppCompatActivity {
                     loginSuccess(response);
                 } else if (response.code() == 404) {
                     //no matching credentials
-                    Toast.makeText(LoginActivity.this, "Wrong credentials!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Wrong credentials!!", Toast.LENGTH_SHORT).show();
+                } else if (response.code() == 401){
+                    Toast.makeText(getBaseContext(), "Problem connecting to server (check certificate)", Toast.LENGTH_SHORT).show();
                 }
             }
             //when the server fails to respond to our request
             @Override
             public void onFailure(Call<ServerData> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
             }
         });
     }

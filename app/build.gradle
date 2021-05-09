@@ -18,8 +18,16 @@ android {
 
     buildTypes {
         release {
+            buildConfigField "String", "BASE_URL", "\"https://shopist.adetectivestory.com\""
+            buildConfigField "String", "CERTIFICATE_PASSWORD", "\"5h0p_15T\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            debuggable true
+        }
+        debug {
+            buildConfigField "String", "BASE_URL", "\"http://192.168.1.65:3000\""
+            buildConfigField "String", "CERTIFICATE_PASSWORD", "\"\""
         }
     }
     compileOptions {

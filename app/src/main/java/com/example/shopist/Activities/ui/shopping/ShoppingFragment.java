@@ -52,7 +52,7 @@ public class ShoppingFragment extends ListFragment {
                 new ViewModelProvider(requireActivity()).get(ShoppingViewModel.class);
         root = inflater.inflate(R.layout.fragment_shopping, container, false);
 
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(root.getContext());
 
         super.onCreateView(inflater, container, savedInstanceState);
 

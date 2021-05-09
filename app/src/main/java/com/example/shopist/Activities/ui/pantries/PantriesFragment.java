@@ -52,7 +52,7 @@ public class PantriesFragment extends ListFragment {
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_pantries, container, false);
 
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(root.getContext());
 
         pantriesViewModel =
                 new ViewModelProvider(requireActivity()).get(PantriesViewModel.class);

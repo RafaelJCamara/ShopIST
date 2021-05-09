@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(this);
         pantryListContent = new ArrayList<>();
         shoppingListContent = new ArrayList<>();
 
