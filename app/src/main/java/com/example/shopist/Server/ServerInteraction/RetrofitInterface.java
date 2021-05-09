@@ -80,6 +80,9 @@ public interface RetrofitInterface {
     @POST("/product")
     Call<Void> createProduct(@Body HashMap<String,String> map);
 
+    @POST("/product/{productId}/rateProduct")
+    Call<Void> rateProductAtStore(@Path("productId") String productId, @Body HashMap<String,String> map);
+
     /*
     * Cart routes
     * */
