@@ -332,7 +332,6 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-
     private void consumeProductsInServer(Product itemInfo, String quantityConsumed, View view){
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("productId", getProductIdFromList(itemInfo));
@@ -352,7 +351,6 @@ public class PantryActivity extends AppCompatActivity {
         });
         updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed, view);
     }
-
 
     private void updateInFrontendPantryAfterConsumed(Product itemInfo, String quantityConsumed, View view){
         Log.i("Beginning","*******");
@@ -388,7 +386,6 @@ public class PantryActivity extends AppCompatActivity {
         fillListContentSettings();
     }
 
-
     private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, Product itemInfo){
         String finalShops = "";
         for(String s: getSelectedShops){
@@ -399,11 +396,13 @@ public class PantryActivity extends AppCompatActivity {
 
         TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
         String[] productNeeded = productNeededComponent.getText().toString().split(":");
-
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productId", getProductIdFromList(itemInfo));
+        Log.d("createshop",getProductIdFromList(itemInfo));
         map.put("shops", finalShops);
-        map.put("needed",productNeeded[1].trim());
+        Log.d("createshop",finalShops);
+        map.put("needed",productNeeded[0].trim());
+        Log.d("createshop",productNeeded[0].trim());
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().updatePantry(listId,map);
         call.enqueue(new Callback<Void>() {
