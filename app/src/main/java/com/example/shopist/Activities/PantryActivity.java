@@ -2,6 +2,8 @@ package com.example.shopist.Activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -76,12 +78,16 @@ public class PantryActivity extends AppCompatActivity {
     private ItemListAdapter itemListAdapter;
 
     private static final int PERMISSION_CODE = 1;
-    private static final int PICK_IMAGE = 1;
+    private static final int PICK_IMAGE = 10;
     String filePath;
     String currentUploadedPhoto;
 
     //testing purposes while we don't fix retriving the correct product info from server
     private ArrayList<ProdImage> productAndImage;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_CAMERA = 1;
+    private static final int SELECT_FILE = 2;
 
 
     @Override
@@ -594,10 +600,67 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //request permission to access external storage
-                requestPermission();
+                //requestPermission();
+                snapPhoto(view);
             }
         });
     }
+
+
+
+    private void snapPhoto(View view){
+        final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(view.getContext());
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+//                    PROFILE_PIC_COUNT = 1;
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUEST_CAMERA);
+                } else if (items[item].equals("Choose from Library")) {
+//                    PROFILE_PIC_COUNT = 1;
+//                    Intent intent = new Intent(
+//                            Intent.ACTION_PICK,
+//                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                    Log.d("photo","Select library");
+//                    startActivityForResult(intent,SELECT_FILE);
+//                    Log.d("photo","Finished intent");
+                    Log.d("photo","Select from gallery.");
+                    requestPermission();
+                } else if (items[item].equals("Cancel")) {
+//                    PROFILE_PIC_COUNT = 0;
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        switch(requestCode) {
+            case REQUEST_CAMERA:
+                Log.d("photo","Selected camera");
+                break;
+            case SELECT_FILE:
+                Log.d("photo","Select from gallery.");
+                requestPermission();
+                break;
+            case PICK_IMAGE:
+                Log.d("photo","Picking image.");
+                filePath = getRealPathFromUri(imageReturnedIntent.getData(), PantryActivity.this);
+                addUploadLogic();
+                break;
+        }
+    }
+
+
+    /*
+    *   BELOW: select photo from photo gallery and choose it as product photo
+    * */
     private void requestPermission(){
         if(ContextCompat.checkSelfPermission
                 (getApplicationContext(),
@@ -634,13 +697,14 @@ public class PantryActivity extends AppCompatActivity {
         startActivityForResult(i, PICK_IMAGE);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //get the image’s file location
-        filePath = getRealPathFromUri(data.getData(), PantryActivity.this);
-        addUploadLogic();
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        //get the image’s file location
+//        filePath = getRealPathFromUri(data.getData(), PantryActivity.this);
+//        addUploadLogic();
+//    }
+
     private String getRealPathFromUri(Uri imageUri, Activity activity){
         Cursor cursor = activity.getContentResolver().query(imageUri, null,  null, null, null);
         if(cursor==null) {
