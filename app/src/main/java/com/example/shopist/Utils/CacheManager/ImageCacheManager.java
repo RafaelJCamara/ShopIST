@@ -31,7 +31,7 @@ public class ImageCacheManager {
 
     //the string is intended to represent the image url at the server
     //the Bitmap is intended to represent the image itself
-    private static LruCache<String, Bitmap> bitmapCache;
+    private static LruCache<String, Bitmap> bitmapCache = new LruCache<String, Bitmap>(cacheSize);
 
     public static LruCache<String, Bitmap> getLruInstance(){
         if(bitmapCache==null){

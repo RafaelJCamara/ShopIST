@@ -103,7 +103,7 @@ public class PantriesFragment extends ListFragment {
             pantriesViewModel.addToPantryListContent(currentLists[i]);
         }
         pantryListSettings();
-        Toast.makeText(root.getContext(), "Current lists rendered with success!", Toast.LENGTH_LONG).show();
+        //Toast.makeText(root.getContext(), "Current lists rendered with success!", Toast.LENGTH_LONG).show();
     }
 
 

@@ -80,7 +80,7 @@ public class PantryActivity extends AppCompatActivity {
     String currentUploadedPhoto;
 
     //testing purposes while we don't fix retriving the correct product info from server
-    private ArrayList<ProdImage> productAndImage = new ArrayList<ProdImage>();
+    private ArrayList<ProdImage> productAndImage;
 
 
     @Override
@@ -90,7 +90,7 @@ public class PantryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
         existingPantryProducts = new ArrayList<ServerPantryProduct>();
-
+        productAndImage = new ArrayList<ProdImage>();
         //add pantry products to list view
         handleProductListDialog();
     }
@@ -147,14 +147,18 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void handleProductDetailDialog(Product itemInfo){
+        Log.d("imageLoading","1");
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
+        Log.d("imageLoading","2");
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
+        Log.d("imageLoading","3");
         builder.setView(view).show();
+        Log.d("imageLoading","4");
         handleBuyInShopsLogic(view, itemInfo);
+        Log.d("imageLoading","5");
     }
 
     private void handleBuyInShopsLogic(View view, Product itemInfo){
-
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
         productNameDetail.setText(itemInfo.getName());
 
@@ -185,9 +189,10 @@ public class PantryActivity extends AppCompatActivity {
         renderProductImage(view, itemInfo);
     }
 
-
     private void renderProductImage(View view, Product itemInfo){
+        Log.d("imageLoading","a");
         String imageUrl = accessProuductImageUrl(itemInfo.getName());
+        Log.d("imageLoading","b");
 
         //check if product is cached
         if(ImageCacheManager.checkIfImageIsCached(imageUrl)){
@@ -225,6 +230,7 @@ public class PantryActivity extends AppCompatActivity {
                 break;
             }
         }
+        Log.d("imageLoading","Product URL: "+url);
         return url;
     }
 

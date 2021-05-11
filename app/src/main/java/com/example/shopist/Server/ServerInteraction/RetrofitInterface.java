@@ -55,8 +55,8 @@ public interface RetrofitInterface {
     Call<Void> consumeProductPantry(@Path("id") String listId, @Body HashMap<String, String> map);
 
     //get existing pantry lists for the user
-    @GET("/list/shopping/userLists/{userId}")
-    Call<ServerUserList> getUserCurrentShoppingLists(@Path("userId") String userId);
+    @GET("/list/pantry/userLists/{userId}")
+    Call<ServerUserList> getUserCurrentPantryLists(@Path("userId") String userId);
 
     /*
     * Shopping list routes
@@ -70,9 +70,9 @@ public interface RetrofitInterface {
     @GET("/list/shopping/{id}")
     Call<ServerShoppingList> syncShoppingList(@Path("id") String listId);
 
-    //get existing pantry lists for the user
-    @GET("/list/pantry/userLists/{userId}")
-    Call<ServerUserList> getUserCurrentPantryLists(@Path("userId") String userId);
+    //get existing shopping lists for the user
+    @GET("/list/shopping/userLists/{userId}")
+    Call<ServerUserList> getUserCurrentShoppingLists(@Path("userId") String userId);
 
 
     /*
