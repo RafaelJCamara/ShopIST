@@ -56,6 +56,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/addProductButton"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <Button
+                android:id="@+id/sharePantryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:text="SHARE"
+                app:layout_constraintStart_toEndOf="@+id/listCode"
+                app:layout_constraintTop_toTopOf="@+id/listCode" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

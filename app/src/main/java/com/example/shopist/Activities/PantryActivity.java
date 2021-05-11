@@ -1,5 +1,6 @@
 package com.example.shopist.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -76,6 +77,7 @@ public class PantryActivity extends AppCompatActivity {
         productListSettings();
         fillPantryProductList();
         addProductLogic();
+        sharePantryLogic();
     }
 
     private void productListSettings() {
@@ -435,4 +437,27 @@ public class PantryActivity extends AppCompatActivity {
         fillListContentSettings();
     }
 
+    //#########################
+    //### share pantry list ###
+    //#########################
+
+    private void sharePantryLogic(){
+        Button sharePantryButton = findViewById(R.id.sharePantryButton);
+        sharePantryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSharePantryIntent();
+            }
+        });
+    }
+
+    public void handleSharePantryIntent(){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
+    }
 }
