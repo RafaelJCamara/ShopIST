@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Activities.ui.ListFragment;
+import com.example.shopist.Activities.ui.shopping.ShoppingFragment;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
@@ -215,7 +216,8 @@ public class PantriesFragment extends ListFragment {
     public void openPantryItemActivity(String itemInfo){
         Intent intent = new Intent(root.getContext(), PantryActivity.class);
         intent.putExtra("itemInfo", itemInfo);
-        intent.putExtra("shoppingLists", /* get shopping lists from server? */new ArrayList<String>());
+        ArrayList<String> list = (ArrayList<String>) ShoppingFragment.shoppingViewModel.getShoppingListContent().getValue();
+        intent.putExtra("shoppingLists", list);
         startActivity(intent);
     }
 

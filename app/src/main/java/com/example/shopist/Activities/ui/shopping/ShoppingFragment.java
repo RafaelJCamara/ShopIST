@@ -37,7 +37,7 @@ import retrofit2.Response;
 
 public class ShoppingFragment extends ListFragment {
 
-    private ShoppingViewModel shoppingViewModel;
+    public static ShoppingViewModel shoppingViewModel;
 
     public RetrofitManager retrofitManager;
 

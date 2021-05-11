@@ -27,6 +27,7 @@ import com.example.shopist.Utils.WaitTimeManager.SimWifiP2pBroadcastReceiver;
 import com.example.shopist.Utils.OfflineManager.WifiStatusReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +63,9 @@ public class MainActivityNav extends AppCompatActivity {
     public static boolean withWifi = true;
     public static SmallDataCacheManager smallDataCacheManager;
 
+    //for letting the user know, in the pantry list context, which are the stores he can buy stuff on
+//    public static ArrayList<String> currentExistingShoppingLists = new ArrayList<String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +80,7 @@ public class MainActivityNav extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         smallDataCacheManager = new SmallDataCacheManager();
+
         initCloudSettings();
         fillTextView();
         addLogoutButtonLogic();
@@ -89,8 +94,6 @@ public class MainActivityNav extends AppCompatActivity {
         unregisterReceiver(mReceiver);
     }
 
-
-
     private void initCloudSettings(){
         Map config = new HashMap();
         config.put("cloud_name", "dy5jqy5fw");
@@ -98,7 +101,6 @@ public class MainActivityNav extends AppCompatActivity {
         config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
         MediaManager.init(getApplicationContext(), config);
     }
-
 
     private void initWifiDirectSettings(){
         IntentFilter filter = new IntentFilter();
