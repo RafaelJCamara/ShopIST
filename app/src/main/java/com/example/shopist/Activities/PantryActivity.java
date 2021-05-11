@@ -10,8 +10,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +31,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,7 +57,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -606,8 +612,6 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void snapPhoto(View view){
         final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(view.getContext());
@@ -616,9 +620,18 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take Photo")) {
+                    Log.d("photo","Take a photo");
 //                    PROFILE_PIC_COUNT = 1;
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent, REQUEST_CAMERA);
+//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                    startActivityForResult(intent, REQUEST_CAMERA);
+                    try {
+                        dispatchTakePictureIntent();
+                        dialog.dismiss();
+//                        galleryAddPic();
+//                        addUploadLogic();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else if (items[item].equals("Choose from Library")) {
 //                    PROFILE_PIC_COUNT = 1;
 //                    Intent intent = new Intent(
@@ -629,6 +642,7 @@ public class PantryActivity extends AppCompatActivity {
 //                    Log.d("photo","Finished intent");
                     Log.d("photo","Select from gallery.");
                     requestPermission();
+                    dialog.dismiss();
                 } else if (items[item].equals("Cancel")) {
 //                    PROFILE_PIC_COUNT = 0;
                     dialog.dismiss();
@@ -644,6 +658,13 @@ public class PantryActivity extends AppCompatActivity {
         switch(requestCode) {
             case REQUEST_CAMERA:
                 Log.d("photo","Selected camera");
+                try{
+//                    dispatchTakePictureIntent();
+                    galleryAddPic();
+//                    addUploadLogic();
+                }catch (Exception e){
+                    //catch exception
+                }
                 break;
             case SELECT_FILE:
                 Log.d("photo","Select from gallery.");
@@ -654,6 +675,65 @@ public class PantryActivity extends AppCompatActivity {
                 filePath = getRealPathFromUri(imageReturnedIntent.getData(), PantryActivity.this);
                 addUploadLogic();
                 break;
+        }
+    }
+
+    /*
+    *   BELOW: take picture of product and save it
+    * */
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(filePath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+        addUploadLogic();
+    }
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Log.d("photo","Storage DIR: "+storageDir);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        filePath = image.getAbsolutePath();
+        Log.d("photo","Path: "+filePath);
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() throws IOException{
+        Log.d("photo","a");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        // Create the File where the photo should go
+        File photoFile = null;
+        try {
+            Log.d("photo","b");
+            photoFile = createImageFile();
+            Log.d("photo","c");
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+        }
+        // Continue only if the File was successfully created
+        if (photoFile != null) {
+            Log.d("photo","There as no error creating the file.");
+            Log.d("photo","This is the current path: "+filePath);
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.example.android.fileprovider",
+                    photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+        }else{
+            Log.d("photo","There an error creating the file.");
         }
     }
 
@@ -721,6 +801,7 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void uploadToCloudinary(String filePath) {
+        Log.d("photo","Going to upload to cloud.");
         MediaManager.get().upload(filePath).callback(new UploadCallback() {
             @Override
             public void onStart(String requestId) {
