@@ -47,6 +47,7 @@ import com.example.shopist.Utils.CacheManager.ImageCacheManager;
 import com.example.shopist.Utils.Other.ItemListAdapter;
 import com.example.shopist.Product.Product;
 import com.example.shopist.Utils.Other.ProdImage;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 import org.w3c.dom.Text;
@@ -87,7 +88,7 @@ public class PantryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
-        setContentView(R.layout.activity_pantry);
+//        setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager();
         existingPantryProducts = new ArrayList<ServerPantryProduct>();
         productAndImage = new ArrayList<ProdImage>();
@@ -469,8 +470,16 @@ public class PantryActivity extends AppCompatActivity {
      */
 
     private void addProductLogic(){
-        Button addProcuctButton = findViewById(R.id.addProductButton);
-        addProcuctButton.setOnClickListener(new View.OnClickListener() {
+//        Button addProcuctButton = findViewById(R.id.addProductButton);
+//        addProcuctButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                handleCreateProductDialog();
+//            }
+//        });
+
+        FloatingActionButton button = findViewById(R.id.addProductBtn);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleCreateProductDialog();
