@@ -92,6 +92,7 @@ public class PantryActivity extends AppCompatActivity {
         existingPantryProducts = new ArrayList<ServerPantryProduct>();
         productAndImage = new ArrayList<ProdImage>();
         //add pantry products to list view
+//        initCloudSettings();
         handleProductListDialog();
     }
 
@@ -100,6 +101,14 @@ public class PantryActivity extends AppCompatActivity {
     ### initial settings ###
     ##########################
      */
+
+//    private void initCloudSettings(){
+//        Map config = new HashMap();
+//        config.put("cloud_name", "dy5jqy5fw");
+//        config.put("api_key", "941312846299731");
+//        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
+//        MediaManager.init(getApplicationContext(), config);
+//    }
 
     private void handleProductListDialog(){
         productListSettings();
@@ -147,15 +156,10 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void handleProductDetailDialog(Product itemInfo){
-        Log.d("imageLoading","1");
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
-        Log.d("imageLoading","2");
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
-        Log.d("imageLoading","3");
         builder.setView(view).show();
-        Log.d("imageLoading","4");
         handleBuyInShopsLogic(view, itemInfo);
-        Log.d("imageLoading","5");
     }
 
     private void handleBuyInShopsLogic(View view, Product itemInfo){
@@ -190,10 +194,7 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void renderProductImage(View view, Product itemInfo){
-        Log.d("imageLoading","a");
         String imageUrl = accessProuductImageUrl(itemInfo.getName());
-        Log.d("imageLoading","b");
-
         //check if product is cached
         if(ImageCacheManager.checkIfImageIsCached(imageUrl)){
             Log.d("imageLoading","PRODUCT IMAGE IN CACHE");
@@ -230,7 +231,6 @@ public class PantryActivity extends AppCompatActivity {
                 break;
             }
         }
-        Log.d("imageLoading","Product URL: "+url);
         return url;
     }
 
@@ -573,11 +573,11 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void addPhotoLogic(View view){
-        Map config = new HashMap();
-        config.put("cloud_name", "dy5jqy5fw");
-        config.put("api_key", "941312846299731");
-        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
-        MediaManager.init(getApplicationContext(), config);
+//        Map config = new HashMap();
+//        config.put("cloud_name", "dy5jqy5fw");
+//        config.put("api_key", "941312846299731");
+//        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
+//        MediaManager.init(getApplicationContext(), config);
         addPhotoButtonLogic(view);
     }
     private void addPhotoButtonLogic(View view){

@@ -20,11 +20,15 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.cloudinary.android.MediaManager;
 import com.example.shopist.R;
 import com.example.shopist.Utils.CacheManager.SmallDataCacheManager;
 import com.example.shopist.Utils.WaitTimeManager.SimWifiP2pBroadcastReceiver;
 import com.example.shopist.Utils.OfflineManager.WifiStatusReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
@@ -72,7 +76,7 @@ public class MainActivityNav extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         smallDataCacheManager = new SmallDataCacheManager();
-
+        initCloudSettings();
         fillTextView();
         addLogoutButtonLogic();
         initWifiDirectSettings();
@@ -84,6 +88,17 @@ public class MainActivityNav extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(mReceiver);
     }
+
+
+
+    private void initCloudSettings(){
+        Map config = new HashMap();
+        config.put("cloud_name", "dy5jqy5fw");
+        config.put("api_key", "941312846299731");
+        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
+        MediaManager.init(getApplicationContext(), config);
+    }
+
 
     private void initWifiDirectSettings(){
         IntentFilter filter = new IntentFilter();
