@@ -9,7 +9,7 @@
         android:id="@+id/productNameAtStore"
         android:layout_width="332dp"
         android:layout_height="34dp"
-        android:text="Product Name"
+        android:text="@string/product_name"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="76dp"
-        android:text="Quantity in store"
+        android:text="@string/quantity_store"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
         app:layout_constraintEnd_toStartOf="@+id/productQuantityInStore"
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:text="Price in store"
+        android:text="@string/price_store"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/productPriceInStore"
@@ -65,7 +65,7 @@
         android:id="@+id/saveProductInfoAtStore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.442"
@@ -92,7 +92,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="144dp"
-        android:text="Classification:"
+        android:text="@string/classification"
         app:layout_constraintStart_toStartOf="@+id/textView9"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -113,7 +113,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Submit Classification"
+        android:text="@string/submit_classification_button"
         app:layout_constraintStart_toStartOf="@+id/submitionRatingBar"
         app:layout_constraintTop_toBottomOf="@+id/submitionRatingBar" />
 
