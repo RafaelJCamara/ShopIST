@@ -214,9 +214,30 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     public void onGoToCartButtonPressed(View view) {
+        //create cart
+        createCart();
+
         Intent intent = new Intent(ShopActivity.this, CartActivity.class);
         intent.putExtra("shoppingListId", listId);
         startActivity(intent);
+    }
+
+    private void createCart(){
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("shopId", listId);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(map);
+        call.enqueue(new Callback<Void>() {
+            //when the server responds to our request
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(ShopActivity.this, "Cart created with success.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

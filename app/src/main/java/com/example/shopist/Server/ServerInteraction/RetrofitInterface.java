@@ -93,8 +93,11 @@ public interface RetrofitInterface {
     @GET("/cart/{shoppingListId}")
     Call<ServerCart> getCart(@Path("shoppingListId") String shoppingListId);
 
-    @POST("/cart/{shoppingListId}")
+    @POST("/cart/checkout/{shoppingListId}")
     Call<Void> checkoutCart(@Path("shoppingListId") String shoppingListId);
+
+    @POST("/cart/createCart")
+    Call<Void> createCart(@Body HashMap<String,String> map);
 
     /*
      * Store routes
