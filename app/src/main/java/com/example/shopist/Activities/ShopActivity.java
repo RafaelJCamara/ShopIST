@@ -15,19 +15,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
-import com.example.shopist.Server.ServerResponses.ServerPantryList;
-import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
-import com.example.shopist.Utils.Adapter;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +51,6 @@ public class ShopActivity extends AppCompatActivity {
         setContentView(R.layout.shop_activity);
         retrofitManager = new RetrofitManager(this);
         existingPantryProducts = new ArrayList<ServerShoppingProduct>();
-
     }
 
     @Override
@@ -105,7 +98,7 @@ public class ShopActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
-                Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
                 handleProductDetailDialog(itemInfo);
             }
         });
@@ -183,7 +176,6 @@ public class ShopActivity extends AppCompatActivity {
                 String productPriceStore = productPriceStoreComponent.getText().toString();
 
                 Toast.makeText(ShopActivity.this, "Product clicked... "+productQuantityStore+" "+productPriceStore, Toast.LENGTH_SHORT).show();
-
 
                 //update information in server
                 updateProductInfo(productQuantityStore, productPriceStore, itemInfo);
@@ -267,9 +259,30 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     public void onGoToCartButtonPressed(View view) {
+        //create cart
+        createCart();
+
         Intent intent = new Intent(ShopActivity.this, CartActivity.class);
         intent.putExtra("shoppingListId", listId);
         startActivity(intent);
+    }
+
+    private void createCart(){
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("shopId", listId);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(map);
+        call.enqueue(new Callback<Void>() {
+            //when the server responds to our request
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(ShopActivity.this, "Cart created with success.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //Shopping product Classification

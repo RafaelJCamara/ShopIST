@@ -28,4 +28,8 @@ public class ShoppingViewModel extends ViewModel {
     public void addToShoppingListContent(String pantryList) {
         this.shoppingListContent.getValue().add(pantryList);
     }
+
+    public void clearContent(){
+        this.shoppingListContent.getValue().clear();
+    }
 }

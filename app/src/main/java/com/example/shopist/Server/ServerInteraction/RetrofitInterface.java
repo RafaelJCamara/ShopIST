@@ -2,9 +2,12 @@ package com.example.shopist.Server.ServerInteraction;
 
 import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerData;
+import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
+import com.example.shopist.Server.ServerResponses.ServerUserList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +55,9 @@ public interface RetrofitInterface {
     @POST("/list/pantry/{id}/consume")
     Call<Void> consumeProductPantry(@Path("id") String listId, @Body HashMap<String, String> map);
 
+    //get existing pantry lists for the user
+    @GET("/list/pantry/userLists/{userId}")
+    Call<ServerUserList> getUserCurrentPantryLists(@Path("userId") String userId);
 
     /*
     * Shopping list routes
@@ -65,10 +71,9 @@ public interface RetrofitInterface {
     @GET("/list/shopping/{id}")
     Call<ServerShoppingList> syncShoppingList(@Path("id") String listId);
 
-    //get all shopping lists in server (TEMPORARY)
-    @GET("/list/shopping")
-    Call<ArrayList<ServerShoppingList>> syncAllShoppingList();
-
+    //get existing shopping lists for the user
+    @GET("/list/shopping/userLists/{userId}")
+    Call<ServerUserList> getUserCurrentShoppingLists(@Path("userId") String userId);
 
 
 
@@ -83,14 +88,21 @@ public interface RetrofitInterface {
     @POST("/product/{productId}/rateProduct")
     Call<Void> rateProductAtStore(@Path("productId") String productId, @Body HashMap<String,String> map);
 
+    @GET("/product/{productName}/getUrl")
+    Call<ServerProductImageUrl> getProductImageUrl(@Path("productName") String imageUrl);
+
+
     /*
     * Cart routes
     * */
     @GET("/cart/{shoppingListId}")
     Call<ServerCart> getCart(@Path("shoppingListId") String shoppingListId);
 
-    @POST("/cart/{shoppingListId}")
+    @POST("/cart/checkout/{shoppingListId}")
     Call<Void> checkoutCart(@Path("shoppingListId") String shoppingListId);
+
+    @POST("/cart/createCart")
+    Call<Void> createCart(@Body HashMap<String,String> map);
 
     /*
      * Store routes
@@ -98,5 +110,15 @@ public interface RetrofitInterface {
 
     @POST("/store/updateProduct")
     Call<Void> updateProductAtStore(@Body HashMap<String,String> map);
+
+
+    /*
+    *   Queue waiting times
+    * */
+    @POST("/store/{storeId}/initCheckoutProcess")
+    Call<ServerInitCheckoutToken> initCheckoutProcess(@Path("storeId") String storeId, @Body HashMap<String,String> map);
+
+    @POST("/store/{storeId}/endCheckoutProcess")
+    Call<Void> endCheckoutProcess(@Path("storeId") String storeId, @Body HashMap<String,String> map);
 
 }

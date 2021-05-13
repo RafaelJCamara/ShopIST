@@ -1,4 +1,4 @@
-package com.example.shopist.Utils;
+package com.example.shopist.Utils.Other;
 
 import android.content.Context;
 import android.view.LayoutInflater;

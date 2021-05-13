@@ -1,36 +1,71 @@
 package com.example.shopist.Activities;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
+import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
-import com.example.shopist.Utils.Adapter;
-
-import com.example.shopist.Utils.ItemListAdapter;
+import com.example.shopist.Utils.Other.Adapter;
+import com.example.shopist.Utils.CacheManager.ImageCacheManager;
+import com.example.shopist.Utils.Other.ItemListAdapter;
 import com.example.shopist.Product.Product;
+import com.example.shopist.Utils.Other.ProdImage;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,18 +87,30 @@ public class PantryActivity extends AppCompatActivity {
 
     private ItemListAdapter itemListAdapter;
 
+    private static final int PERMISSION_CODE = 1;
+    private static final int PICK_IMAGE = 10;
+    String filePath;
+    String currentUploadedPhoto;
+
+    //testing purposes while we don't fix retriving the correct product info from server
+    private ArrayList<ProdImage> productAndImage;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_CAMERA = 1;
+    private static final int SELECT_FILE = 2;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
+//        setContentView(R.layout.activity_pantry);
         retrofitManager = new RetrofitManager(this);
         existingPantryProducts = new ArrayList<ServerPantryProduct>();
-        getAllShopListFromServer();
-
+        productAndImage = new ArrayList<ProdImage>();
 
         //add pantry products to list view
+//        initCloudSettings();
         handleProductListDialog();
     }
 
@@ -73,13 +120,20 @@ public class PantryActivity extends AppCompatActivity {
     ##########################
      */
 
+//    private void initCloudSettings(){
+//        Map config = new HashMap();
+//        config.put("cloud_name", "dy5jqy5fw");
+//        config.put("api_key", "941312846299731");
+//        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
+//        MediaManager.init(getApplicationContext(), config);
+//    }
+
     private void handleProductListDialog(){
         productListSettings();
         fillPantryProductList();
         addProductLogic();
         sharePantryLogic();
     }
-
     private void productListSettings() {
         //configure product list and adapter
         fillListContentSettings();
@@ -128,7 +182,6 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void handleBuyInShopsLogic(View view, Product itemInfo){
-
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
         productNameDetail.setText(itemInfo.getName());
 
@@ -145,48 +198,118 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void fillListViewWithShoppingLists(View view, Product itemInfo){
-        //ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
-        Log.i("before set adapter", "*******");
-        for(String s: shoppingLists){
-            Log.i("before set adapter", s);
-        }
+        ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.setHasFixedSize(true);
-
-        Adapter adapter = new Adapter(shoppingLists);
+        Adapter adapter = new Adapter(shopList);
         recyclerView.setAdapter(adapter);
 
         addSaveButtonLogic(adapter, view, itemInfo);
         addConsumeProductLogic(view, itemInfo);
+        renderProductImage(view, itemInfo);
     }
 
+    private void renderProductImage(View view, Product itemInfo){
+        String imageUrl = accessProuductImageUrl(itemInfo.getName());
+        //check if product is cached
+        if(ImageCacheManager.checkIfImageIsCached(imageUrl)){
+            Log.d("imageLoading","PRODUCT IMAGE IN CACHE");
+           //in cache
+            Bitmap imageContent = ImageCacheManager.retrieveBitmapContent(imageUrl);
+            renderFromBitmapContent(imageContent, view);
+        }else{
+            Log.d("imageLoading","PRODUCT IMAGE NOT IN CACHE");
+            //not in cache
+            renderProductImageFromServer(view,itemInfo);
+        }
+    }
 
-    private void getAllShopListFromServer() {
-        Log.i("msg pantry act","*******");
-        Call<ArrayList<ServerShoppingList>> call = retrofitManager.accessRetrofitInterface().syncAllShoppingList();
-        call.enqueue(new Callback<ArrayList<ServerShoppingList>>() {
-            @Override
-            public void onResponse(Call<ArrayList<ServerShoppingList>> call, Response<ArrayList<ServerShoppingList>> response) {
-                if(response.code()==200){
-                    //list retrieved by the server
-                    ArrayList<ServerShoppingList> lists = response.body();
-                    for(ServerShoppingList list : lists){
-                        shoppingLists.add(list.getName() + "->"+list.getUuid());
-                        Log.i("msg pantry act",list.getName() + " PA");
-                    }
+    private void renderFromBitmapContent(Bitmap bitmap, View view){
+        ImageView imageView = view.findViewById(R.id.productImageView);
+        imageView.setImageBitmap(bitmap);
+        Toast.makeText(getApplicationContext(),"CURRENT CACHE SIZE (in kB): "+ImageCacheManager.getCurrentCacheSize() ,Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean checkIfIsInList(Product itemInfo){
+        for(ProdImage pi : this.productAndImage){
+            if(pi.getProductName().equals(itemInfo.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String accessProuductImageUrl(String productName){
+        String url="";
+        for(ProdImage pi : this.productAndImage){
+            if(pi.getProductName().equals(productName)){
+                url = pi.getProductImageUrl();
+                break;
+            }
+        }
+        return url;
+    }
+
+    private void renderProductImageFromServer(View view, Product itemInfo){
+        //check if the product image url is currently in small info cache
+        //currently we are storing in a list, but we will change for a cache system
+        if(checkIfIsInList(itemInfo)){
+            //info in cache, retrieve from it
+            String url = accessProuductImageUrl(itemInfo.getName());
+            renderImage(view, url);
+        }else{
+            //ask server for image url
+            Call<ServerProductImageUrl> call = retrofitManager.accessRetrofitInterface().getProductImageUrl(itemInfo.getName());
+            call.enqueue(new Callback<ServerProductImageUrl>() {
+                @Override
+                public void onResponse(Call<ServerProductImageUrl> call, Response<ServerProductImageUrl> response) {
+                    String url = response.body().getImageUrl();
+                    productAndImage.add(new ProdImage(itemInfo.getName(),url));
+                    renderImage(view, url);
                 }
-            }
-            @Override
-            public void onFailure(Call<ArrayList<ServerShoppingList>> call, Throwable t) {
-                Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-            }
-        });
+
+                @Override
+                public void onFailure(Call<ServerProductImageUrl> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     //Should return just the shopping list associated with the user/pantryLists
+
+    private void renderImage(View view, String url){
+        ImageView imageView = view.findViewById(R.id.productImageView);
+        //the below configuration is telling Glide to not use cache
+        //we want to use our own cache (not theirs)
+        Glide
+                .with(getApplicationContext())
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
+                        //add photo to cache
+                        ImageCacheManager.addPhotoToCache(url, bitmap);
+                        Log.d("imageLoading","PRODUCT PHOTO ADDED TO CACHE SUCCESSFULY.");
+                        imageView.setImageBitmap(bitmap);
+                        Toast.makeText(getApplicationContext(),"CURRENT CACHE SIZE (in kB): "+ImageCacheManager.getCurrentCacheSize() ,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+    }
+
+
+
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -208,14 +331,27 @@ public class PantryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //get amount to be consumed
                 EditText amountToBeConsumed = view.findViewById(R.id.amountToConsume);
-                if(Integer.parseInt(amountToBeConsumed.getText().toString()) <= itemInfo.getStock())
-                    consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString(), view);
-                else
-                    Toast.makeText(getApplicationContext(),"Not enough stock" ,Toast.LENGTH_SHORT).show();
+                if (Integer.parseInt(amountToBeConsumed.getText().toString()) <= itemInfo.getStock()) {
+                    if(MainActivityNav.withWifi){
+                        //there is wifi
+                        //consume product in server
+                        consumeProductsInServer(itemInfo, amountToBeConsumed.getText().toString(), view);
+                    }else{
+                        //there is no wifi
+                        TextView listNameComponent = findViewById(R.id.listName);
+                        String listName = listNameComponent.getText().toString();
+                        //consume product locally
+                        MainActivityNav.smallDataCacheManager.consumeProductFromPantry(listName,itemInfo.getName());
+                        //render update on frontend
+                    }
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Not enough stock", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
     }
-
 
     private void consumeProductsInServer(Product itemInfo, String quantityConsumed, View view){
         HashMap<String, String> map = new HashMap<String, String>();
@@ -236,7 +372,6 @@ public class PantryActivity extends AppCompatActivity {
         });
         updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed, view);
     }
-
 
     private void updateInFrontendPantryAfterConsumed(Product itemInfo, String quantityConsumed, View view){
         Log.i("Beginning","*******");
@@ -272,7 +407,6 @@ public class PantryActivity extends AppCompatActivity {
         fillListContentSettings();
     }
 
-
     private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, Product itemInfo){
         String finalShops = "";
         for(String s: getSelectedShops){
@@ -281,11 +415,15 @@ public class PantryActivity extends AppCompatActivity {
         }
 //        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
-
+        TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
+        String[] productNeeded = productNeededComponent.getText().toString().split(":");
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productId", getProductIdFromList(itemInfo));
+        Log.d("createshop",getProductIdFromList(itemInfo));
         map.put("shops", finalShops);
-        map.put("needed",String.valueOf(itemInfo.getNeeded()));
+        Log.d("createshop",finalShops);
+        map.put("needed",productNeeded[0].trim());
+        Log.d("createshop",productNeeded[0].trim());
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().updatePantry(listId,map);
         call.enqueue(new Callback<Void>() {
@@ -351,8 +489,16 @@ public class PantryActivity extends AppCompatActivity {
 
 
     private void addProductLogic(){
-        Button addProcuctButton = findViewById(R.id.addProductButton);
-        addProcuctButton.setOnClickListener(new View.OnClickListener() {
+//        Button addProcuctButton = findViewById(R.id.addProductButton);
+//        addProcuctButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                handleCreateProductDialog();
+//            }
+//        });
+
+        FloatingActionButton button = findViewById(R.id.addProductBtn);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleCreateProductDialog();
@@ -367,7 +513,12 @@ public class PantryActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
         createProductLogic(view, alert);
+        takeProductPhotoSettings(view);
     }
+
+    /*
+    * Create product logic
+    * */
 
     public void createProductLogic(View view, AlertDialog builder){
         Button createProductButton = view.findViewById(R.id.CreateProductButton);
@@ -412,6 +563,7 @@ public class PantryActivity extends AppCompatActivity {
         map.put("barcode", productBarcode);
         map.put("stock", productStock);
         map.put("needed", productNeeded);
+        map.put("imageUrl", currentUploadedPhoto);
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().addProductToPantry(listId,map);
         call.enqueue(new Callback<Void>() {
@@ -435,6 +587,247 @@ public class PantryActivity extends AppCompatActivity {
         productsList.add(product);
         fillPantryProductList();
         fillListContentSettings();
+    }
+
+
+    /*
+    * Upload photo
+    * */
+
+    public void takeProductPhotoSettings(View view){
+        addPhotoLogic(view);
+//        addUploadLogic();
+    }
+
+    private void addPhotoLogic(View view){
+//        Map config = new HashMap();
+//        config.put("cloud_name", "dy5jqy5fw");
+//        config.put("api_key", "941312846299731");
+//        config.put("api_secret", "1TjF4L4PRUT4K0r7bsTCWQYX12Q");
+//        MediaManager.init(getApplicationContext(), config);
+        addPhotoButtonLogic(view);
+    }
+    private void addPhotoButtonLogic(View view){
+        Button photoButton = view.findViewById(R.id.photo_button);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //request permission to access external storage
+                //requestPermission();
+                snapPhoto(view);
+            }
+        });
+    }
+
+    private void snapPhoto(View view){
+        final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(view.getContext());
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    Log.d("photo","Take a photo");
+//                    PROFILE_PIC_COUNT = 1;
+//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                    startActivityForResult(intent, REQUEST_CAMERA);
+                    try {
+                        dispatchTakePictureIntent();
+                        dialog.dismiss();
+//                        galleryAddPic();
+//                        addUploadLogic();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (items[item].equals("Choose from Library")) {
+//                    PROFILE_PIC_COUNT = 1;
+//                    Intent intent = new Intent(
+//                            Intent.ACTION_PICK,
+//                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                    Log.d("photo","Select library");
+//                    startActivityForResult(intent,SELECT_FILE);
+//                    Log.d("photo","Finished intent");
+                    Log.d("photo","Select from gallery.");
+                    requestPermission();
+                    dialog.dismiss();
+                } else if (items[item].equals("Cancel")) {
+//                    PROFILE_PIC_COUNT = 0;
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        switch(requestCode) {
+            case REQUEST_CAMERA:
+                Log.d("photo","Selected camera");
+                try{
+//                    dispatchTakePictureIntent();
+                    galleryAddPic();
+//                    addUploadLogic();
+                }catch (Exception e){
+                    //catch exception
+                }
+                break;
+            case SELECT_FILE:
+                Log.d("photo","Select from gallery.");
+                requestPermission();
+                break;
+            case PICK_IMAGE:
+                Log.d("photo","Picking image.");
+                filePath = getRealPathFromUri(imageReturnedIntent.getData(), PantryActivity.this);
+                addUploadLogic();
+                break;
+        }
+    }
+
+    /*
+    *   BELOW: take picture of product and save it
+    * */
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(filePath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+        addUploadLogic();
+    }
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Log.d("photo","Storage DIR: "+storageDir);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        filePath = image.getAbsolutePath();
+        Log.d("photo","Path: "+filePath);
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() throws IOException{
+        Log.d("photo","a");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        // Create the File where the photo should go
+        File photoFile = null;
+        try {
+            Log.d("photo","b");
+            photoFile = createImageFile();
+            Log.d("photo","c");
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+        }
+        // Continue only if the File was successfully created
+        if (photoFile != null) {
+            Log.d("photo","There as no error creating the file.");
+            Log.d("photo","This is the current path: "+filePath);
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.example.android.fileprovider",
+                    photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+        }else{
+            Log.d("photo","There an error creating the file.");
+        }
+    }
+
+
+    /*
+    *   BELOW: select photo from photo gallery and choose it as product photo
+    * */
+    private void requestPermission(){
+        if(ContextCompat.checkSelfPermission
+                (getApplicationContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+        ){
+            accessTheGallery();
+        } else {
+            ActivityCompat.requestPermissions(
+                    PantryActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_CODE
+            );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode== PERMISSION_CODE){
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                accessTheGallery();
+            }else {
+                Toast.makeText(getApplicationContext(), "permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void accessTheGallery(){
+        Intent i = new Intent(
+                Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        );
+        i.setType("image/*");
+        startActivityForResult(i, PICK_IMAGE);
+    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        //get the image’s file location
+//        filePath = getRealPathFromUri(data.getData(), PantryActivity.this);
+//        addUploadLogic();
+//    }
+
+    private String getRealPathFromUri(Uri imageUri, Activity activity){
+        Cursor cursor = activity.getContentResolver().query(imageUri, null,  null, null, null);
+        if(cursor==null) {
+            return imageUri.getPath();
+        }else{
+            cursor.moveToFirst();
+            int idx =  cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(idx);
+        }
+    }
+
+    private void addUploadLogic(){
+        uploadToCloudinary(filePath);
+    }
+
+    private void uploadToCloudinary(String filePath) {
+        Log.d("photo","Going to upload to cloud.");
+        MediaManager.get().upload(filePath).callback(new UploadCallback() {
+            @Override
+            public void onStart(String requestId) {
+            }
+            @Override
+            public void onProgress(String requestId, long bytes, long totalBytes) {
+            }
+            @Override
+            public void onSuccess(String requestId, Map resultData) {
+                currentUploadedPhoto = resultData.get("url").toString();
+                Toast.makeText(getApplicationContext(), currentUploadedPhoto, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onError(String requestId, ErrorInfo error) {
+            }
+            @Override
+            public void onReschedule(String requestId, ErrorInfo error) {
+            }
+        }).dispatch();
     }
 
     //#########################

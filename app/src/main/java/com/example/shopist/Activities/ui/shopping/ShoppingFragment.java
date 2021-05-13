@@ -19,12 +19,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.ShopActivity;
 import com.example.shopist.Activities.ui.ListFragment;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
+import com.example.shopist.Server.ServerResponses.ServerUserList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,7 @@ import retrofit2.Response;
 
 public class ShoppingFragment extends ListFragment {
 
-    private ShoppingViewModel shoppingViewModel;
+    public static ShoppingViewModel shoppingViewModel;
 
     public RetrofitManager retrofitManager;
 
@@ -62,6 +64,7 @@ public class ShoppingFragment extends ListFragment {
                 shoppingListSettings();
                 retrieveShoppingList();
                 createShoppingList();
+                fillExistingShoppingLists();
             }
         });
 
@@ -145,7 +148,14 @@ public class ShoppingFragment extends ListFragment {
                     Toast.makeText(root.getContext(), "List has already been added.", Toast.LENGTH_LONG).show();
                 }else{
                     //the list hasn't been added
-                    getShoppingListFromServer(listId);
+                    if(MainActivityNav.withWifi){
+                        //there is Wifi
+                        //get list from the server
+                        getShoppingListFromServer(listId);
+                    }else{
+                        Toast.makeText(root.getContext(), "Please connect yourself to Wifi before making this operation.", Toast.LENGTH_LONG).show();
+                    }
+
                     dialog.dismiss();
                 }
             }
@@ -177,6 +187,34 @@ public class ShoppingFragment extends ListFragment {
         shoppingViewModel.addToShoppingListContent(finalListInfo);
         shoppingListSettings();
         Toast.makeText(root.getContext(), "List added with success!", Toast.LENGTH_LONG).show();
+    }
+
+
+    public void fillExistingShoppingLists(){
+        //clean previous content
+        shoppingViewModel.clearContent();
+        Call<ServerUserList> call = retrofitManager.accessRetrofitInterface().getUserCurrentShoppingLists(MainActivityNav.currentUserId);
+        call.enqueue(new Callback<ServerUserList>() {
+            @Override
+            public void onResponse(Call<ServerUserList> call, Response<ServerUserList> response) {
+                if(response.code()==200){
+                    String[] currentLists = response.body().getUserList();
+                    renderCurrentLists(currentLists);
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerUserList> call, Throwable t) {
+                Toast.makeText(root.getContext(), "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void renderCurrentLists(String[] currentLists){
+        for(int i=0;i!=currentLists.length;i++){
+            shoppingViewModel.addToShoppingListContent(currentLists[i]);
+        }
+        shoppingListSettings();
+        Toast.makeText(root.getContext(), "Current lists rendered with success!", Toast.LENGTH_LONG).show();
     }
 
 
@@ -221,7 +259,17 @@ public class ShoppingFragment extends ListFragment {
                     Toast.makeText(root.getContext(), "List has already been created.", Toast.LENGTH_LONG).show();
                 }else{
                     //list has not been created
-                    createShoppingListInServer(listName, listAddress);
+                    if(MainActivityNav.withWifi){
+                        //there is wifi
+                        //create list at server
+                        createShoppingListInServer(listName, listAddress);
+                    }else{
+                        //there is no Wifi
+                        //do changes in local cache
+                        MainActivityNav.smallDataCacheManager.createShoppingList(listName,listAddress);
+                        //render offline content in frontend
+                    }
+                    
                     dialog.dismiss();
                 }
             }
@@ -252,6 +300,7 @@ public class ShoppingFragment extends ListFragment {
         HashMap<String,String> map = new HashMap<>();
         map.put("listName",listName);
         map.put("address", listAddress);
+        map.put("userId", MainActivityNav.currentUserId);
         Call<ServerListToken> call = retrofitManager.accessRetrofitInterface().executeShoppingListCreation(map);
         call.enqueue(new Callback<ServerListToken>() {
             @Override

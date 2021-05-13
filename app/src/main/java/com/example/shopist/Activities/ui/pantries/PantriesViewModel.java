@@ -27,4 +27,8 @@ public class PantriesViewModel extends ViewModel {
     public void addToPantryListContent(String pantryList) {
         this.pantryListContent.getValue().add(pantryList);
     }
+
+    public void clearContent(){
+        this.pantryListContent.getValue().clear();
+    }
 }
