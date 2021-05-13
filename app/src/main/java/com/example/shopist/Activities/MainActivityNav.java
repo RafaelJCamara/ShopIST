@@ -94,6 +94,12 @@ public class MainActivityNav extends AppCompatActivity {
         unregisterReceiver(mReceiver);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initWifiDirectSettings();
+    }
+
     private void initCloudSettings(){
         Map config = new HashMap();
         config.put("cloud_name", "dy5jqy5fw");
