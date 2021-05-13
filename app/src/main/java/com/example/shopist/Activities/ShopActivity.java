@@ -2,12 +2,14 @@ package com.example.shopist.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -157,8 +159,15 @@ public class ShopActivity extends AppCompatActivity {
     private void handleProductUpdateInShopLogic(View view, String itemInfo){
         String[] prodInfo = itemInfo.split(";");
 
+        RatingBar ratingBar;
+        Button ratingButton;
+        //Set product name in view
         TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
         productNameInStore.setText(prodInfo[0].trim());
+
+        //Set product classification in view
+        TextView classification = view.findViewById(R.id.classificationTextView);
+        classification.setText(getProductRatingFromList(getProductIdFromList(itemInfo)));
 
         //add save button
         Button saveProductInfoButton = view.findViewById(R.id.saveProductInfoAtStore);
@@ -180,6 +189,22 @@ public class ShopActivity extends AppCompatActivity {
                 updateProductInfo(productQuantityStore, productPriceStore, itemInfo);
             }
         });
+
+        ratingBar = view.findViewById(R.id.submitionRatingBar);
+        ratingButton = view.findViewById(R.id.submitProdClassification);
+
+        ratingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Classification of Shopping product
+                String productRating = String.valueOf(ratingBar.getRating());
+                Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
+
+                //update information in server
+                updateProductRating(itemInfo, productRating);
+            }
+        });
+
 
     }
 
@@ -221,10 +246,54 @@ public class ShopActivity extends AppCompatActivity {
         return productId;
     }
 
+    private String getProductRatingFromList(String productId) {
+        String rateString="";
+        double rate =0;
+        for(ServerShoppingProduct prod:this.existingPantryProducts){
+            if(productId.trim().equals(prod.getProductId())){
+                if(prod.getTotalRating()!=0) {
+                    double totalRating = prod.getTotalRating();
+                    double nrRatings = prod.getNrRatings();
+                    rate = totalRating / nrRatings;
+                    rateString = String.format("%.1f", rate);
+                }
+
+            }
+        }
+        if(rate == 0)
+            rateString = "no rating";
+
+        return rateString;
+    }
+
     public void onGoToCartButtonPressed(View view) {
         Intent intent = new Intent(ShopActivity.this, CartActivity.class);
         intent.putExtra("shoppingListId", listId);
         startActivity(intent);
     }
+
+    //Shopping product Classification
+
+    public void updateProductRating(String itemInfo, String classification){
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("productRating", classification);
+        String productId = getProductIdFromList(itemInfo);
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().rateProductAtStore(productId, map);
+        call.enqueue(new Callback<Void>() {
+            //when the server responds to our request
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(ShopActivity.this, "Product updated with success.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
 }

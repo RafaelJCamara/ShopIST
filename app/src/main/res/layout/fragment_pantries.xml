@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:text="@string/get"
+        android:text="@string/get_button"
         app:layout_constraintEnd_toStartOf="@+id/createPantryListButton"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,7 +32,7 @@
         android:id="@+id/createPantryListButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/create"
+        android:text="@string/create_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
