@@ -2,6 +2,7 @@ package com.example.shopist.Activities.ui.pantries;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,8 @@ public class PantriesFragment extends ListFragment {
 
     private AlertDialog dialog;
     private static final String LIST_BUNDLE_KEY = "pantryListContent";
+
+    private ArrayList<String> currentShoppingList=new ArrayList<String>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -208,18 +211,43 @@ public class PantriesFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
-                openPantryItemActivity(itemInfo);
+                getShoppingListsFromServer(itemInfo);
             }
         });
+    }
+
+    private void getShoppingListsFromServer(String itemInfo){
+        Call<ServerUserList> call = retrofitManager.accessRetrofitInterface().getUserCurrentShoppingLists(MainActivityNav.currentUserId);
+        call.enqueue(new Callback<ServerUserList>() {
+            @Override
+            public void onResponse(Call<ServerUserList> call, Response<ServerUserList> response) {
+                if(response.code()==200){
+                    assignList(response.body().getUserList(),itemInfo);
+                }
+            }
+            @Override
+            public void onFailure(Call<ServerUserList> call, Throwable t) {
+                Toast.makeText(root.getContext(), "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void assignList(String[] a,String itemInfo){
+        this.currentShoppingList = new ArrayList<String>();
+        for(int i=0;i!=a.length;i++){
+            Log.d("getlist",a[i]);
+            this.currentShoppingList.add(a[i]);
+        }
+        openPantryItemActivity(itemInfo);
     }
 
     public void openPantryItemActivity(String itemInfo){
         Intent intent = new Intent(root.getContext(), PantryActivity.class);
         intent.putExtra("itemInfo", itemInfo);
-        ArrayList<String> list = (ArrayList<String>) ShoppingFragment.shoppingViewModel.getShoppingListContent().getValue();
-        intent.putExtra("shoppingLists", list);
+        intent.putExtra("shoppingLists", this.currentShoppingList);
         startActivity(intent);
     }
+
 
     //settings for the list and its adapters
     private void fillPantryListContentSettings(){
