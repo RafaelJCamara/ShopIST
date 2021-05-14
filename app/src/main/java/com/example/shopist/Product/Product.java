@@ -2,20 +2,16 @@ package com.example.shopist.Product;
 
 import com.example.shopist.R;
 
-public class Product {
+public abstract class Product {
 
     private String name;
     private String description;
     private int image;
-    private int stock;
-    private int needed;
 
-    public Product(String name, String description, int stock, int needed){
+    public Product(String name, String description){
 
         this.name=name;
         this.description=description;
-        this.stock=stock;
-        this.needed=needed;
         this.image= R.drawable.box;
     }
 
@@ -41,19 +37,4 @@ public class Product {
         this.image = image;
     }
 
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public int getNeeded() {
-        return needed;
-    }
-
-    public void setNeeded(int needed) {
-        this.needed = needed;
-    }
 }

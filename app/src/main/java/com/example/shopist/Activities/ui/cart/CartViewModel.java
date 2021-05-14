@@ -10,8 +10,11 @@ public class CartViewModel extends ViewModel {
 
     private MutableLiveData<Double> total;
 
+    private MutableLiveData<Long> quantity;
+
     public CartViewModel() {
         total = new MutableLiveData<>();
+        quantity = new MutableLiveData<>();
     }
 
     public LiveData<Double> getTotal() {
@@ -20,5 +23,13 @@ public class CartViewModel extends ViewModel {
 
     public void setTotal(double total) {
         this.total.setValue(total > -1 ? total : null);
+    }
+
+    public LiveData<Long> getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(long quantity) {
+        this.quantity.setValue(quantity > -1 ? quantity : null);
     }
 }

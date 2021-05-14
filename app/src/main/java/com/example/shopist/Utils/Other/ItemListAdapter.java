@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.shopist.Product.PantryProduct;
 import com.example.shopist.R;
 import com.example.shopist.Product.Product;
 
@@ -16,9 +17,9 @@ import java.util.ArrayList;
 public class ItemListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<Product> list;
+    ArrayList<? extends Product> list;
 
-    public ItemListAdapter(Context context, ArrayList<Product> list) {
+    public ItemListAdapter(Context context, ArrayList<? extends Product> list) {
         this.context = context;
         this.list = list;
     }
@@ -41,17 +42,42 @@ public class ItemListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        convertView = LayoutInflater.from(context).inflate(R.layout.row_productlist, parent,false );
+        Product product = list.get(position);
+        Class<?> clazz = product.getClass();
+
+        convertView = getConvertView(clazz, parent);
 
         ImageView icon = (ImageView) convertView.findViewById(R.id.item_icon);
         TextView name = (TextView) convertView.findViewById(R.id.item_name);
 
-        icon.setImageResource(list.get(position).getImage());
+        icon.setImageResource(product.getImage());
 
         //String productInfo = productName+"; "+productDescription+"; Needed: "+needed+" ; "+"Stock: "+stock;
+        fillDetails(convertView, product, clazz);
 
-        name.setText(list.get(position).getName()+": "+list.get(position).getDescription()+"; Needed: "+ list.get(position).getNeeded()+" Stock: "+list.get(position).getStock());
         return convertView;
+    }
+
+    private void fillDetails(View convertView, Product product, Class<?> clazz) {
+
+        if(clazz == PantryProduct.class) {
+
+            PantryProduct pProduct = (PantryProduct) product;
+
+            TextView name = (TextView) convertView.findViewById(R.id.item_name);
+            name.setText(pProduct.getName() + ": " + pProduct.getDescription() + "; Needed: " + pProduct.getNeeded() + " Stock: " + pProduct.getStock());
+
+        }
+
+    }
+
+    private View getConvertView(Class<?> clazz, ViewGroup parent) {
+
+        if(clazz == PantryProduct.class) {
+            return LayoutInflater.from(context).inflate(R.layout.row_productlist, parent,false );
+        }
+        return null;
+
     }
 }
 

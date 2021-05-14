@@ -43,6 +43,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
+import com.example.shopist.Product.PantryProduct;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
@@ -76,7 +77,7 @@ public class PantryActivity extends AppCompatActivity {
     private RetrofitManager retrofitManager;
 
     public ListView listView;
-    private ArrayList<Product> productsList = new ArrayList<Product>();
+    private ArrayList<PantryProduct> productsList = new ArrayList<>();
     private ArrayList<String> shoppingLists = new ArrayList<String>();
 
     private String listId;
@@ -158,7 +159,7 @@ public class PantryActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Product itemInfo = (Product) parent.getAdapter().getItem(position);
+                PantryProduct itemInfo = (PantryProduct) parent.getAdapter().getItem(position);
                 handleProductDetailDialog(itemInfo);
             }
         });
@@ -174,14 +175,14 @@ public class PantryActivity extends AppCompatActivity {
         listCodeView.setText(listId);
     }
 
-    private void handleProductDetailDialog(Product itemInfo){
+    private void handleProductDetailDialog(PantryProduct itemInfo){
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
         builder.setView(view).show();
         handleBuyInShopsLogic(view, itemInfo);
     }
 
-    private void handleBuyInShopsLogic(View view, Product itemInfo){
+    private void handleBuyInShopsLogic(View view, PantryProduct itemInfo){
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
         productNameDetail.setText(itemInfo.getName());
 
@@ -197,7 +198,7 @@ public class PantryActivity extends AppCompatActivity {
         fillListViewWithShoppingLists(view, itemInfo);
     }
 
-    private void fillListViewWithShoppingLists(View view, Product itemInfo){
+    private void fillListViewWithShoppingLists(View view, PantryProduct itemInfo){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
@@ -324,7 +325,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void addConsumeProductLogic(View view, Product itemInfo){
+    private void addConsumeProductLogic(View view, PantryProduct itemInfo){
         Button consumeProductButton = view.findViewById(R.id.consumeProductAtPantry);
         consumeProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -353,7 +354,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void consumeProductsInServer(Product itemInfo, String quantityConsumed, View view){
+    private void consumeProductsInServer(PantryProduct itemInfo, String quantityConsumed, View view){
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("productId", getProductIdFromList(itemInfo));
         map.put("quantity", quantityConsumed);
@@ -373,7 +374,7 @@ public class PantryActivity extends AppCompatActivity {
         updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed, view);
     }
 
-    private void updateInFrontendPantryAfterConsumed(Product itemInfo, String quantityConsumed, View view){
+    private void updateInFrontendPantryAfterConsumed(PantryProduct itemInfo, String quantityConsumed, View view){
         Log.i("Beginning","*******");
         Log.i("Beginning",itemInfo.getName());
         Log.i("Beginning",itemInfo.getDescription());
@@ -390,7 +391,7 @@ public class PantryActivity extends AppCompatActivity {
                 itemInfo.setStock(stock);
                 finalS = itemInfo.getName()+";"+itemInfo.getDescription()+";"+"Needed:"+needed+";"+"Stock:"+stock;
                 index = i;
-                Product product = new Product(itemInfo.getName(), itemInfo.getDescription(), stock, needed);
+                PantryProduct product = new PantryProduct(itemInfo.getName(), itemInfo.getDescription(), stock, needed);
                 productsList.set(index,product);
 
                 TextView productStockDetail = view.findViewById(R.id.productStockDetail);
@@ -474,9 +475,9 @@ public class PantryActivity extends AppCompatActivity {
 
     private void renderLists(ArrayList<ServerPantryProduct> list){
         this.existingPantryProducts = list;
-        productsList = new ArrayList<Product>();
+        productsList = new ArrayList<PantryProduct>();
         for(ServerPantryProduct prod : list){
-            Product product = new Product(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
+            PantryProduct product = new PantryProduct(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
             productsList.add(product);
         }
@@ -583,7 +584,7 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void renderNewProduct(String productName, String productDescription, String needed, String stock){
-        Product product = new Product(productName, productDescription, Integer.parseInt(stock), Integer.parseInt(needed));
+        PantryProduct product = new PantryProduct(productName, productDescription, Integer.parseInt(stock), Integer.parseInt(needed));
         productsList.add(product);
         fillPantryProductList();
         fillListContentSettings();

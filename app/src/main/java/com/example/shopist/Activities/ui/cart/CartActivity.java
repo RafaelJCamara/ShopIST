@@ -57,6 +57,11 @@ public class CartActivity extends AppCompatActivity {
             button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
         });
 
+        cartViewModel.getQuantity().observe(this, s -> {
+            textView.setText(s != null ? String.format("Item Qty: %d", s) : "");
+            button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
+        });
+
         button.setOnClickListener(view -> { onCheckoutButtonPressed(view); });
 
         productListSettings();
@@ -110,6 +115,7 @@ public class CartActivity extends AppCompatActivity {
             productList.add(finalListInfo);
         }
         productListSettings();
+        this.cartViewModel.setQuantity(cart.getQuantity());
         this.cartViewModel.setTotal(cart.getTotal());
     }
 
