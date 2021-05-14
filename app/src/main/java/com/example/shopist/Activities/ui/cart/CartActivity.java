@@ -12,10 +12,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shopist.Product.CartProduct;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerCartProduct;
+import com.example.shopist.Utils.Other.ItemListAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class CartActivity extends AppCompatActivity {
 
     private CartViewModel cartViewModel;
 
-    private List<String> productList = new ArrayList<String>();
+    private List<CartProduct> productList = new ArrayList<>();
 
     private Context context;
 
@@ -50,15 +52,16 @@ public class CartActivity extends AppCompatActivity {
         cartViewModel =
                 new ViewModelProvider(this).get(CartViewModel.class);
 
-        final TextView textView = findViewById(R.id.cart_total);
+        final TextView totalView = findViewById(R.id.cart_total);
+        final TextView qtyView = findViewById(R.id.cart_qty);
         final FloatingActionButton button = findViewById(R.id.cart_checkout_button);
         cartViewModel.getTotal().observe(this, s -> {
-            textView.setText(s != null ? String.format("Total: %.2f€", s) : "");
+            totalView.setText(s != null ? String.format("Total: %.2f€", s) : "");
             button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
         });
 
         cartViewModel.getQuantity().observe(this, s -> {
-            textView.setText(s != null ? String.format("Item Qty: %d", s) : "");
+            qtyView.setText(s != null ? String.format("Item Qty: %d", s) : "");
             button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
         });
 
@@ -74,16 +77,7 @@ public class CartActivity extends AppCompatActivity {
         final ListView listView = findViewById(R.id.cartList);
 
         //create list adapter
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                //context
-                this,
-                //layout to be applied on
-                android.R.layout.simple_list_item_1,
-                //id inside layout
-                android.R.id.text1,
-                //data
-                productList
-        );
+        ItemListAdapter adapter = new ItemListAdapter(this, productList);
 
         //add adapter to list
         listView.setAdapter(adapter);
@@ -111,8 +105,8 @@ public class CartActivity extends AppCompatActivity {
 
     private void renderCart(ServerCart cart){
         for(ServerCartProduct product : cart.getProducts()) {
-            String finalListInfo = product.getName() + " | " + product.getDescription() + " | " + product.getPrice() + "€ | x" + product.getQuantity();
-            productList.add(finalListInfo);
+            CartProduct cProduct = new CartProduct(product.getName(), product.getDescription(), product.getPrice(), product.getQuantity());
+            productList.add(cProduct);
         }
         productListSettings();
         this.cartViewModel.setQuantity(cart.getQuantity());

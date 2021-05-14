@@ -8,18 +8,19 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.shopist.Product.CartProduct;
 import com.example.shopist.Product.PantryProduct;
 import com.example.shopist.R;
 import com.example.shopist.Product.Product;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ItemListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<? extends Product> list;
+    List<? extends Product> list;
 
-    public ItemListAdapter(Context context, ArrayList<? extends Product> list) {
+    public ItemListAdapter(Context context, List<? extends Product> list) {
         this.context = context;
         this.list = list;
     }
@@ -51,8 +52,8 @@ public class ItemListAdapter extends BaseAdapter {
         TextView name = (TextView) convertView.findViewById(R.id.item_name);
 
         icon.setImageResource(product.getImage());
+        name.setText(product.getName());
 
-        //String productInfo = productName+"; "+productDescription+"; Needed: "+needed+" ; "+"Stock: "+stock;
         fillDetails(convertView, product, clazz);
 
         return convertView;
@@ -67,6 +68,16 @@ public class ItemListAdapter extends BaseAdapter {
             TextView name = (TextView) convertView.findViewById(R.id.item_name);
             name.setText(pProduct.getName() + ": " + pProduct.getDescription() + "; Needed: " + pProduct.getNeeded() + " Stock: " + pProduct.getStock());
 
+        } else if (clazz == CartProduct.class) {
+
+            CartProduct cProduct = (CartProduct) product;
+
+            TextView price = (TextView) convertView.findViewById(R.id.item_price);
+            TextView qty = (TextView) convertView.findViewById(R.id.item_qty);
+
+            price.setText(String.format("%.2f€", cProduct.getPrice()));
+            qty.setText(String.format("x%d", cProduct.getQuantity()));
+
         }
 
     }
@@ -75,6 +86,8 @@ public class ItemListAdapter extends BaseAdapter {
 
         if(clazz == PantryProduct.class) {
             return LayoutInflater.from(context).inflate(R.layout.row_productlist, parent,false );
+        } else if(clazz == CartProduct.class) {
+            return LayoutInflater.from(context).inflate(R.layout.row_cart, parent, false);
         }
         return null;
 
