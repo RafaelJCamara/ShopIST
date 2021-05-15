@@ -126,7 +126,7 @@ public class ShopActivity extends AppCompatActivity {
     private void renderLists(ArrayList<ServerShoppingProduct> list){
         this.existingPantryProducts = list;
         for(ServerShoppingProduct prod : list){
-            String productInfo=prod.getName()+"; Needed:"+prod.getNeeded();
+            String productInfo=prod.getName()+"; Needed:"+prod.getNeeded()+"; price:" + prod.getPrice();
             listContent.add(productInfo);
         }
         fillListContentSettings();
@@ -176,6 +176,10 @@ public class ShopActivity extends AppCompatActivity {
                 String productPriceStore = productPriceStoreComponent.getText().toString();
 
                 Toast.makeText(ShopActivity.this, "Product clicked... "+productQuantityStore+" "+productPriceStore, Toast.LENGTH_SHORT).show();
+                String productPrice[] = prodInfo[2].split(":");
+                if(Integer.parseInt(productPrice[1].trim())==0){
+                    handleUserPromptDialog(itemInfo);
+                }
 
                 //update information in server
                 updateProductInfo(productQuantityStore, productPriceStore, itemInfo);
@@ -196,8 +200,6 @@ public class ShopActivity extends AppCompatActivity {
                 updateProductRating(itemInfo, productRating);
             }
         });
-
-
     }
 
     private void updateProductInfo(String quantity, String price, String itemInfo){
@@ -293,6 +295,60 @@ public class ShopActivity extends AppCompatActivity {
         String productId = getProductIdFromList(itemInfo);
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().rateProductAtStore(productId, map);
+        call.enqueue(new Callback<Void>() {
+            //when the server responds to our request
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(ShopActivity.this, "Product updated with success.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //user prompt
+    private void handleUserPromptDialog(String itemInfo){
+        View view = getLayoutInflater().inflate(R.layout.user_prompt_price,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
+        builder.setView(view).show();
+        handleProductUpdateUserPrompt(view, itemInfo);
+    }
+
+    private void handleProductUpdateUserPrompt(View view, String itemInfo) {
+        String[] prodInfo = itemInfo.split(";");
+        Button updateButton;
+        //Set product name in view
+        TextView productNameInStore = view.findViewById(R.id.product_name);
+        productNameInStore.setText(prodInfo[0].trim());
+
+        //add save button
+        Button saveProductInfoButton = view.findViewById(R.id.update_button);
+        saveProductInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get price in store
+                EditText productPriceStoreComponent = view.findViewById(R.id.new_price);
+                String productPriceStore = productPriceStoreComponent.getText().toString();
+
+                Toast.makeText(ShopActivity.this, "Product clicked... " + productPriceStore, Toast.LENGTH_SHORT).show();
+
+                //update information in server
+                updateProductPriceServer(productPriceStore, itemInfo);
+            }
+        });
+    }
+
+
+    private void updateProductPriceServer(String price, String itemInfo){
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("productPrice", price);
+        map.put("shoppingListId", listId);
+        map.put("productId", getProductIdFromList(itemInfo));
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().updateProductPriceAtStore(map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
             @Override

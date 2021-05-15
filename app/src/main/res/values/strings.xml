@@ -67,10 +67,9 @@
     <string name="classification">Classification</string>
     <string name="submit_classification_button">SUBMIT CLASSIFICATION</string>
 
-    <!--
-    //buttons
-    -->
     <string name="share_list_button">SHARE</string>
     <string name="add_product_button">Add Product</string>
+
+    <string name="user_prompt_price">It seems this product dont have an associated price at this store.\n Do you wish to add it now?\n (this will make your cart price more precise)</string>
 
 </resources>
