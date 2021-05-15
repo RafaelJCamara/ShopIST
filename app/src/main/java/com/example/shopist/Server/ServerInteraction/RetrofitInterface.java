@@ -8,6 +8,7 @@ import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerUserList;
+import com.example.shopist.Utils.Other.CartContent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,14 +96,14 @@ public interface RetrofitInterface {
     /*
     * Cart routes
     * */
-    @GET("/cart/{shoppingListId}")
-    Call<ServerCart> getCart(@Path("shoppingListId") String shoppingListId);
+    @GET("/cart/{shoppingListId}/{userId}")
+    Call<ServerCart> getCart(@Path("shoppingListId") String shoppingListId, @Path("userId") String userId);
 
-    @POST("/cart/checkout/{shoppingListId}")
-    Call<Void> checkoutCart(@Path("shoppingListId") String shoppingListId);
+    @POST("/cart/checkout/{shoppingListId}/{userId}")
+    Call<Void> checkoutCart(@Path("shoppingListId") String shoppingListId, @Path("userId") String userId,@Body HashMap<String, CartContent> map);
 
-    @POST("/cart/createCart")
-    Call<Void> createCart(@Body HashMap<String,String> map);
+    @POST("/cart/createCart/{userId}")
+    Call<Void> createCart(@Path("userId") String shoppingListId, @Body HashMap<String,String> map);
 
     /*
      * Store routes

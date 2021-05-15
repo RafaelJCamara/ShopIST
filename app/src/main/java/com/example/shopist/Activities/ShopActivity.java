@@ -266,7 +266,7 @@ public class ShopActivity extends AppCompatActivity {
     private void createCart(){
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("shopId", listId);
-        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(map);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(MainActivityNav.currentUserId,map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
             @Override

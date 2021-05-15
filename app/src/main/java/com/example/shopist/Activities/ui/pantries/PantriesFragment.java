@@ -45,7 +45,7 @@ public class PantriesFragment extends ListFragment {
     public ListView pantryListView;
     //public List<String> pantryListContent;
 
-    private PantriesViewModel pantriesViewModel;
+    public static PantriesViewModel pantriesViewModel;
     
     private View root;
 
