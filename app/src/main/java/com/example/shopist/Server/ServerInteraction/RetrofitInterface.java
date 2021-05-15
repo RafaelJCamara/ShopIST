@@ -8,6 +8,7 @@ import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerUserList;
+import com.example.shopist.Server.ServerResponses.WaitTimeInfo;
 import com.example.shopist.Utils.Other.CartContent;
 
 import java.util.ArrayList;
@@ -121,5 +122,8 @@ public interface RetrofitInterface {
 
     @POST("/store/{storeId}/endCheckoutProcess")
     Call<Void> endCheckoutProcess(@Path("storeId") String storeId, @Body HashMap<String,String> map);
+
+    @GET("/store/{storeId}/currentWaitingTime")
+    Call<WaitTimeInfo> getCurrentWaitingTime(@Path("storeId") String storeId);
 
 }

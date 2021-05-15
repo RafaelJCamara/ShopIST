@@ -2,6 +2,7 @@ package com.example.shopist.Utils.WaitTimeManager;
 
 import android.widget.Toast;
 
+import com.example.shopist.Activities.MainActivity;
 import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
@@ -18,23 +19,17 @@ public class QueueTimeManager {
     private MainActivityNav myActivity;
     private RetrofitManager retrofitManager;
     private String checkoutId;
-
     public QueueTimeManager(MainActivityNav myActivity){
         this.myActivity = myActivity;
         retrofitManager = new RetrofitManager(myActivity);
     }
 
     public void initCheckoutProcess(){
-
-        PublicInfoManager.setCurrentStoreId("1");
-        PublicInfoManager.setCurrentNumberItemsInCart((int)Math.ceil(Math.random()*20));
-
         HashMap<String,String> map = new HashMap<>();
-        map.put("numberItemsCart", String.valueOf(PublicInfoManager.getCurrentNumberItemsInCart()));
+        map.put("numberItemsCart", String.valueOf(PublicInfoManager.currentNumberItemsInCart));
 
         Call<ServerInitCheckoutToken> call = retrofitManager.accessRetrofitInterface()
                 .initCheckoutProcess(PublicInfoManager.getCurrentStoreId(),map);
-
 
         call.enqueue(new Callback<ServerInitCheckoutToken>() {
             @Override
@@ -57,7 +52,7 @@ public class QueueTimeManager {
         HashMap<String,String> map = new HashMap<>();
         map.put("checkoutId", this.checkoutId);
 
-        Call<Void> call = retrofitManager.accessRetrofitInterface().endCheckoutProcess("1",map);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().endCheckoutProcess(PublicInfoManager.currentShopUuid,map);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

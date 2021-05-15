@@ -63,6 +63,7 @@ public class MainActivityNav extends AppCompatActivity {
     public static boolean withWifi = true;
     public static SmallDataCacheManager smallDataCacheManager;
 
+
     //for letting the user know, in the pantry list context, which are the stores he can buy stuff on
 //    public static ArrayList<String> currentExistingShoppingLists = new ArrayList<String>();
 

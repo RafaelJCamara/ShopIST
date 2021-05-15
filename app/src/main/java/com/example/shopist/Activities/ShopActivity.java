@@ -22,6 +22,9 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
+import com.example.shopist.Server.ServerResponses.WaitTimeInfo;
+import com.example.shopist.Utils.Other.PublicInfoManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +45,6 @@ public class ShopActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private ArrayList<ServerShoppingProduct> existingPantryProducts;
-
 
 
     @Override
@@ -72,6 +74,8 @@ public class ShopActivity extends AppCompatActivity {
         fillListContentSettings();
         //add product click listener
         addProductListClickListener();
+        //add waiting time button logic
+        addWaitTimeLogic();
         fillTextView();
     }
 
@@ -103,6 +107,42 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void addWaitTimeLogic(){
+        FloatingActionButton button = findViewById(R.id.waitTimeButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getWaitTimeFromServer();
+            }
+        });
+    }
+
+    private void getWaitTimeFromServer(){
+        TextView listCodeView = findViewById(R.id.shopListCode);
+        Call<WaitTimeInfo> call = retrofitManager.accessRetrofitInterface().getCurrentWaitingTime(listCodeView.getText().toString());
+        call.enqueue(new Callback<WaitTimeInfo>() {
+            @Override
+            public void onResponse(Call<WaitTimeInfo> call, Response<WaitTimeInfo> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    WaitTimeInfo list = response.body();
+                    updateTime(list.getWaitingTime());
+                }
+            }
+            @Override
+            public void onFailure(Call<WaitTimeInfo> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void updateTime(double time){
+        TextView textView = findViewById(R.id.currentWaitTimeStore);
+        textView.setText(String.valueOf(time)+" minutes");
+        textView.setVisibility(View.VISIBLE);
+    }
+
 
     private void fillPantryProductList(){
         //ask the server for information
@@ -140,6 +180,7 @@ public class ShopActivity extends AppCompatActivity {
         listNameView.setText(values[0]);
         listId = values[1];
         listCodeView.setText(listId);
+        PublicInfoManager.currentShopUuid = listId;
     }
 
     private void handleProductDetailDialog(String itemInfo){

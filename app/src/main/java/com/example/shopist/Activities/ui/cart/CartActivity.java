@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.shopist.Activities.LoginActivity;
 import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Activities.ui.pantries.PantriesFragment;
@@ -31,6 +32,7 @@ import com.example.shopist.Utils.Other.CartContent;
 import com.example.shopist.Utils.Other.DistributeProductsAtCartAdapter;
 import com.example.shopist.Utils.Other.PantryInCartContent;
 import com.example.shopist.Utils.Other.ProductBought;
+import com.example.shopist.Utils.Other.PublicInfoManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -127,10 +129,13 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void renderCart(ServerCart cart){
+        int count = 0;
         for(ServerCartProduct product : cart.getProducts()) {
             String finalListInfo = product.getName() + " | " + product.getDescription() + " | " + product.getPrice() + "€ | x" + product.getQuantity();
             productList.add(finalListInfo);
+            count+=product.getQuantity();
         }
+        PublicInfoManager.currentNumberItemsInCart = count;
         productListSettings();
         this.cartViewModel.setTotal(cart.getTotal());
     }

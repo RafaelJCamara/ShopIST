@@ -6,15 +6,15 @@ public class PublicInfoManager {
     /*
     *  Info for estimating queue waiting times
     * */
-    private static String currentStoreId;
-    private static int currentNumberItemsInCart;
+    public static String currentShopUuid;
+    public static int currentNumberItemsInCart;
 
     public static void setCurrentStoreId(String newStoreId){
-        currentStoreId = newStoreId;
+        currentShopUuid = newStoreId;
     }
 
     public static String getCurrentStoreId() {
-        return currentStoreId;
+        return currentShopUuid;
     }
 
     public static void setCurrentNumberItemsInCart(int currentNumberItemsInCart) {
