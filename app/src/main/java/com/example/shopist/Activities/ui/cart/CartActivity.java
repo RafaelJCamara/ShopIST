@@ -2,7 +2,11 @@ package com.example.shopist.Activities.ui.cart;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.shopist.Activities.ShopActivity;
 import com.example.shopist.Product.CartProduct;
@@ -21,6 +26,7 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerCartProduct;
 import com.example.shopist.Utils.Other.ItemListAdapter;
+import com.example.shopist.Utils.Other.SimpleCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -72,7 +78,7 @@ public class CartActivity extends AppCompatActivity {
             button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
         });
         cartViewModel.getProductList().observe(this, s -> {
-            adapter.setList(s);
+            productListSettings();
         });
 
         button.setOnClickListener(view -> { onCheckoutButtonPressed(view); });
@@ -84,6 +90,16 @@ public class CartActivity extends AppCompatActivity {
     }
 
     public void productListSettings() {
+
+        final SwipeRefreshLayout swipeList = this.findViewById(R.id.swipeLayout);
+
+        swipeList.setOnRefreshListener(() -> {
+            swipeList.setRefreshing(true);
+            getCartFromServer(() -> {
+                swipeList.setRefreshing(false);
+            });
+        });
+
         final ListView listView = findViewById(R.id.cartList);
 
         //create list adapter
@@ -105,14 +121,16 @@ public class CartActivity extends AppCompatActivity {
             Button remove = v.findViewById(R.id.removeProductButton);
 
             update.setOnClickListener(v1 -> {
-                updateProductInfo(cartProduct);
-                dialog.dismiss();
+                updateProductInfo(v, cartProduct, () -> {
+                    dialog.dismiss();
+                });
             });
 
             remove.setOnClickListener(v1 -> {
                 cartProduct.setQuantity(0);
-                updateProductInfo(cartProduct);
-                dialog.dismiss();
+                updateProductInfo(v, cartProduct, () -> {
+                    dialog.dismiss();
+                });
             });
 
         });
@@ -137,18 +155,18 @@ public class CartActivity extends AppCompatActivity {
         Button plus = v.findViewById(R.id.qtyPlus);
 
         minus.setOnClickListener(v1 -> {
-            cartProduct.setQuantity(cartProduct.getQuantity() - 1);
-            qty.setText(String.format("%d", cartProduct.getQuantity()));
+            qty.requestFocus();
+            qty.setText(String.format("%d", Long.parseLong(qty.getText().toString()) - 1));
         });
 
         plus.setOnClickListener(v1 -> {
-            cartProduct.setQuantity(cartProduct.getQuantity() + 1);
-            qty.setText(String.format("%d", cartProduct.getQuantity()));
+            qty.requestFocus();
+            qty.setText(String.format("%d", Long.parseLong(qty.getText().toString()) + 1));
         });
 
     }
 
-    public void getCartFromServer(){
+    public void getCartFromServer(SimpleCallback... callback){
         Call<ServerCart> call = retrofitManager.accessRetrofitInterface().getCart(this.shoppingListId);
         call.enqueue(new Callback<ServerCart>() {
             @Override
@@ -158,6 +176,9 @@ public class CartActivity extends AppCompatActivity {
                     ServerCart cart = response.body();
                     //render list in front-end
                     renderCart(cart);
+                    for(SimpleCallback c : callback) {
+                        c.callback();
+                    }
                 }
             }
 
@@ -169,7 +190,7 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void renderCart(ServerCart cart){
-        cartViewModel.getProductList().getValue().clear();
+        cartViewModel.getProductList().setValue(new ArrayList<>());
         for(ServerCartProduct product : cart.getProducts()) {
             CartProduct cProduct = new CartProduct(product.getName(), product.getDescription(), product.getPrice(), product.getQuantity());
             cProduct.setId(product.getProductId());
@@ -201,7 +222,10 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
-    private void updateProductInfo(CartProduct product){
+    private void updateProductInfo(View view, CartProduct product, SimpleCallback... callback){
+
+        parseProduct(view, product);
+
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productQuantity", String.valueOf(product.getQuantity()));
         map.put("productPrice", String.valueOf(product.getPrice()));
@@ -214,6 +238,9 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast.makeText(CartActivity.this, "Product updated with success.", Toast.LENGTH_SHORT).show();
+                for(SimpleCallback c : callback) {
+                    c.callback();
+                }
             }
 
             @Override
@@ -221,6 +248,16 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(CartActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void parseProduct(View v, CartProduct product) {
+
+        EditText price = v.findViewById(R.id.productPriceField);
+        EditText qty = v.findViewById(R.id.productQuantityField);
+
+        product.setPrice(Double.parseDouble(price.getText().toString()));
+        product.setQuantity(Long.parseLong(qty.getText().toString()));
+
     }
 
 }

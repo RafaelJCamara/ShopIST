@@ -49,10 +49,6 @@ public class ItemListAdapter extends BaseAdapter {
         return position;
     }
 
-    public void setList(List<? extends Product> list) {
-        this.list = list;
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 

@@ -260,7 +260,6 @@ public class ShopActivity extends AppCompatActivity {
     public void onGoToCartButtonPressed(View view) {
         //create cart
         createCart();
-        intent.putExtra("shoppingListId", shopListId);
     }
 
     private void createCart(){
@@ -285,7 +284,7 @@ public class ShopActivity extends AppCompatActivity {
     private void startCartActivity(){
         Intent intent = new Intent(ShopActivity.this, CartActivity.class);
         intent.putExtra("storeName", this.shopListName);
-        intent.putExtra("shoppingListId", listId);
+        intent.putExtra("shoppingListId", shopListId);
         startActivity(intent);
     }
 
