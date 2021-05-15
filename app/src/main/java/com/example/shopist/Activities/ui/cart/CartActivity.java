@@ -95,16 +95,16 @@ public class CartActivity extends AppCompatActivity {
 
         swipeList.setOnRefreshListener(() -> {
             swipeList.setRefreshing(true);
-            getCartFromServer(() -> {
+            getCartFromServer((args) -> {
                 swipeList.setRefreshing(false);
             });
         });
 
         final ListView listView = findViewById(R.id.cartList);
+        View v = getLayoutInflater().inflate(R.layout.product_detail_cart,null);
 
         //create list adapter
         adapter = new ItemListAdapter(this, cartViewModel.getProductList().getValue(), (parent, view, position, id) -> {
-            View v = getLayoutInflater().inflate(R.layout.product_detail_cart,null);
 
             CartProduct cartProduct = cartViewModel.getProductList().getValue().get(position);
 
@@ -121,18 +121,26 @@ public class CartActivity extends AppCompatActivity {
             Button remove = v.findViewById(R.id.removeProductButton);
 
             update.setOnClickListener(v1 -> {
-                updateProductInfo(v, cartProduct, () -> {
+                parseProduct(view, cartProduct);
+                updateProductInfo(v, cartProduct, (args) -> {
                     dialog.dismiss();
                 });
             });
 
             remove.setOnClickListener(v1 -> {
                 cartProduct.setQuantity(0);
-                updateProductInfo(v, cartProduct, () -> {
+                parseProduct(view, cartProduct);
+                updateProductInfo(v, cartProduct, (args) -> {
                     dialog.dismiss();
                 });
             });
 
+        }, (args) -> {
+            CartProduct cartProduct = (CartProduct) args[0];
+            cartProduct.setQuantity(0);
+            updateProductInfo(v, cartProduct, (args2) -> {
+                getCartFromServer();
+            });
         });
 
         //add adapter to list
@@ -190,7 +198,7 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void renderCart(ServerCart cart){
-        cartViewModel.getProductList().setValue(new ArrayList<>());
+        cartViewModel.setProductList(new ArrayList<>());
         for(ServerCartProduct product : cart.getProducts()) {
             CartProduct cProduct = new CartProduct(product.getName(), product.getDescription(), product.getPrice(), product.getQuantity());
             cProduct.setId(product.getProductId());
@@ -223,8 +231,6 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void updateProductInfo(View view, CartProduct product, SimpleCallback... callback){
-
-        parseProduct(view, product);
 
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productQuantity", String.valueOf(product.getQuantity()));

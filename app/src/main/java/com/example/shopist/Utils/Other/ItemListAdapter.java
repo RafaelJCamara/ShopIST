@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Product.CartProduct;
 import com.example.shopist.Product.PantryProduct;
@@ -28,10 +30,17 @@ public class ItemListAdapter extends BaseAdapter {
     Context context;
     List<? extends Product> list;
 
+    SimpleCallback itemDeleteCallback;
+
     public ItemListAdapter(Context context, List<? extends Product> list, AdapterView.OnItemClickListener itemClickListener) {
         this.context = context;
         this.list = list;
         this.itemClickListener = itemClickListener;
+    }
+
+    public ItemListAdapter(Context context, List<? extends Product> list, AdapterView.OnItemClickListener itemClickListener, SimpleCallback itemDeleteCallback) {
+        this(context,list,itemClickListener);
+        this.itemDeleteCallback = itemDeleteCallback;
     }
 
     @Override
@@ -83,7 +92,16 @@ public class ItemListAdapter extends BaseAdapter {
 
         } else if (clazz == CartProduct.class) {
 
+            SwipeLayout swipeLayout =  (SwipeLayout) convertView.findViewById(R.id.swipe_left);
+            //set show mode.
+            swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
+
             CartProduct cProduct = (CartProduct) product;
+
+            Button delete = swipeLayout.findViewById(R.id.delete_button);
+            delete.setOnClickListener(v -> {
+                this.itemDeleteCallback.callback(cProduct);
+            });
 
             TextView price = (TextView) convertView.findViewById(R.id.item_price);
             TextView qty = (TextView) convertView.findViewById(R.id.item_qty);

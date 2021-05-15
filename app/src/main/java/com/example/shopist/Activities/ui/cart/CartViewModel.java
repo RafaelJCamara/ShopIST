@@ -44,7 +44,7 @@ public class CartViewModel extends ViewModel {
         return productList;
     }
 
-    public void setProductList(MutableLiveData<List<CartProduct>> productList) {
-        this.productList = productList;
+    public void setProductList(List<CartProduct> productList) {
+        this.productList.setValue(productList);
     }
 }

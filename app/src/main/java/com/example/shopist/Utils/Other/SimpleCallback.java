@@ -2,6 +2,6 @@ package com.example.shopist.Utils.Other;
 
 public interface SimpleCallback {
 
-    public void callback();
+    public void callback(Object... arguments);
 
 }
