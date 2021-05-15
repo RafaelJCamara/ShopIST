@@ -6,14 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".Activities.ui.cart.CartActivity">
 
+    <TextView
+        android:id="@+id/cart_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="25dp"
+        android:paddingVertical="20dp"
+        android:text="Cart Title"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ListView
         android:id="@+id/cartList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cart_title"
         tools:layout_conversion_absoluteHeight="675dp"
         tools:layout_conversion_absoluteWidth="411dp">
 
@@ -28,7 +40,7 @@
         android:contentDescription="@string/cart_checkout"
         android:src="@drawable/ic_cart_black"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
-        app:layout_constraintEnd_toEndOf="@+id/cartList"/>
+        app:layout_constraintEnd_toEndOf="@+id/cartList" />
 
     <View
         android:id="@+id/divider2"

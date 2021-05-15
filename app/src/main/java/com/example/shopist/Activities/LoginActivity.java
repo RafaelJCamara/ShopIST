@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkSignupOrigin(){
         //checks if we go to the login activity from a successful signup
-        if(getIntent()!=null){
+        if(getIntent()!=null && getIntent().getStringExtra("email") != null){
             //we came from signup
             //this means we should fill the login fields with the cart credentials
             EditText emailComponent = findViewById(R.id.emailLogin);

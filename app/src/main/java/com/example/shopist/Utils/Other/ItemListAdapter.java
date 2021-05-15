@@ -4,25 +4,34 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Product.CartProduct;
 import com.example.shopist.Product.PantryProduct;
 import com.example.shopist.R;
 import com.example.shopist.Product.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemListAdapter extends BaseAdapter {
 
+    private final AdapterView.OnItemClickListener itemClickListener;
     Context context;
     List<? extends Product> list;
 
-    public ItemListAdapter(Context context, List<? extends Product> list) {
+    public ItemListAdapter(Context context, List<? extends Product> list, AdapterView.OnItemClickListener itemClickListener) {
         this.context = context;
         this.list = list;
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -40,6 +49,10 @@ public class ItemListAdapter extends BaseAdapter {
         return position;
     }
 
+    public void setList(List<? extends Product> list) {
+        this.list = list;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -53,6 +66,10 @@ public class ItemListAdapter extends BaseAdapter {
 
         icon.setImageResource(product.getImage());
         name.setText(product.getName());
+
+        convertView.setOnClickListener(v -> {
+            itemClickListener.onItemClick(null, v, position, 0);
+        });
 
         fillDetails(convertView, product, clazz);
 

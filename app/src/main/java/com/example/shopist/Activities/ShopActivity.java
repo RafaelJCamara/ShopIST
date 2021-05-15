@@ -2,7 +2,6 @@ package com.example.shopist.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.R;
@@ -37,9 +35,8 @@ public class ShopActivity extends AppCompatActivity {
     public ListView listView;
     private ArrayList<String> listContent = new ArrayList<String>();
 
-    private String listId;
-
-    private RecyclerView recyclerView;
+    private String shopListName;
+    private String shopListId;
 
     private ArrayList<ServerShoppingProduct> existingPantryProducts;
 
@@ -51,6 +48,11 @@ public class ShopActivity extends AppCompatActivity {
         setContentView(R.layout.shop_activity);
         retrofitManager = new RetrofitManager(this);
         existingPantryProducts = new ArrayList<ServerShoppingProduct>();
+
+        String listInfo = getIntent().getStringExtra("itemInfo");
+        String [] values = listInfo.split("->");
+        this.shopListName = values[0];
+        this.shopListId = values[1];
     }
 
     @Override
@@ -106,7 +108,7 @@ public class ShopActivity extends AppCompatActivity {
 
     private void fillPantryProductList(){
         //ask the server for information
-        Call<ServerShoppingList> call = retrofitManager.accessRetrofitInterface().syncShoppingList(listId);
+        Call<ServerShoppingList> call = retrofitManager.accessRetrofitInterface().syncShoppingList(shopListId);
         call.enqueue(new Callback<ServerShoppingList>() {
             @Override
             public void onResponse(Call<ServerShoppingList> call, Response<ServerShoppingList> response) {
@@ -133,13 +135,10 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     private void fillTextView(){
-        String listInfo = getIntent().getStringExtra("itemInfo");
-        String [] values = listInfo.split("->");
         TextView listNameView = findViewById(R.id.shopListName);
         TextView listCodeView = findViewById(R.id.shopListCode);
-        listNameView.setText(values[0]);
-        listId = values[1];
-        listCodeView.setText(listId);
+        listNameView.setText(this.shopListName);
+        listCodeView.setText(this.shopListId);
     }
 
     private void handleProductDetailDialog(String itemInfo){
@@ -204,7 +203,7 @@ public class ShopActivity extends AppCompatActivity {
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productQuantity", quantity);
         map.put("productPrice", price);
-        map.put("shoppingListId", listId);
+        map.put("shoppingListId", shopListId);
         map.put("productId", getProductIdFromList(itemInfo));
         
         Call<Void> call = retrofitManager.accessRetrofitInterface().updateProductAtStore(map);
@@ -263,13 +262,14 @@ public class ShopActivity extends AppCompatActivity {
         createCart();
 
         Intent intent = new Intent(ShopActivity.this, CartActivity.class);
-        intent.putExtra("shoppingListId", listId);
+        intent.putExtra("storeName", this.shopListName);
+        intent.putExtra("shoppingListId", shopListId);
         startActivity(intent);
     }
 
     private void createCart(){
         HashMap<String,String> map = new HashMap<String,String>();
-        map.put("shopId", listId);
+        map.put("shopId", shopListId);
         Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request

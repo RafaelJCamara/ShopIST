@@ -2,7 +2,6 @@ package com.example.shopist.Activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,8 +16,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -49,7 +46,6 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
-import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Utils.Other.Adapter;
 import com.example.shopist.Utils.CacheManager.ImageCacheManager;
 import com.example.shopist.Utils.Other.ItemListAdapter;
@@ -58,9 +54,6 @@ import com.example.shopist.Utils.Other.ProdImage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -139,7 +132,7 @@ public class PantryActivity extends AppCompatActivity {
         //configure product list and adapter
         fillListContentSettings();
         //add product click listener
-        addProductListClickListener();
+        //addProductListClickListener();
         fillTextView();
     }
 
@@ -149,21 +142,23 @@ public class PantryActivity extends AppCompatActivity {
         listView = findViewById(R.id.productListInfo);
 
         //create list adapter
-        itemListAdapter = new ItemListAdapter(this, productsList);
+        itemListAdapter = new ItemListAdapter(this, productsList, (parent, view, position, id) -> {
+            PantryProduct itemInfo = (PantryProduct) listView.getAdapter().getItem(position);
+            handleProductDetailDialog(itemInfo);
+        });
 
         //add adapter to list
         listView.setAdapter(itemListAdapter);
     }
 
-    private void addProductListClickListener(){
+    /*private void addProductListClickListener(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PantryProduct itemInfo = (PantryProduct) parent.getAdapter().getItem(position);
-                handleProductDetailDialog(itemInfo);
+
             }
         });
-    }
+    }*/
 
     private void fillTextView(){
         String listInfo = getIntent().getStringExtra("itemInfo");
@@ -189,10 +184,10 @@ public class PantryActivity extends AppCompatActivity {
         TextView productDescriptionDetail = view.findViewById(R.id.productDescriptionDetail);
         productDescriptionDetail.setText(itemInfo.getDescription());
 
-        TextView productStockDetail = view.findViewById(R.id.productStockDetail);
+        TextView productStockDetail = view.findViewById(R.id.productPriceDetail);
         productStockDetail.setText(String.valueOf(itemInfo.getStock()));
 
-        TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
+        TextView productNeededDetail = view.findViewById(R.id.productQuantityDetail);
         productNeededDetail.setText(String.valueOf(itemInfo.getNeeded()));
 
         fillListViewWithShoppingLists(view, itemInfo);
@@ -312,7 +307,7 @@ public class PantryActivity extends AppCompatActivity {
 
 
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
-        Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
+        Button saveButton = view.findViewById(R.id.productDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -394,10 +389,10 @@ public class PantryActivity extends AppCompatActivity {
                 PantryProduct product = new PantryProduct(itemInfo.getName(), itemInfo.getDescription(), stock, needed);
                 productsList.set(index,product);
 
-                TextView productStockDetail = view.findViewById(R.id.productStockDetail);
+                TextView productStockDetail = view.findViewById(R.id.productPriceDetail);
                 productStockDetail.setText(String.valueOf(stock));
 
-                TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
+                TextView productNeededDetail = view.findViewById(R.id.productQuantityDetail);
                 productNeededDetail.setText(String.valueOf(needed));
             }
         }
@@ -416,7 +411,7 @@ public class PantryActivity extends AppCompatActivity {
         }
 //        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
-        TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
+        TextView productNeededComponent = view.findViewById(R.id.productQuantityDetail);
         String[] productNeeded = productNeededComponent.getText().toString().split(":");
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productId", getProductIdFromList(itemInfo));

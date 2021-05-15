@@ -53,4 +53,8 @@
     <string name="title_shopping_lists">Listas de Compras</string>
     <string name="username">nome de utilizador</string>
     <string name="WelcomeMessage">Bem-vindo ao ShopIST</string>
+    <string name="cart">Carrinho</string>
+    <string name="quantity">Quantidade</string>
+    <string name="update">Atualizar</string>
+    <string name="remove">Remover</string>
 </resources>

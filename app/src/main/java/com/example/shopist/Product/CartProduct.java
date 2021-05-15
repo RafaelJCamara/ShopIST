@@ -2,6 +2,8 @@ package com.example.shopist.Product;
 
 public class CartProduct extends Product {
 
+    private String id;
+
     private double price;
     private long quantity;
 
@@ -9,6 +11,14 @@ public class CartProduct extends Product {
         super(name, description);
         this.price = price;
         this.quantity = quantity;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public double getPrice() {

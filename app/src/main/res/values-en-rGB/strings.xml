@@ -53,4 +53,8 @@
     <string name="title_pantry_lists">Pantry Lists</string>
     <string name="title_shopping_lists">Shopping Lists</string>
     <string name="username">username</string>
+    <string name="cart">Cart</string>
+    <string name="quantity">Quantity</string>
+    <string name="update">Update</string>
+    <string name="remove">Remove</string>
 </resources>
