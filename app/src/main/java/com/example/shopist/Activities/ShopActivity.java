@@ -260,11 +260,7 @@ public class ShopActivity extends AppCompatActivity {
     public void onGoToCartButtonPressed(View view) {
         //create cart
         createCart();
-
-        Intent intent = new Intent(ShopActivity.this, CartActivity.class);
-        intent.putExtra("storeName", this.shopListName);
         intent.putExtra("shoppingListId", shopListId);
-        startActivity(intent);
     }
 
     private void createCart(){
@@ -276,6 +272,7 @@ public class ShopActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast.makeText(ShopActivity.this, "Cart created with success.", Toast.LENGTH_SHORT).show();
+                startCartActivity();
             }
 
             @Override
@@ -283,6 +280,13 @@ public class ShopActivity extends AppCompatActivity {
                 Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void startCartActivity(){
+        Intent intent = new Intent(ShopActivity.this, CartActivity.class);
+        intent.putExtra("storeName", this.shopListName);
+        intent.putExtra("shoppingListId", listId);
+        startActivity(intent);
     }
 
     //Shopping product Classification
@@ -306,7 +310,5 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 }
