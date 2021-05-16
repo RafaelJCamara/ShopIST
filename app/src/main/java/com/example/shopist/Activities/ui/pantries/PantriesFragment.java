@@ -23,12 +23,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Activities.ui.ListFragment;
-import com.example.shopist.Activities.ui.shopping.ShoppingFragment;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerUserList;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +76,7 @@ public class PantriesFragment extends ListFragment {
         });
         return root;
     }
+
 
     /*
     ##########################
@@ -137,7 +138,7 @@ public class PantriesFragment extends ListFragment {
 
     //depende do tipo de lista
     public void handleGetPantryListLogic(View view){
-        Button getListButton = view.findViewById(R.id.addListButton);
+        Button getListButton = view.findViewById(R.id.saveUserAccessButton);
         getListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

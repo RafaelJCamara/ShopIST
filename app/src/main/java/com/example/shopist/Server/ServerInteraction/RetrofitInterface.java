@@ -126,4 +126,12 @@ public interface RetrofitInterface {
     @GET("/store/{storeId}/currentWaitingTime")
     Call<WaitTimeInfo> getCurrentWaitingTime(@Path("storeId") String storeId);
 
+
+    /*
+    *   Grant user access
+    * */
+
+    @POST("/list/pantry/{listId}/grantaccess")
+    Call<Void> grantUserAccess(@Path("listId") String listId, @Body HashMap<String,String> map);
+
 }

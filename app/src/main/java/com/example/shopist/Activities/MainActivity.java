@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
     //depende do tipo de lista
     public void handleGetPantryListLogic(View view){
-        Button getListButton = view.findViewById(R.id.addListButton);
+        Button getListButton = view.findViewById(R.id.saveUserAccessButton);
         getListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleGetShoppingListLogic(View view){
-        Button getListButton = view.findViewById(R.id.addListButton);
+        Button getListButton = view.findViewById(R.id.saveUserAccessButton);
         getListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
