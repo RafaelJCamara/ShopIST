@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textViewUserEmailAccess"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Enter user email"
@@ -19,7 +19,7 @@
         app:layout_constraintVertical_bias="0.235" />
 
     <Button
-        android:id="@+id/saveUserAccessButton"
+        android:id="@+id/saveUserShoppingAccessButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SAVE ACCESS"
@@ -29,16 +29,16 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/userEmailAddressAccess"
+        android:id="@+id/userEmailAddressAccessShopping"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="37dp"
         android:ems="10"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/saveUserAccessButton"
+        app:layout_constraintBottom_toTopOf="@+id/saveUserShoppingAccessButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.079"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUserEmailAccess"
         app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

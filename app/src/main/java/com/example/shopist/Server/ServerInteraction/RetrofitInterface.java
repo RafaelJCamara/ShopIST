@@ -134,4 +134,7 @@ public interface RetrofitInterface {
     @POST("/list/pantry/{listId}/grantaccess")
     Call<Void> grantUserAccess(@Path("listId") String listId, @Body HashMap<String,String> map);
 
+    @POST("/list/shopping/{listId}/grantaccess")
+    Call<Void> grantUserAccessShopping(@Path("listId") String listId, @Body HashMap<String,String> map);
+
 }

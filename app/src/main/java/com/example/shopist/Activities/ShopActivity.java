@@ -62,7 +62,71 @@ public class ShopActivity extends AppCompatActivity {
         listContent.clear();
         //add shopping products to list view
         handleProductListDialog();
+        addUserAccessList();
     }
+
+
+
+    /*
+    ##########################
+    ### access list grant ###
+    ##########################
+     */
+
+    private void addUserAccessList(){
+        FloatingActionButton button = findViewById(R.id.userAccessGrantShoppingButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleUserAccessListDialog();
+            }
+        });
+    }
+
+    private void handleUserAccessListDialog(){
+        View view = getLayoutInflater().inflate(R.layout.user_access_shopping,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        AlertDialog alert = builder.create();
+        alert.show();
+        handleUserAccessListLogic(view, alert);
+    }
+
+    private void handleUserAccessListLogic(View view, AlertDialog builder){
+        EditText userEmail = view.findViewById(R.id.userEmailAddressAccessShopping);
+        Button grantAccessButton = view.findViewById(R.id.saveUserShoppingAccessButton);
+        grantAccessButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                grantAccessToUser(userEmail.getText().toString(),listId, builder);
+            }
+        });
+    }
+
+    private void grantAccessToUser(String userEmail, String listUuid, AlertDialog builder){
+        HashMap<String,String> map = new HashMap<String, String>();
+        map.put("userEmail",userEmail);
+        map.put("ownerId",MainActivityNav.currentUserId);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().grantUserAccessShopping(listUuid, map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200){
+                    Toast.makeText(ShopActivity.this, "User access granted with success.", Toast.LENGTH_LONG).show();
+                    builder.cancel();
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /*
+    *   Settings
+    * */
+
 
     private void handleProductListDialog(){
         productListSettings();

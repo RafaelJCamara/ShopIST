@@ -136,7 +136,7 @@ public class ShoppingFragment extends ListFragment {
     }
 
     public void handleGetShoppingListLogic(View view){
-        Button getListButton = view.findViewById(R.id.saveUserAccessButton);
+        Button getListButton = view.findViewById(R.id.saveUserShoppingAccessButton);
         getListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -2,7 +2,6 @@ package com.example.shopist.Activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,7 +17,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,7 +46,6 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
-import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Utils.Other.Adapter;
 import com.example.shopist.Utils.CacheManager.ImageCacheManager;
 import com.example.shopist.Utils.Other.ItemListAdapter;
@@ -57,9 +54,6 @@ import com.example.shopist.Utils.Other.ProdImage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -133,7 +127,7 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void handleUserAccessListDialog(){
-        View view = getLayoutInflater().inflate(R.layout.user_access,null);
+        View view = getLayoutInflater().inflate(R.layout.user_access_pantry,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view);
         AlertDialog alert = builder.create();
@@ -142,8 +136,8 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void handleUserAccessListLogic(View view, AlertDialog builder){
-        EditText userEmail = view.findViewById(R.id.userEmailAddressAccess);
-        Button grantAccessButton = view.findViewById(R.id.saveUserAccessButton);
+        EditText userEmail = view.findViewById(R.id.userEmailAddressAccessShopping);
+        Button grantAccessButton = view.findViewById(R.id.saveUserShoppingAccessButton);
         grantAccessButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,12 +165,6 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
-
 
     /*
     ##########################
