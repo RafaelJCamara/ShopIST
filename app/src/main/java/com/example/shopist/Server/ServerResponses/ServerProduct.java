@@ -14,9 +14,7 @@ public abstract class ServerProduct implements Serializable {
         return productId;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
     public String getDescription() {
         return description;

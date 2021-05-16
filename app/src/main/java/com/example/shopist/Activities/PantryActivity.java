@@ -478,6 +478,7 @@ public class PantryActivity extends AppCompatActivity {
         for(ServerPantryProduct prod : list){
             Product product = new Product(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
+
             productsList.add(product);
         }
         fillListContentSettings();
@@ -847,7 +848,7 @@ public class PantryActivity extends AppCompatActivity {
     public void handleSharePantryIntent(){
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, R.string.share_pantry_msg + "\n" + listId);
         sendIntent.setType("text/plain");
 
         Intent shareIntent = Intent.createChooser(sendIntent, null);

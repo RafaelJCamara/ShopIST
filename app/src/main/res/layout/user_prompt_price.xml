@@ -20,10 +20,10 @@
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
         android:text="Price:"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="180dp" />
+        app:layout_constraintStart_toStartOf="@+id/textView12"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <EditText
         android:id="@+id/new_price"

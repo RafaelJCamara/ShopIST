@@ -70,6 +70,7 @@
     <string name="share_list_button">SHARE</string>
     <string name="add_product_button">Add Product</string>
 
-    <string name="user_prompt_price">It seems this product dont have an associated price at this store.\n Do you wish to add it now?\n (this will make your cart price more precise)</string>
+    <string name="user_prompt_price"> It seems this product dont have an associated price at this store.  Do you wish to add it now?  (this will make your cart price more precise)</string>
+    <string name="share_pantry_msg">Here is my pantry list from ShopIST! To add it, in your pantry, click ADD and insert the code. Good shopping!</string>
 
 </resources>

@@ -151,12 +151,14 @@ public class ShopActivity extends AppCompatActivity {
 
     private void handleProductUpdateInShopLogic(View view, String itemInfo){
         String[] prodInfo = itemInfo.split(";");
+        String productPrice[] = prodInfo[2].split(":");
+
 
         RatingBar ratingBar;
         Button ratingButton;
         //Set product name in view
         TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
-        productNameInStore.setText(prodInfo[0].trim());
+        productNameInStore.setText(prodInfo[0].trim() + "\nprice:" + productPrice[1].trim());
 
         //Set product classification in view
         TextView classification = view.findViewById(R.id.classificationTextView);
@@ -176,8 +178,7 @@ public class ShopActivity extends AppCompatActivity {
                 String productPriceStore = productPriceStoreComponent.getText().toString();
 
                 Toast.makeText(ShopActivity.this, "Product clicked... "+productQuantityStore+" "+productPriceStore, Toast.LENGTH_SHORT).show();
-                String productPrice[] = prodInfo[2].split(":");
-                if(Integer.parseInt(productPrice[1].trim())==0){
+                if(Float.parseFloat(productPrice[1].trim())==0 && productPriceStore.trim().equals("")){
                     handleUserPromptDialog(itemInfo);
                 }
 
@@ -251,7 +252,6 @@ public class ShopActivity extends AppCompatActivity {
                     rate = totalRating / nrRatings;
                     rateString = String.format("%.1f", rate);
                 }
-
             }
         }
         if(rate == 0)
