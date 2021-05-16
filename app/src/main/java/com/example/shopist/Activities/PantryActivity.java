@@ -135,8 +135,8 @@ public class PantryActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
         handleUserAccessListLogic(view, alert);
-        fillUserAccessList(view);
-        removeUserAccessList(view, alert);
+        fillUserAccessList(view, alert);
+//        removeUserAccessList(view, alert);
     }
 
     private void handleUserAccessListLogic(View view, AlertDialog builder){
@@ -170,14 +170,13 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-
-    private void fillUserAccessList(View view){
+    private void fillUserAccessList(View view, AlertDialog builder){
         Call<UserAccess> call = retrofitManager.accessRetrofitInterface().getAllPantryUsers(listId);
         call.enqueue(new Callback<UserAccess>() {
             @Override
             public void onResponse(Call<UserAccess> call, Response<UserAccess> response) {
                 String[] users = response.body().getUsers();
-                renderUserAccessList(users, view);
+                renderUserAccessList(users, view, builder);
             }
 
             @Override
@@ -187,21 +186,40 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void renderUserAccessList(String[] users, View view){
+    private void renderUserAccessList(String[] users, View view, AlertDialog builder){
         this.recyclerView = view.findViewById(R.id.pantryListAccessList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.setHasFixedSize(true);
         Adapter adapter = new Adapter(Arrays.asList(users));
         recyclerView.setAdapter(adapter);
+        removeUserAccessList(view,builder, adapter);
     }
 
-    private void removeUserAccessList(View view, AlertDialog builder){
+    private void removeUserAccessList(View view, AlertDialog builder, Adapter adapter){
         Button removeAccessButton = view.findViewById(R.id.removerUserAccessToPantryList);
         removeAccessButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                removeUsers(adapter.getSelectedShopping(), view, builder);
+            }
+        });
+    }
 
+    private void removeUsers(ArrayList<String> removedUsers, View view, AlertDialog builder){
+        HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+        map.put("deleted", removedUsers);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().removeUserAccessPantry(listId,map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(view.getContext(),"User removed with success." ,Toast.LENGTH_SHORT).show();
+                builder.cancel();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
             }
         });
     }

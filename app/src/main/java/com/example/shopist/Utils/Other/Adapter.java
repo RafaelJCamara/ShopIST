@@ -53,8 +53,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
         return this.selectedShopping;
     }
 
-
-
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         CheckBox checkBox;

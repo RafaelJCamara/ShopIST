@@ -144,4 +144,10 @@ public interface RetrofitInterface {
     @GET("/list/shopping/{listId}/getallusers")
     Call<UserAccess> getAllShoppingUsers(@Path("listId") String listId);
 
+    @POST("/list/pantry/{listId}/removeaccess")
+    Call<Void> removeUserAccessPantry(@Path("listId") String listId, @Body HashMap<String,ArrayList<String>> map);
+
+    @POST("/list/shopping/{listId}/removeaccess")
+    Call<Void> removeUserAccessShopping(@Path("listId") String listId, @Body HashMap<String,ArrayList<String>> map);
+
 }
