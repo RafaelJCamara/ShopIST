@@ -60,6 +60,7 @@ public class MainActivityNav extends AppCompatActivity {
     };
     private WifiStatusReceiver wifiStatusReceiver;
     public static String currentUserId;
+    public static String currentUsername;
     public static boolean withWifi = true;
     public static SmallDataCacheManager smallDataCacheManager;
 
@@ -141,6 +142,7 @@ public class MainActivityNav extends AppCompatActivity {
         if(extras!=null){
             if(extras.containsKey("username")){
                 info+=intent.getStringExtra("username");
+                currentUsername = intent.getStringExtra("username");
             }
         }else{
             info+="anonymous";

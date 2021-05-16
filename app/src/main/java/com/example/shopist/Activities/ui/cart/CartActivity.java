@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shopist.Activities.LoginActivity;
+import com.example.shopist.Activities.MainActivity;
 import com.example.shopist.Activities.MainActivityNav;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Activities.ui.pantries.PantriesFragment;
@@ -238,6 +239,7 @@ public class CartActivity extends AppCompatActivity {
                     productListSettings();
                     cartViewModel.setTotal(-1);
                     Toast.makeText(context, "Cart checked out!", Toast.LENGTH_SHORT).show();
+//                    gotoMainActivity();
                 }
             }
 
@@ -246,6 +248,17 @@ public class CartActivity extends AppCompatActivity {
                 Toast.makeText(context, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void gotoMainActivity(){
+        Intent intent = new Intent(context, MainActivityNav.class);
+
+        //put cart information into intent
+        intent.putExtra("username", MainActivityNav.currentUsername);
+        intent.putExtra("userId",MainActivityNav.currentUserId);
+
+        //start activity targeted in the intent
+        startActivity(intent);
     }
 
 }
