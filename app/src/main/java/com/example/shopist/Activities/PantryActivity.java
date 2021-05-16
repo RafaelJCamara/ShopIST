@@ -46,6 +46,7 @@ import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
+import com.example.shopist.Server.ServerResponses.UserAccess;
 import com.example.shopist.Utils.Other.Adapter;
 import com.example.shopist.Utils.CacheManager.ImageCacheManager;
 import com.example.shopist.Utils.Other.ItemListAdapter;
@@ -57,6 +58,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +135,8 @@ public class PantryActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
         handleUserAccessListLogic(view, alert);
+        fillUserAccessList(view);
+        removeUserAccessList(view, alert);
     }
 
     private void handleUserAccessListLogic(View view, AlertDialog builder){
@@ -165,6 +169,43 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void fillUserAccessList(View view){
+        Call<UserAccess> call = retrofitManager.accessRetrofitInterface().getAllPantryUsers(listId);
+        call.enqueue(new Callback<UserAccess>() {
+            @Override
+            public void onResponse(Call<UserAccess> call, Response<UserAccess> response) {
+                String[] users = response.body().getUsers();
+                renderUserAccessList(users, view);
+            }
+
+            @Override
+            public void onFailure(Call<UserAccess> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void renderUserAccessList(String[] users, View view){
+        this.recyclerView = view.findViewById(R.id.pantryListAccessList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        this.recyclerView.setLayoutManager(layoutManager);
+        this.recyclerView.setHasFixedSize(true);
+        Adapter adapter = new Adapter(Arrays.asList(users));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void removeUserAccessList(View view, AlertDialog builder){
+        Button removeAccessButton = view.findViewById(R.id.removerUserAccessToPantryList);
+        removeAccessButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
 
     /*
     ##########################

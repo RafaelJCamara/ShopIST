@@ -8,6 +8,7 @@ import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerUserList;
+import com.example.shopist.Server.ServerResponses.UserAccess;
 import com.example.shopist.Server.ServerResponses.WaitTimeInfo;
 import com.example.shopist.Utils.Other.CartContent;
 
@@ -136,5 +137,11 @@ public interface RetrofitInterface {
 
     @POST("/list/shopping/{listId}/grantaccess")
     Call<Void> grantUserAccessShopping(@Path("listId") String listId, @Body HashMap<String,String> map);
+
+    @GET("/list/pantry/{listId}/getallusers")
+    Call<UserAccess> getAllPantryUsers(@Path("listId") String listId);
+
+    @GET("/list/shopping/{listId}/getallusers")
+    Call<UserAccess> getAllShoppingUsers(@Path("listId") String listId);
 
 }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.Activities.ui.cart.CartActivity;
@@ -22,11 +23,14 @@ import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
+import com.example.shopist.Server.ServerResponses.UserAccess;
 import com.example.shopist.Server.ServerResponses.WaitTimeInfo;
+import com.example.shopist.Utils.Other.Adapter;
 import com.example.shopist.Utils.Other.PublicInfoManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -90,6 +94,8 @@ public class ShopActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
         handleUserAccessListLogic(view, alert);
+        fillUserAccessList(view);
+        removeUserAccessList(view, alert);
     }
 
     private void handleUserAccessListLogic(View view, AlertDialog builder){
@@ -122,6 +128,51 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void fillUserAccessList(View view){
+        Call<UserAccess> call = retrofitManager.accessRetrofitInterface().getAllShoppingUsers(listId);
+        call.enqueue(new Callback<UserAccess>() {
+            @Override
+            public void onResponse(Call<UserAccess> call, Response<UserAccess> response) {
+                String[] users = response.body().getUsers();
+                renderUserAccessList(users, view);
+            }
+
+            @Override
+            public void onFailure(Call<UserAccess> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void renderUserAccessList(String[] users, View view){
+        this.recyclerView = view.findViewById(R.id.shoppingListAccessList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        this.recyclerView.setLayoutManager(layoutManager);
+        this.recyclerView.setHasFixedSize(true);
+        Adapter adapter = new Adapter(Arrays.asList(users));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void removeUserAccessList(View view, AlertDialog builder){
+        Button removeAccessButton = view.findViewById(R.id.removerUserAccessToShoppingList);
+        removeAccessButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
 
     /*
     *   Settings
