@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="16dp"
         android:onClick="onGoToCartButtonPressed"
         android:text="@string/go_to_cart_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -101,4 +101,14 @@
         app:layout_constraintStart_toEndOf="@+id/shopListName"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_vpn_key_24" />
+
+    <Button
+        android:id="@+id/shareShoppingProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SHARE"
+        app:layout_constraintBottom_toTopOf="@+id/textView10"
+        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/shopListCode"
+        app:layout_constraintTop_toBottomOf="@+id/shopListName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

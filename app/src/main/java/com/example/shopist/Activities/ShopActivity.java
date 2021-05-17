@@ -183,13 +183,6 @@ public class ShopActivity extends AppCompatActivity {
         });
     }
 
-
-
-
-
-
-
-
     /*
     *   Settings
     * */
@@ -198,6 +191,7 @@ public class ShopActivity extends AppCompatActivity {
     private void handleProductListDialog(){
         productListSettings();
         fillPantryProductList();
+        shareShoppingLogic();
     }
 
     private void productListSettings() {
@@ -481,5 +475,30 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
     }
+
+    //#########################
+    //### share shopping list ###
+    //#########################
+
+    private void shareShoppingLogic(){
+        Button sharePantryButton = findViewById(R.id.shareShoppingProduct);
+        sharePantryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleShareShoppingIntent();
+            }
+        });
+    }
+
+    public void handleShareShoppingIntent(){
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello there! Join my shopping list on ShopIST, by inserting the following code: "+listId+" .");
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
+    }
+
 
 }
