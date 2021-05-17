@@ -6,18 +6,40 @@
     android:layout_height="match_parent"
     tools:context=".Activities.ui.cart.CartActivity">
 
-    <ListView
-        android:id="@+id/cartList"
+    <TextView
+        android:id="@+id/cart_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="25dp"
+        android:paddingVertical="20dp"
+        android:text="Cart Title"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_conversion_absoluteHeight="675dp"
-        tools:layout_conversion_absoluteWidth="411dp">
+        app:layout_constraintTop_toTopOf="parent" />
 
-    </ListView>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cart_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cart_title">
+
+        <ListView
+            android:id="@+id/cartList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cart_title"
+            tools:layout_conversion_absoluteHeight="675dp"
+            tools:layout_conversion_absoluteWidth="411dp">
+
+        </ListView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/cart_checkout_button"
@@ -28,7 +50,7 @@
         android:contentDescription="@string/cart_checkout"
         android:src="@drawable/ic_cart_black"
         app:layout_constraintBottom_toTopOf="@+id/divider2"
-        app:layout_constraintEnd_toEndOf="@+id/cartList"/>
+        app:layout_constraintEnd_toEndOf="@id/swipeLayout" />
 
     <View
         android:id="@+id/divider2"
@@ -38,7 +60,7 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toTopOf="@+id/cart_total"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/cartList" />
+        app:layout_constraintStart_toStartOf="@id/swipeLayout" />
 
     <TextView
         android:id="@+id/cart_total"
@@ -50,5 +72,16 @@
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/cart_qty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
