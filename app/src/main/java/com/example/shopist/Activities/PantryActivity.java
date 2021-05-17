@@ -723,6 +723,7 @@ public class PantryActivity extends AppCompatActivity {
         HashMap<String, String> map = new HashMap<String,String>();
         map.put("productName",productName);
         map.put("amountToBuy", amountToBuy);
+        map.put("pantryListUuid", listId);
         map.put("allShops", finalShops);
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().addSuggestedProduct(map);
