@@ -232,6 +232,9 @@ public class ShopActivity extends AppCompatActivity {
         map.put("productPrice", price);
         map.put("shoppingListId", shopListId);
         map.put("productId", getProductIdFromList(itemInfo));
+
+        itemInfo.setPrice(Float.parseFloat(price));
+        fillListContentSettings();
         
         Call<Void> call = retrofitManager.accessRetrofitInterface().updateProductAtStore(map);
         call.enqueue(new Callback<Void>() {
