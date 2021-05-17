@@ -4,10 +4,10 @@ public class CartProduct extends Product {
 
     private String id;
 
-    private double price;
+    private Double price;
     private long quantity;
 
-    public CartProduct(String name, String description, double price, long quantity) {
+    public CartProduct(String name, String description, Double price, long quantity) {
         super(name, description);
         this.price = price;
         this.quantity = quantity;

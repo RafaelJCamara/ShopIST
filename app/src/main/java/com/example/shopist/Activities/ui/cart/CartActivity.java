@@ -77,9 +77,6 @@ public class CartActivity extends AppCompatActivity {
             qtyView.setText(s != null ? String.format("Item Qty: %d", s) : "");
             button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
         });
-        cartViewModel.getProductList().observe(this, s -> {
-            productListSettings();
-        });
 
         button.setOnClickListener(view -> { onCheckoutButtonPressed(view); });
 
@@ -121,7 +118,7 @@ public class CartActivity extends AppCompatActivity {
             Button remove = v.findViewById(R.id.removeProductButton);
 
             update.setOnClickListener(v1 -> {
-                parseProduct(view, cartProduct);
+                parseProduct(v, cartProduct);
                 updateProductInfo(v, cartProduct, (args) -> {
                     dialog.dismiss();
                 });
@@ -129,7 +126,6 @@ public class CartActivity extends AppCompatActivity {
 
             remove.setOnClickListener(v1 -> {
                 cartProduct.setQuantity(0);
-                parseProduct(view, cartProduct);
                 updateProductInfo(v, cartProduct, (args) -> {
                     dialog.dismiss();
                 });

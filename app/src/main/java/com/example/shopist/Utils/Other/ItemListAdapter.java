@@ -18,6 +18,7 @@ import com.daimajia.swipe.SwipeLayout;
 import com.example.shopist.Activities.PantryActivity;
 import com.example.shopist.Product.CartProduct;
 import com.example.shopist.Product.PantryProduct;
+import com.example.shopist.Product.ShopProduct;
 import com.example.shopist.R;
 import com.example.shopist.Product.Product;
 
@@ -76,12 +77,19 @@ public class ItemListAdapter extends BaseAdapter {
             itemClickListener.onItemClick(null, v, position, 0);
         });
 
-        fillDetails(convertView, product, clazz);
+        fillDetails(convertView, product, position, clazz);
 
         return convertView;
     }
 
-    private void fillDetails(View convertView, Product product, Class<?> clazz) {
+    private void fillDetails(View convertView, Product product, int position, Class<?> clazz) {
+
+        SwipeLayout swipeLayout =  (SwipeLayout) convertView.findViewById(R.id.swipe_left);
+        //set show mode.
+        swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
+        swipeLayout.getSurfaceView().setOnClickListener(v -> {
+            itemClickListener.onItemClick(null, v, position, 0);
+        });
 
         if(clazz == PantryProduct.class) {
 
@@ -90,11 +98,24 @@ public class ItemListAdapter extends BaseAdapter {
             TextView name = (TextView) convertView.findViewById(R.id.item_name);
             name.setText(pProduct.getName() + ": " + pProduct.getDescription() + "; Needed: " + pProduct.getNeeded() + " Stock: " + pProduct.getStock());
 
-        } else if (clazz == CartProduct.class) {
+        }
+        else if (clazz == ShopProduct.class) {
 
-            SwipeLayout swipeLayout =  (SwipeLayout) convertView.findViewById(R.id.swipe_left);
-            //set show mode.
-            swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
+            ShopProduct sProduct = (ShopProduct) product;
+
+            Button delete = swipeLayout.findViewById(R.id.delete_button);
+            delete.setOnClickListener(v -> {
+                this.itemDeleteCallback.callback(sProduct);
+            });
+
+            TextView needed = (TextView) convertView.findViewById(R.id.item_needed);
+            TextView qty = (TextView) convertView.findViewById(R.id.item_qty);
+
+            needed.setText(String.format("Needed: %d", sProduct.getNeeded()));
+            qty.setText(String.format("Cart: %d", sProduct.getQuantity()));
+
+        }
+        else if (clazz == CartProduct.class) {
 
             CartProduct cProduct = (CartProduct) product;
 
@@ -117,9 +138,14 @@ public class ItemListAdapter extends BaseAdapter {
 
         if(clazz == PantryProduct.class) {
             return LayoutInflater.from(context).inflate(R.layout.row_productlist, parent,false );
-        } else if(clazz == CartProduct.class) {
+        }
+        else if(clazz == ShopProduct.class) {
+            return LayoutInflater.from(context).inflate(R.layout.row_shop, parent, false);
+        }
+        else if(clazz == CartProduct.class) {
             return LayoutInflater.from(context).inflate(R.layout.row_cart, parent, false);
         }
+
         return null;
 
     }

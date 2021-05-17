@@ -80,5 +80,6 @@
     <string name="euro">€</string>
     <string name="update">Update</string>
     <string name="remove">Remove</string>
+    <string name="title">Title</string>
 
 </resources>
