@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +20,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
     private List<String> shopList;
     private ArrayList<String> selectedShopping;
-
+    public static ArrayList<String> existingShopping = new ArrayList<String>();
 
     public Adapter(List<String> shopList){
         Log.i("Beginning","*****adapter");
         this.shopList = shopList;
-        selectedShopping = new ArrayList<>();
+        selectedShopping = new ArrayList<String>();
         for(String s : shopList){
             Log.i("Beginning",s);
         }
@@ -53,6 +54,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
         return this.selectedShopping;
     }
 
+    public void addShoppingLists(String[] shops){
+        for(int i=0;i!=shops.length;i++){
+            existingShopping.add(shops[i]);
+        }
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         CheckBox checkBox;
@@ -60,6 +67,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             checkBox = (CheckBox) itemView.findViewById(R.id.shopStore);
+//            for(String s : Adapter.existingShopping){
+//                if(s.trim().equals(checkBox.getText().toString().split(" -> ")[1].trim())){
+//                    checkBox.setEnabled(true);
+//                }
+//            }
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

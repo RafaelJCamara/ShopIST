@@ -1,5 +1,6 @@
 package com.example.shopist.Server.ServerInteraction;
 
+import com.example.shopist.Server.ServerResponses.AllProductShops;
 import com.example.shopist.Server.ServerResponses.ProductSuggestion;
 import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerData;
@@ -62,6 +63,11 @@ public interface RetrofitInterface {
     //get existing pantry lists for the user
     @GET("/list/pantry/userLists/{userId}")
     Call<ServerUserList> getUserCurrentPantryLists(@Path("userId") String userId);
+
+    //get all shoppings lists a product is being bought
+    @GET("/list/pantry/{pantryId}/allshops/{productName}")
+    Call<AllProductShops> getProductPantryLists(@Path("pantryId") String pantryId, @Path("productName") String productName);
+
 
     /*
     * Shopping list routes

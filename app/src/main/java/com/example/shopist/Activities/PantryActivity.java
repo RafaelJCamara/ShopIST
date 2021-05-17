@@ -44,6 +44,7 @@ import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.AllProductShops;
 import com.example.shopist.Server.ServerResponses.ProductSuggestion;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
@@ -324,12 +325,37 @@ public class PantryActivity extends AppCompatActivity {
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.setHasFixedSize(true);
         Adapter adapter = new Adapter(shopList);
-        recyclerView.setAdapter(adapter);
-
+        this.recyclerView.setAdapter(adapter);
+//        checkIfAlreayShopsExist(adapter, view, itemInfo, builder);
         addSaveButtonLogic(adapter, view, itemInfo, builder);
         addConsumeProductLogic(view, itemInfo);
         renderProductImage(view, itemInfo);
     }
+
+//    private void checkIfAlreayShopsExist(Adapter adapter,View view, Product itemInfo, AlertDialog builder){
+//        //ask server for image url
+//        Call<AllProductShops> call = retrofitManager.accessRetrofitInterface().getProductPantryLists(listId, itemInfo.getName());
+//        call.enqueue(new Callback<AllProductShops>() {
+//            @Override
+//            public void onResponse(Call<AllProductShops> call, Response<AllProductShops> response) {
+//                String[] shops = response.body().getAllshops();
+//                processShops(shops, adapter);
+////                addSaveButtonLogic(adapter, view, itemInfo, builder);
+////                addConsumeProductLogic(view, itemInfo);
+////                renderProductImage(view, itemInfo);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<AllProductShops> call, Throwable t) {
+//                Toast.makeText(getApplicationContext(),"Server error." ,Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+//
+//    private void processShops(String[] shops, Adapter adapter){
+//        adapter.addShoppingLists(shops);
+//        this.recyclerView.setAdapter(adapter);
+//    }
 
     private void renderProductImage(View view, Product itemInfo){
         String imageUrl = accessProuductImageUrl(itemInfo.getName());
