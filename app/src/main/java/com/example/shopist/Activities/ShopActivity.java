@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopist.Activities.ui.cart.CartActivity;
+import com.example.shopist.Product.Product;
+import com.example.shopist.Product.ShopProduct;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
@@ -43,10 +45,10 @@ public class ShopActivity extends AppCompatActivity {
 
     public ListView listView;
     private ArrayList<String> listContent = new ArrayList<String>();
+    private ArrayList<ShopProduct> shopProductList = new ArrayList<ShopProduct>();
 
-    private String listId;
-
-    private RecyclerView recyclerView;
+    private String shopListName;
+    private String shopListId;
 
     private ArrayList<ServerShoppingProduct> existingPantryProducts;
 
@@ -57,6 +59,11 @@ public class ShopActivity extends AppCompatActivity {
         setContentView(R.layout.shop_activity);
         retrofitManager = new RetrofitManager(this);
         existingPantryProducts = new ArrayList<ServerShoppingProduct>();
+
+        String listInfo = getIntent().getStringExtra("itemInfo");
+        String [] values = listInfo.split("->");
+        this.shopListName = values[0];
+        this.shopListId = values[1];
     }
 
     @Override
@@ -208,7 +215,13 @@ public class ShopActivity extends AppCompatActivity {
     private void fillListContentSettings(){
         //get list view
         listView = findViewById(R.id.shopListProducts);
+        listContent.clear();
 
+        //fill listContent from ShopProductList with strings to use on list adapter
+        for(ShopProduct prod : shopProductList) {
+            String productInfo = prod.getName() + "; Needed:" + prod.getNeeded() + "; price:" + prod.getPrice();
+            listContent.add(productInfo);
+        }
         //create list adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 //context
@@ -228,7 +241,12 @@ public class ShopActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
                 //Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
-                handleProductDetailDialog(itemInfo);
+                ShopProduct product = getProductFromShoProductList(itemInfo);
+                if(product != null)
+                    handleProductDetailDialog(product);
+                else
+                    Toast.makeText(ShopActivity.this, "error getting product",Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -271,7 +289,7 @@ public class ShopActivity extends AppCompatActivity {
 
     private void fillPantryProductList(){
         //ask the server for information
-        Call<ServerShoppingList> call = retrofitManager.accessRetrofitInterface().syncShoppingList(listId);
+        Call<ServerShoppingList> call = retrofitManager.accessRetrofitInterface().syncShoppingList(shopListId);
         call.enqueue(new Callback<ServerShoppingList>() {
             @Override
             public void onResponse(Call<ServerShoppingList> call, Response<ServerShoppingList> response) {
@@ -291,43 +309,52 @@ public class ShopActivity extends AppCompatActivity {
     private void renderLists(ArrayList<ServerShoppingProduct> list){
         this.existingPantryProducts = list;
         for(ServerShoppingProduct prod : list){
-            String productInfo=prod.getName()+"; Needed:"+prod.getNeeded();
+            ShopProduct p = new ShopProduct(prod.getName(), prod.getDescription(), prod.getNeeded());
+            if(prod.getPrice()!=0)
+                p.setPrice(prod.getPrice());
+
+            if(prod.getNrRatings()!=0) {
+                p.setNrRating(prod.getNrRatings());
+                p.setTotalRating(prod.getTotalRating());
+            }
+
+            String productInfo=prod.getName()+"; Needed:"+prod.getNeeded()+"; price:" + prod.getPrice();
             listContent.add(productInfo);
+            shopProductList.add(p);
         }
         fillListContentSettings();
     }
 
     private void fillTextView(){
-        String listInfo = getIntent().getStringExtra("itemInfo");
-        String [] values = listInfo.split("->");
         TextView listNameView = findViewById(R.id.shopListName);
         TextView listCodeView = findViewById(R.id.shopListCode);
         listNameView.setText(values[0]);
         listId = values[1];
         listCodeView.setText(listId);
         PublicInfoManager.currentShopUuid = listId;
+        listNameView.setText(this.shopListName);
+        listCodeView.setText(this.shopListId);
     }
 
-    private void handleProductDetailDialog(String itemInfo){
+    private void handleProductDetailDialog(ShopProduct product){
         View view = getLayoutInflater().inflate(R.layout.update_product_store,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
         builder.setView(view).show();
-        handleProductUpdateInShopLogic(view, itemInfo);
+        handleProductUpdateInShopLogic(view, product);
     }
 
-    private void handleProductUpdateInShopLogic(View view, String itemInfo){
-        String[] prodInfo = itemInfo.split(";");
+    private void handleProductUpdateInShopLogic(View view, ShopProduct product){
+        //String[] prodInfo = itemInfo.split(";");
+        //String productPrice[] = prodInfo[2].split(":");
 
         RatingBar ratingBar;
         Button ratingButton;
         //Set product name in view
         TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
-        productNameInStore.setText(prodInfo[0].trim());
+        productNameInStore.setText(product.getName());
 
         //Set product classification in view
-        TextView classification = view.findViewById(R.id.classificationTextView);
-        classification.setText(getProductRatingFromList(getProductIdFromList(itemInfo)));
-
+        updateProductRatingFrontend(view, product);
         //add save button
         Button saveProductInfoButton = view.findViewById(R.id.saveProductInfoAtStore);
         saveProductInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -342,9 +369,12 @@ public class ShopActivity extends AppCompatActivity {
                 String productPriceStore = productPriceStoreComponent.getText().toString();
 
                 Toast.makeText(ShopActivity.this, "Product clicked... "+productQuantityStore+" "+productPriceStore, Toast.LENGTH_SHORT).show();
+                if(product.getPrice()==0 && productPriceStore.trim().equals("")){
+                    handleUserPromptDialog(product);
+                }
 
                 //update information in server
-                updateProductInfo(productQuantityStore, productPriceStore, itemInfo);
+                updateProductInfo(productQuantityStore, productPriceStore, product);
             }
         });
 
@@ -359,20 +389,23 @@ public class ShopActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
 
                 //update information in server
-                updateProductRating(itemInfo, productRating);
+                updateProductRating(product, productRating);
+
+                updateProductRatingFrontend(view, product);
             }
         });
-
-
     }
 
-    private void updateProductInfo(String quantity, String price, String itemInfo){
+    private void updateProductInfo(String quantity, String price, ShopProduct itemInfo){
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productQuantity", quantity);
         map.put("productPrice", price);
-        map.put("shoppingListId", listId);
+        map.put("shoppingListId", shopListId);
         map.put("productId", getProductIdFromList(itemInfo));
-        
+
+        itemInfo.setPrice(Float.parseFloat(price));
+        fillListContentSettings();
+
         Call<Void> call = retrofitManager.accessRetrofitInterface().updateProductAtStore(map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
@@ -389,14 +422,14 @@ public class ShopActivity extends AppCompatActivity {
     }
 
 
-    private String getProductIdFromList(String itemInfo){
+    private String getProductIdFromList(ShopProduct product){
         String productId ="";
         for(ServerShoppingProduct prod:this.existingPantryProducts){
-            String[] prodInfo = itemInfo.split(";");
-            String[] productNeeded = prodInfo[1].trim().split(":");
+            //String[] prodInfo = itemInfo.split(";");
+            //String[] productNeeded = prodInfo[1].trim().split(":");
 
-            if(prodInfo[0].trim().equals(prod.getName()) &&
-                    productNeeded[1].trim().equals(String.valueOf(prod.getNeeded()))
+            if(product.getName().equals(prod.getName()) &&
+                    product.getNeeded()== prod.getNeeded()
             ){
                 productId+=prod.getProductId();
             }
@@ -404,24 +437,19 @@ public class ShopActivity extends AppCompatActivity {
         return productId;
     }
 
-    private String getProductRatingFromList(String productId) {
-        String rateString="";
-        double rate =0;
-        for(ServerShoppingProduct prod:this.existingPantryProducts){
-            if(productId.trim().equals(prod.getProductId())){
-                if(prod.getTotalRating()!=0) {
-                    double totalRating = prod.getTotalRating();
-                    double nrRatings = prod.getNrRatings();
-                    rate = totalRating / nrRatings;
-                    rateString = String.format("%.1f", rate);
-                }
+    private ShopProduct getProductFromShoProductList(String itemInfo) {
+        String[] prodInfo = itemInfo.split(";");
 
+        ShopProduct product = null;
+        String productName = prodInfo[0].trim();
+
+        for(ShopProduct prod:this.shopProductList){
+            if(productName.equals(prod.getName())){
+                product = prod;
             }
         }
-        if(rate == 0)
-            rateString = "no rating";
-
-        return rateString;
+        Log.d("getprodfromshoplist", product.getName() +" "+ product.getPrice() +" " +product.getRating() );
+        return product;
     }
 
     public void onGoToCartButtonPressed(View view) {
@@ -433,6 +461,8 @@ public class ShopActivity extends AppCompatActivity {
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("shopId", listId);
         Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(MainActivityNav.currentUserId,map);
+        map.put("shopId", shopListId);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
             @Override
@@ -450,18 +480,102 @@ public class ShopActivity extends AppCompatActivity {
 
     private void startCartActivity(){
         Intent intent = new Intent(ShopActivity.this, CartActivity.class);
-        intent.putExtra("shoppingListId", listId);
+        intent.putExtra("storeName", this.shopListName);
+        intent.putExtra("shoppingListId", shopListId);
         startActivity(intent);
     }
 
     //Shopping product Classification
 
-    public void updateProductRating(String itemInfo, String classification){
+    public void updateProductRating(ShopProduct itemInfo, String classification){
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productRating", classification);
         String productId = getProductIdFromList(itemInfo);
 
+        //this should just append after server response OK
+
+        double currentClassification = itemInfo.getTotalRating();
+        double totalClassifications = itemInfo.getNrRatings();
+        itemInfo.setTotalRating(Double.parseDouble(classification) + currentClassification);
+        itemInfo.setNrRating(totalClassifications+1);
+
         Call<Void> call = retrofitManager.accessRetrofitInterface().rateProductAtStore(productId, map);
+        call.enqueue(new Callback<Void>() {
+            //when the server responds to our request
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(ShopActivity.this, "Product updated with success.", Toast.LENGTH_SHORT).show();
+                //updateProductOnShopProductList(itemInfo);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void updateProductRatingFrontend(View view, ShopProduct itemInfo){
+        TextView classification = view.findViewById(R.id.classificationTextView);
+        ShopProduct product = getProductFromShoProductList(itemInfo.getName());
+        if(product.getNrRatings()>0)
+            classification.setText(String.format("%.1f", product.getRating()));
+        else
+            classification.setText("Not rated yet");
+
+
+        int i;
+        for(i=0; i<this.shopProductList.size(); i++){
+            if(this.shopProductList.get(i).getName().equals(itemInfo.getName())) {
+                //this.shopProductList.set(i, itemInfo);
+                Log.d("updateProductOnShopProductList", itemInfo.getName() +" "+ itemInfo.getPrice() +" " +itemInfo.getRating() );
+            }
+        }
+
+
+        //fillPantryProductList();
+    }
+
+    //user prompt
+    private void handleUserPromptDialog(ShopProduct product){
+        View view = getLayoutInflater().inflate(R.layout.user_prompt_price,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
+        builder.setView(view).show();
+        handleProductUpdateUserPrompt(view, product);
+    }
+
+    private void handleProductUpdateUserPrompt(View view, ShopProduct product) {
+        //String[] prodInfo = itemInfo.split(";");
+        Button updateButton;
+        //Set product name in view
+        TextView productNameInStore = view.findViewById(R.id.product_name);
+        productNameInStore.setText(product.getName());
+
+        //add save button
+        Button saveProductInfoButton = view.findViewById(R.id.update_button);
+        saveProductInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get price in store
+                EditText productPriceStoreComponent = view.findViewById(R.id.new_price);
+                String productPriceStore = productPriceStoreComponent.getText().toString();
+
+                Toast.makeText(ShopActivity.this, "Product clicked... " + productPriceStore, Toast.LENGTH_SHORT).show();
+
+                //update information in server
+                updateProductPriceServer(productPriceStore, product);
+            }
+        });
+    }
+
+
+    private void updateProductPriceServer(String price, ShopProduct product){
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("productPrice", price);
+        map.put("shoppingListId", shopListId);
+        map.put("productId", getProductIdFromList(product));
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().updateProductPriceAtStore(map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
             @Override

@@ -55,6 +55,12 @@
     <string name="title_shopping_lists">Compras</string>
     <string name="username">nome de utilizador</string>
     <string name="WelcomeMessage">Bem-vindo ao ShopIST</string>
+    <string name="user_prompt_price">" Este produto não tem um preço associado a esta loja.\\n Deseja adiciona-lo agora?\\n (isto possibilitará determinar o preço do carrinho de compras preciso)"</string>
+    <string name="share_pantry_msg">Aqui está a lista da minha dispensa! Para a adicionar, na sua area de Dispensas clique em ADD e insira o codigo. Boas Compras!</string>
+    <string name="cart">Carrinho</string>
+    <string name="quantity">Quantidade</string>
+    <string name="update">Atualizar</string>
+    <string name="remove">Remover</string>
     <string name="template_suggestion_header">Pessoas que compraram este produto também compraram:</string>
     <string name="add_question">Quer adicionar?</string>
     <string name="yes_checkbox">Sim (se sim, preencher o campo abaixo)</string>

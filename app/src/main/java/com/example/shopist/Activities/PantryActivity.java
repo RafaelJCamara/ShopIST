@@ -42,6 +42,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
+import com.example.shopist.Product.PantryProduct;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.AllProductShops;
@@ -77,7 +78,7 @@ public class PantryActivity extends AppCompatActivity {
     private RetrofitManager retrofitManager;
 
     public ListView listView;
-    private ArrayList<Product> productsList = new ArrayList<Product>();
+    private ArrayList<PantryProduct> productsList = new ArrayList<>();
     private ArrayList<String> shoppingLists = new ArrayList<String>();
 
     private String listId;
@@ -254,7 +255,7 @@ public class PantryActivity extends AppCompatActivity {
         //configure product list and adapter
         fillListContentSettings();
         //add product click listener
-        addProductListClickListener();
+        //addProductListClickListener();
         fillTextView();
     }
 
@@ -264,21 +265,23 @@ public class PantryActivity extends AppCompatActivity {
         listView = findViewById(R.id.productListInfo);
 
         //create list adapter
-        itemListAdapter = new ItemListAdapter(this, productsList);
+        itemListAdapter = new ItemListAdapter(this, productsList, (parent, view, position, id) -> {
+            PantryProduct itemInfo = (PantryProduct) listView.getAdapter().getItem(position);
+            handleProductDetailDialog(itemInfo);
+        });
 
         //add adapter to list
         listView.setAdapter(itemListAdapter);
     }
 
-    private void addProductListClickListener(){
+    /*private void addProductListClickListener(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Product itemInfo = (Product) parent.getAdapter().getItem(position);
-                handleProductDetailDialog(itemInfo);
+
             }
         });
-    }
+    }*/
 
     private void fillTextView(){
         String listInfo = getIntent().getStringExtra("itemInfo");
@@ -290,7 +293,7 @@ public class PantryActivity extends AppCompatActivity {
         listCodeView.setText(listId);
     }
 
-    private void handleProductDetailDialog(Product itemInfo){
+    private void handleProductDetailDialog(PantryProduct itemInfo){
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
 //        builder.setView(view).show();
@@ -301,6 +304,7 @@ public class PantryActivity extends AppCompatActivity {
         handleBuyInShopsLogic(view, itemInfo, alert);
     }
 
+    private void handleBuyInShopsLogic(View view, PantryProduct itemInfo){
     private void handleBuyInShopsLogic(View view, Product itemInfo, AlertDialog builder){
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
         productNameDetail.setText(itemInfo.getName());
@@ -308,16 +312,17 @@ public class PantryActivity extends AppCompatActivity {
         TextView productDescriptionDetail = view.findViewById(R.id.productDescriptionDetail);
         productDescriptionDetail.setText(itemInfo.getDescription());
 
-        TextView productStockDetail = view.findViewById(R.id.productStockDetail);
+        TextView productStockDetail = view.findViewById(R.id.productPriceDetail);
         productStockDetail.setText(String.valueOf(itemInfo.getStock()));
 
-        TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
+        TextView productNeededDetail = view.findViewById(R.id.productQuantityDetail);
         productNeededDetail.setText(String.valueOf(itemInfo.getNeeded()));
 
         fillListViewWithShoppingLists(view, itemInfo, builder);
     }
 
     private void fillListViewWithShoppingLists(View view, Product itemInfo, AlertDialog builder){
+    private void fillListViewWithShoppingLists(View view, PantryProduct itemInfo){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
@@ -453,6 +458,10 @@ public class PantryActivity extends AppCompatActivity {
                 });
     }
 
+
+
+    private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
+        Button saveButton = view.findViewById(R.id.productDetailSave);
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo, AlertDialog builder){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -467,7 +476,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void addConsumeProductLogic(View view, Product itemInfo){
+    private void addConsumeProductLogic(View view, PantryProduct itemInfo){
         Button consumeProductButton = view.findViewById(R.id.consumeProductAtPantry);
         consumeProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -496,7 +505,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void consumeProductsInServer(Product itemInfo, String quantityConsumed, View view){
+    private void consumeProductsInServer(PantryProduct itemInfo, String quantityConsumed, View view){
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("productId", getProductIdFromList(itemInfo));
         map.put("quantity", quantityConsumed);
@@ -516,7 +525,7 @@ public class PantryActivity extends AppCompatActivity {
         updateInFrontendPantryAfterConsumed(itemInfo, quantityConsumed, view);
     }
 
-    private void updateInFrontendPantryAfterConsumed(Product itemInfo, String quantityConsumed, View view){
+    private void updateInFrontendPantryAfterConsumed(PantryProduct itemInfo, String quantityConsumed, View view){
         Log.i("Beginning","*******");
         Log.i("Beginning",itemInfo.getName());
         Log.i("Beginning",itemInfo.getDescription());
@@ -533,13 +542,13 @@ public class PantryActivity extends AppCompatActivity {
                 itemInfo.setStock(stock);
                 finalS = itemInfo.getName()+";"+itemInfo.getDescription()+";"+"Needed:"+needed+";"+"Stock:"+stock;
                 index = i;
-                Product product = new Product(itemInfo.getName(), itemInfo.getDescription(), stock, needed);
+                PantryProduct product = new PantryProduct(itemInfo.getName(), itemInfo.getDescription(), stock, needed);
                 productsList.set(index,product);
 
-                TextView productStockDetail = view.findViewById(R.id.productStockDetail);
+                TextView productStockDetail = view.findViewById(R.id.productPriceDetail);
                 productStockDetail.setText(String.valueOf(stock));
 
-                TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
+                TextView productNeededDetail = view.findViewById(R.id.productQuantityDetail);
                 productNeededDetail.setText(String.valueOf(needed));
             }
         }
@@ -559,7 +568,7 @@ public class PantryActivity extends AppCompatActivity {
         String allShops=finalShops;
 //        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
-        TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
+        TextView productNeededComponent = view.findViewById(R.id.productQuantityDetail);
         String[] productNeeded = productNeededComponent.getText().toString().split(":");
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productId", getProductIdFromList(itemInfo));
@@ -621,10 +630,11 @@ public class PantryActivity extends AppCompatActivity {
 
     private void renderLists(ArrayList<ServerPantryProduct> list){
         this.existingPantryProducts = list;
-        productsList = new ArrayList<Product>();
+        productsList = new ArrayList<PantryProduct>();
         for(ServerPantryProduct prod : list){
-            Product product = new Product(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
+            PantryProduct product = new PantryProduct(prod.getName(), prod.getDescription(), prod.getStock(), prod.getNeeded());
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
+
             productsList.add(product);
         }
         fillListContentSettings();
@@ -876,7 +886,7 @@ public class PantryActivity extends AppCompatActivity {
     }
 
     private void renderNewProduct(String productName, String productDescription, String needed, String stock){
-        Product product = new Product(productName, productDescription, Integer.parseInt(stock), Integer.parseInt(needed));
+        PantryProduct product = new PantryProduct(productName, productDescription, Integer.parseInt(stock), Integer.parseInt(needed));
         productsList.add(product);
         fillPantryProductList();
         fillListContentSettings();
@@ -1142,6 +1152,7 @@ public class PantryActivity extends AppCompatActivity {
         sendIntent.setAction(Intent.ACTION_SEND);
         String s = getString(R.string.share_message, getResources().getString(R.string.title_pantries),listId);
         sendIntent.putExtra(Intent.EXTRA_TEXT, s);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, R.string.share_pantry_msg + "\n" + listId);
         sendIntent.setType("text/plain");
 
         Intent shareIntent = Intent.createChooser(sendIntent, null);

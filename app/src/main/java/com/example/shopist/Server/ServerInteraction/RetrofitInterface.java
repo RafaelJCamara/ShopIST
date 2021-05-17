@@ -121,6 +121,10 @@ public interface RetrofitInterface {
     @POST("/store/updateProduct")
     Call<Void> updateProductAtStore(@Body HashMap<String,String> map);
 
+    @POST("/store/updateProductPrice")
+    Call<Void> updateProductPriceAtStore(@Body HashMap<String,String> map);
+
+
 
     /*
     *   Queue waiting times

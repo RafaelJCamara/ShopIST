@@ -66,4 +66,10 @@
     <string name="remove_access_button">REMOVE ACCESS</string>
     <string name="wait_time">Current waiting time</string>
 
+    <string name="user_prompt_price">" It seems this product dont have an associated price at this store.  Do you wish to add it now?  (this will make your cart price more precise)"</string>
+    <string name="share_pantry_msg">Here is my pantry list from ShopIST! To add it, in your pantry, click ADD and insert the code. Good shopping!</string>
+    <string name="cart">Cart</string>
+    <string name="quantity">Quantity</string>
+    <string name="update">Update</string>
+    <string name="remove">Remove</string>
 </resources>
