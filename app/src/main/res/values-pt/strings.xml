@@ -41,6 +41,7 @@
     <string name="quantity_store">Quantidade em loja</string>
     <string name="save_button">GUARDAR</string>
     <string name="share_list_button">PARTILHAR</string>
+    <string name="share_message">Olá! Junte-se à minha lista de %1$s em ShopIST, inserindo o seguinte código:  %2$s .</string>
     <string name="signup">Não tem conta? Registe-se aqui!</string>
     <string name="signup_button">REGISTAR</string>
     <string name="signup_title">Registar na ShopIST</string>

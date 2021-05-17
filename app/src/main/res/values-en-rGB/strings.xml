@@ -42,6 +42,7 @@
     <string name="quantity_store">Quantity in store</string>
     <string name="save_button">SAVE</string>
     <string name="share_list_button">SHARE</string>
+    <string name="share_message">Hello there! Join my  %1$s list on ShopIST, by inserting the following code:  %2$s .</string>
     <string name="signup">Dont have an account? Signup here!</string>
     <string name="signup_button">SIGN UP</string>
     <string name="signup_title">Signup to ShopIST</string>

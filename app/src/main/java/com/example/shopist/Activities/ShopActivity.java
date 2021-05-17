@@ -493,7 +493,8 @@ public class ShopActivity extends AppCompatActivity {
     public void handleShareShoppingIntent(){
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello there! Join my shopping list on ShopIST, by inserting the following code: "+listId+" .");
+        String s = getString(R.string.share_message, getResources().getString(R.string.title_shopping),listId);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, s);
         sendIntent.setType("text/plain");
 
         Intent shareIntent = Intent.createChooser(sendIntent, null);

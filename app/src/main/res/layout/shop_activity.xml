@@ -106,7 +106,7 @@
         android:id="@+id/shareShoppingProduct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SHARE"
+        android:text="@string/share_list_button"
         app:layout_constraintBottom_toTopOf="@+id/textView10"
         app:layout_constraintEnd_toStartOf="@+id/button"
         app:layout_constraintStart_toEndOf="@+id/shopListCode"

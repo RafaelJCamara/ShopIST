@@ -1114,7 +1114,8 @@ public class PantryActivity extends AppCompatActivity {
     public void handleSharePantryIntent(){
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello there! Join my pantry list on ShopIST, by inserting the following code: "+listId+" .");
+        String s = getString(R.string.share_message, getResources().getString(R.string.title_pantries),listId);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, s);
         sendIntent.setType("text/plain");
 
         Intent shareIntent = Intent.createChooser(sendIntent, null);
