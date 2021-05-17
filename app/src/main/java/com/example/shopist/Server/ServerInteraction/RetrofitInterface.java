@@ -1,5 +1,6 @@
 package com.example.shopist.Server.ServerInteraction;
 
+import com.example.shopist.Server.ServerResponses.ProductSuggestion;
 import com.example.shopist.Server.ServerResponses.ServerCart;
 import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
@@ -149,5 +150,16 @@ public interface RetrofitInterface {
 
     @POST("/list/shopping/{listId}/removeaccess")
     Call<Void> removeUserAccessShopping(@Path("listId") String listId, @Body HashMap<String,ArrayList<String>> map);
+
+
+    /*
+    * Product suggestions
+    * */
+
+    @GET("/product/{productName}/suggestions")
+    Call<ProductSuggestion> getProductSuggestion(@Path("productName") String productName);
+
+    @POST("/product/suggestions/addsuggestedproduct")
+    Call<Void> addSuggestedProduct(@Body HashMap<String, String> map);
 
 }

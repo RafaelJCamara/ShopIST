@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -43,6 +44,7 @@ import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ProductSuggestion;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
 import com.example.shopist.Server.ServerResponses.ServerPantryProduct;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
@@ -54,6 +56,8 @@ import com.example.shopist.Product.Product;
 import com.example.shopist.Utils.Other.ProdImage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -288,11 +292,15 @@ public class PantryActivity extends AppCompatActivity {
     private void handleProductDetailDialog(Product itemInfo){
         View view = getLayoutInflater().inflate(R.layout.product_detail_and_shops,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
-        builder.setView(view).show();
-        handleBuyInShopsLogic(view, itemInfo);
+//        builder.setView(view).show();
+        builder.setView(view);
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        handleBuyInShopsLogic(view, itemInfo, alert);
     }
 
-    private void handleBuyInShopsLogic(View view, Product itemInfo){
+    private void handleBuyInShopsLogic(View view, Product itemInfo, AlertDialog builder){
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
         productNameDetail.setText(itemInfo.getName());
 
@@ -305,10 +313,10 @@ public class PantryActivity extends AppCompatActivity {
         TextView productNeededDetail = view.findViewById(R.id.productNeededDetail);
         productNeededDetail.setText(String.valueOf(itemInfo.getNeeded()));
 
-        fillListViewWithShoppingLists(view, itemInfo);
+        fillListViewWithShoppingLists(view, itemInfo, builder);
     }
 
-    private void fillListViewWithShoppingLists(View view, Product itemInfo){
+    private void fillListViewWithShoppingLists(View view, Product itemInfo, AlertDialog builder){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
@@ -318,7 +326,7 @@ public class PantryActivity extends AppCompatActivity {
         Adapter adapter = new Adapter(shopList);
         recyclerView.setAdapter(adapter);
 
-        addSaveButtonLogic(adapter, view, itemInfo);
+        addSaveButtonLogic(adapter, view, itemInfo, builder);
         addConsumeProductLogic(view, itemInfo);
         renderProductImage(view, itemInfo);
     }
@@ -419,9 +427,7 @@ public class PantryActivity extends AppCompatActivity {
                 });
     }
 
-
-
-    private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
+    private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo, AlertDialog builder){
         Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -430,7 +436,7 @@ public class PantryActivity extends AppCompatActivity {
 //                for(String s: getSelectedShops){
 //                    Toast.makeText(view.getContext(), s,Toast.LENGTH_SHORT).show();
 //                }
-                sendUpdateToServer(getSelectedShops, view, itemInfo);
+                sendUpdateToServer(getSelectedShops, view, itemInfo, builder);
             }
         });
     }
@@ -518,12 +524,13 @@ public class PantryActivity extends AppCompatActivity {
         fillListContentSettings();
     }
 
-    private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, Product itemInfo){
+    private void sendUpdateToServer(ArrayList<String> getSelectedShops, View view, Product itemInfo, AlertDialog builder){
         String finalShops = "";
         for(String s: getSelectedShops){
             String[] shopInfo = s.split("->");
             finalShops+=shopInfo[1]+",";
         }
+        String allShops=finalShops;
 //        Toast.makeText(view.getContext(), finalShops,Toast.LENGTH_SHORT).show();
 
         TextView productNeededComponent = view.findViewById(R.id.productNeededDetail);
@@ -541,6 +548,9 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast.makeText(getApplicationContext(),"Updated with success." ,Toast.LENGTH_SHORT).show();
+                builder.cancel();
+                //show suggestion in main menu
+                seekSuggestion(itemInfo.getName(), allShops);
             }
 
             @Override
@@ -591,6 +601,151 @@ public class PantryActivity extends AppCompatActivity {
             String productInfo=prod.getName()+"; "+prod.getDescription()+"; Needed:"+prod.getNeeded()+"; Stock:"+prod.getStock();
             productsList.add(product);
         }
+        fillListContentSettings();
+    }
+
+
+    //##########################
+    //### suggest product ###
+    //##########################
+    private void seekSuggestion(String productName, String finalShops){
+        Call<ProductSuggestion> call = retrofitManager.accessRetrofitInterface().getProductSuggestion(productName);
+        call.enqueue(new Callback<ProductSuggestion>() {
+            @Override
+            public void onResponse(Call<ProductSuggestion> call, Response<ProductSuggestion> response) {
+                if(response.code()==200){
+                    //list retrieved by the server
+                    ProductSuggestion product = response.body();
+                    renderSuggestion(product, finalShops);
+                }
+            }
+            @Override
+            public void onFailure(Call<ProductSuggestion> call, Throwable t) {
+                Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void renderSuggestion(ProductSuggestion product, String finalShops){
+        View view = getLayoutInflater().inflate(R.layout.suggested_product,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        //fill suggested product details
+        fillSuggestedProductDetails(view, product, alert, finalShops);
+    }
+
+    private void fillSuggestedProductDetails(View view, ProductSuggestion productSuggestion, AlertDialog builder, String finalShops){
+        TextView productName = view.findViewById(R.id.productNameSuggested);
+        productName.setText(productSuggestion.getProductName());
+        TextView productDescription = view.findViewById(R.id.productDescriptionSuggested);
+        productDescription.setText(productSuggestion.getProductDescription());
+        renderProductImageSuggested(view, productSuggestion, builder, finalShops);
+    }
+
+    private void renderProductImageSuggested(View view, ProductSuggestion productSuggestion, AlertDialog builder, String finalShops){
+        //check if product is cached
+        if(ImageCacheManager.checkIfImageIsCached(productSuggestion.getProductImageUrl())){
+            Log.d("imageLoading","PRODUCT IMAGE IN CACHE");
+            //in cache
+            Bitmap imageContent = ImageCacheManager.retrieveBitmapContent(productSuggestion.getProductImageUrl());
+            renderFromBitmapContentSuggestion(imageContent, view);
+        }else{
+            Log.d("imageLoading","PRODUCT IMAGE NOT IN CACHE");
+            //not in cache
+            renderImageSuggested(view,productSuggestion.getProductImageUrl());
+        }
+
+        //add logic to process form
+        processForm(view, builder, finalShops);
+    }
+
+    private void renderFromBitmapContentSuggestion(Bitmap bitmap, View view){
+        ImageView imageView = view.findViewById(R.id.suggestedProductImage);
+        imageView.setImageBitmap(bitmap);
+        Toast.makeText(getApplicationContext(),"CURRENT CACHE SIZE (in kB): "+ImageCacheManager.getCurrentCacheSize() ,Toast.LENGTH_SHORT).show();
+    }
+
+    //Should return just the shopping list associated with the user/pantryLists
+    private void renderImageSuggested(View view, String url){
+        ImageView imageView = view.findViewById(R.id.suggestedProductImage);
+        //the below configuration is telling Glide to not use cache
+        //we want to use our own cache (not theirs)
+        Glide
+                .with(getApplicationContext())
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
+                        //add photo to cache
+                        ImageCacheManager.addPhotoToCache(url, bitmap);
+                        Log.d("imageLoading","PRODUCT PHOTO ADDED TO CACHE SUCCESSFULY.");
+                        imageView.setImageBitmap(bitmap);
+                        Toast.makeText(getApplicationContext(),"CURRENT CACHE SIZE (in kB): "+ImageCacheManager.getCurrentCacheSize() ,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+    }
+
+    //logic to process form
+    private void processForm(View view, AlertDialog builder, String finalShops){
+        Button saveButton = view.findViewById(R.id.saveSuggestions);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckBox yesCheckbox = view.findViewById(R.id.yesSuggestedProduct);
+                if(yesCheckbox.isChecked()){
+                    //check the amount to be bought
+                    EditText amountToBuy = view.findViewById(R.id.amountToBeBoughtSuggested);
+                    //send info to server
+                    TextView productName = view.findViewById(R.id.productNameSuggested);
+                    TextView productDescription = view.findViewById(R.id.productDescriptionSuggested);
+                    sendInfoToServer(productName.getText().toString(), productDescription.getText().toString(),amountToBuy.getText().toString(), finalShops, builder);
+                }
+                CheckBox noCheckbox = view.findViewById(R.id.noSuggestedProduct);
+                if(noCheckbox.isChecked()){
+                    builder.cancel();
+                }
+            }
+        });
+    }
+
+    private void sendInfoToServer(String productName, String productDescription,String amountToBuy, String finalShops, AlertDialog builder){
+        HashMap<String, String> map = new HashMap<String,String>();
+        map.put("productName",productName);
+        map.put("amountToBuy", amountToBuy);
+        map.put("allShops", finalShops);
+
+        Call<Void> call = retrofitManager.accessRetrofitInterface().addSuggestedProduct(map);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.code()==200){
+                    Toast.makeText(PantryActivity.this, "Suggested product added with success.", Toast.LENGTH_LONG).show();
+                    //render product in pantry list
+                    Product product = new Product(productName, productDescription, 0, Integer.parseInt(amountToBuy));
+                    renderSuggestedProduct(product);
+                    builder.cancel();
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void renderSuggestedProduct(Product product){
+        productsList.add(product);
         fillListContentSettings();
     }
 
