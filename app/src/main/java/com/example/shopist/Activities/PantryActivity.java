@@ -304,8 +304,7 @@ public class PantryActivity extends AppCompatActivity {
         handleBuyInShopsLogic(view, itemInfo, alert);
     }
 
-    private void handleBuyInShopsLogic(View view, PantryProduct itemInfo){
-    private void handleBuyInShopsLogic(View view, Product itemInfo, AlertDialog builder){
+    private void handleBuyInShopsLogic(View view, PantryProduct itemInfo, AlertDialog builder){
         TextView productNameDetail = view.findViewById(R.id.productNameDetail);
         productNameDetail.setText(itemInfo.getName());
 
@@ -321,8 +320,7 @@ public class PantryActivity extends AppCompatActivity {
         fillListViewWithShoppingLists(view, itemInfo, builder);
     }
 
-    private void fillListViewWithShoppingLists(View view, Product itemInfo, AlertDialog builder){
-    private void fillListViewWithShoppingLists(View view, PantryProduct itemInfo){
+    private void fillListViewWithShoppingLists(View view, PantryProduct itemInfo, AlertDialog builder){
         ArrayList<String> shopList = (ArrayList<String>) getIntent().getSerializableExtra("shoppingLists");
         this.recyclerView = view.findViewById(R.id.shopListDetail);
 
@@ -458,12 +456,8 @@ public class PantryActivity extends AppCompatActivity {
                 });
     }
 
-
-
-    private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo){
-        Button saveButton = view.findViewById(R.id.productDetailSave);
     private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo, AlertDialog builder){
-        Button saveButton = view.findViewById(R.id.productShoppingDetailSave);
+        Button saveButton = view.findViewById(R.id.productDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -769,11 +763,12 @@ public class PantryActivity extends AppCompatActivity {
                 if(response.code()==200){
                     Toast.makeText(PantryActivity.this, "Suggested product added with success.", Toast.LENGTH_LONG).show();
                     //render product in pantry list
-                    Product product = new Product(productName, productDescription, 0, Integer.parseInt(amountToBuy));
+                    PantryProduct product = new PantryProduct(productName, productDescription, 0, Integer.parseInt(amountToBuy));
                     renderSuggestedProduct(product);
                     builder.cancel();
                 }
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(PantryActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
@@ -781,7 +776,7 @@ public class PantryActivity extends AppCompatActivity {
         });
     }
 
-    private void renderSuggestedProduct(Product product){
+    private void renderSuggestedProduct(PantryProduct product){
         productsList.add(product);
         fillListContentSettings();
     }
@@ -1152,7 +1147,6 @@ public class PantryActivity extends AppCompatActivity {
         sendIntent.setAction(Intent.ACTION_SEND);
         String s = getString(R.string.share_message, getResources().getString(R.string.title_pantries),listId);
         sendIntent.putExtra(Intent.EXTRA_TEXT, s);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, R.string.share_pantry_msg + "\n" + listId);
         sendIntent.setType("text/plain");
 
         Intent shareIntent = Intent.createChooser(sendIntent, null);

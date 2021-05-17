@@ -38,6 +38,8 @@ import java.util.HashMap;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ShopActivity extends AppCompatActivity {
 
@@ -49,6 +51,8 @@ public class ShopActivity extends AppCompatActivity {
 
     private String shopListName;
     private String shopListId;
+
+    private RecyclerView recyclerView;
 
     private ArrayList<ServerShoppingProduct> existingPantryProducts;
 
@@ -111,7 +115,7 @@ public class ShopActivity extends AppCompatActivity {
         grantAccessButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                grantAccessToUser(userEmail.getText().toString(),listId, builder);
+                grantAccessToUser(userEmail.getText().toString(),shopListId, builder);
             }
         });
     }
@@ -137,7 +141,7 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     private void fillUserAccessList(View view, AlertDialog builder){
-        Call<UserAccess> call = retrofitManager.accessRetrofitInterface().getAllShoppingUsers(listId);
+        Call<UserAccess> call = retrofitManager.accessRetrofitInterface().getAllShoppingUsers(shopListId);
         call.enqueue(new Callback<UserAccess>() {
             @Override
             public void onResponse(Call<UserAccess> call, Response<UserAccess> response) {
@@ -175,7 +179,7 @@ public class ShopActivity extends AppCompatActivity {
     private void removeUsers(ArrayList<String> removedUsers, View view, AlertDialog builder){
         HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
         map.put("deleted", removedUsers);
-        Call<Void> call = retrofitManager.accessRetrofitInterface().removeUserAccessShopping(listId,map);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().removeUserAccessShopping(shopListId,map);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -326,12 +330,14 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     private void fillTextView(){
+        String listInfo = getIntent().getStringExtra("itemInfo");
+        String [] values = listInfo.split("->");
         TextView listNameView = findViewById(R.id.shopListName);
         TextView listCodeView = findViewById(R.id.shopListCode);
         listNameView.setText(values[0]);
-        listId = values[1];
-        listCodeView.setText(listId);
-        PublicInfoManager.currentShopUuid = listId;
+        shopListId = values[1];
+        listCodeView.setText(shopListId);
+        PublicInfoManager.currentShopUuid = shopListId;
         listNameView.setText(this.shopListName);
         listCodeView.setText(this.shopListId);
     }
@@ -459,10 +465,8 @@ public class ShopActivity extends AppCompatActivity {
 
     private void createCart(){
         HashMap<String,String> map = new HashMap<String,String>();
-        map.put("shopId", listId);
-        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(MainActivityNav.currentUserId,map);
         map.put("shopId", shopListId);
-        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(map);
+        Call<Void> call = retrofitManager.accessRetrofitInterface().createCart(MainActivityNav.currentUserId,map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
             @Override
@@ -607,7 +611,7 @@ public class ShopActivity extends AppCompatActivity {
     public void handleShareShoppingIntent(){
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        String s = getString(R.string.share_message, getResources().getString(R.string.title_shopping),listId);
+        String s = getString(R.string.share_message, getResources().getString(R.string.title_shopping),shopListId);
         sendIntent.putExtra(Intent.EXTRA_TEXT, s);
         sendIntent.setType("text/plain");
 

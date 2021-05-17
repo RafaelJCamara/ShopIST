@@ -205,8 +205,6 @@ public class CartActivity extends AppCompatActivity {
     }
 
     public void getCartFromServer(SimpleCallback... callback){
-        Call<ServerCart> call = retrofitManager.accessRetrofitInterface().getCart(this.shoppingListId);
-    public void getCartFromServer(){
         Call<ServerCart> call = retrofitManager.accessRetrofitInterface().getCart(this.shoppingListId, MainActivityNav.currentUserId);
         call.enqueue(new Callback<ServerCart>() {
             @Override
