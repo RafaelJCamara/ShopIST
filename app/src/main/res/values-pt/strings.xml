@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShopIST</string>
+    <string name="Welcome">Bem-vindo</string>
     <string name="title_pantries">Despensas</string>
     <string name="title_shopping">Compras</string>
     <string name="title_cart">Carrinho</string>
@@ -50,8 +51,19 @@
     <string name="submit_classification_button">SUBMETER CLASSIFICAÇÃO</string>
     <string name="title_activity_cart">AtividadeCarrinho</string>
     <string name="title_activity_main2">AtividadePrincipal</string>
-    <string name="title_pantry_lists">Listas de Dispensas</string>
-    <string name="title_shopping_lists">Listas de Compras</string>
+    <string name="title_pantry_lists">Dispensas</string>
+    <string name="title_shopping_lists">Compras</string>
     <string name="username">nome de utilizador</string>
     <string name="WelcomeMessage">Bem-vindo ao ShopIST</string>
+    <string name="template_suggestion_header">Pessoas que compraram este produto também compraram:</string>
+    <string name="add_question">Quer adicionar?</string>
+    <string name="yes_checkbox">Sim (se sim, preencher o campo abaixo)</string>
+    <string name="amount_purchase_suggested">Montante a comprar</string>
+    <string name="no_checkox">Não</string>
+    <string name="user_access_email">Introduza o email do utilizador</string>
+    <string name="save_access_button">GUARDAR ACESSO</string>
+    <string name="allowed_users">Utilizadores atualmente permitidos</string>
+    <string name="remove_access_button">REMOVER ACCESSO</string>
+    <string name="wait_time">Tempo de espera atual</string>
+
 </resources>

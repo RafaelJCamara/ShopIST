@@ -136,7 +136,7 @@ public class MainActivityNav extends AppCompatActivity {
 
     private void fillTextView(){
         TextView textView = findViewById(R.id.textView);
-        String info = "Welcome, ";
+        String info = getResources().getString(R.string.Welcome)+", ";
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if(extras!=null){

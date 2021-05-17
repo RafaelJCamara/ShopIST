@@ -1,6 +1,5 @@
 <resources>
-
-
+    <string name="Welcome">Welcome</string>
     <string name="WelcomeMessage">Welcome to ShopIST</string>
     <string name="login_button">LOGIN</string>
     <string name="signup">Dont have an account? Signup here!</string>
@@ -66,6 +65,19 @@
     <string name="price_store">Price in store</string>
     <string name="classification">Classification</string>
     <string name="submit_classification_button">SUBMIT CLASSIFICATION</string>
+
+    <string name="template_suggestion_header">Shoppers who bought that product also bought:</string>
+    <string name="add_question">Do you want to add?</string>
+    <string name="yes_checkbox">Yes (if so, please fill the below field)</string>
+    <string name="amount_purchase_suggested">Amount to purchase</string>
+    <string name="no_checkox">No</string>
+
+    <string name="user_access_email">Enter user email</string>
+    <string name="save_access_button">SAVE ACCESS</string>
+    <string name="allowed_users">Current allowed users</string>
+    <string name="remove_access_button">REMOVE ACCESS</string>
+
+    <string name="wait_time">Current waiting time</string>
 
     <!--
     //buttons

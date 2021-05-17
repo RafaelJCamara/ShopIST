@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ShopIST</string>
+    <string name="Welcome">Welcome</string>
     <string name="title_pantries">Pantries</string>
     <string name="title_shopping">Shopping</string>
     <string name="title_cart">Cart</string>
@@ -54,4 +55,15 @@
     <string name="title_pantry_lists">Pantry Lists</string>
     <string name="title_shopping_lists">Shopping Lists</string>
     <string name="username">username</string>
+    <string name="template_suggestion_header">Shoppers who bought that product also bought:</string>
+    <string name="add_question">Do you want to add?</string>
+    <string name="yes_checkbox">Yes (if so, please fill the below field)</string>
+    <string name="amount_purchase_suggested">Amount to purchase</string>
+    <string name="no_checkox">No</string>
+    <string name="user_access_email">Enter user email</string>
+    <string name="save_access_button">SAVE ACCESS</string>
+    <string name="allowed_users">Current allowed users</string>
+    <string name="remove_access_button">REMOVE ACCESS</string>
+    <string name="wait_time">Current waiting time</string>
+
 </resources>
