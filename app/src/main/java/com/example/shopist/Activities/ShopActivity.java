@@ -390,7 +390,6 @@ public class ShopActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
 
             //update information in server
-            updateProductRating(shopProduct, productRating);
 
             updateProductRating(shopProduct, productRating);
             getClassificationFromServer(view, shopProduct);
@@ -714,6 +713,8 @@ public class ShopActivity extends AppCompatActivity {
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productRating", classification);
 
+        Log.d("Update Product Rating", "updating " + classification + " Id:" +itemInfo.getId());
+
         Call<Void> call = retrofitManager.accessRetrofitInterface().rateProductAtStore(itemInfo.getId(), map);
         call.enqueue(new Callback<Void>() {
             //when the server responds to our request
@@ -763,42 +764,6 @@ public class ShopActivity extends AppCompatActivity {
 
     public void renderHist(ServerClassificationHistogram hist, View view){
         ArrayList<BarEntry> yVals = new ArrayList<>();
-        float barWidth = 9f;
-        float spaceForBar = 10f;
-
-        /*ArrayList<String> labels = new ArrayList<>();
-        labels.add("1 Star");
-        labels.add("2 Star");
-        labels.add("3 Star");
-        labels.add("4 Star");
-        labels.add("5 Star");
-
-        //Layout hist
-        HorizontalBarChart mChart = (HorizontalBarChart) view.findViewById(R.id.idHorizontalBarChart);
-        mChart.setDrawBarShadow(false);
-        mChart.setDrawValueAboveBar(true);
-        mChart.getDescription().setEnabled(false);
-        mChart.setPinchZoom(false);
-        mChart.setDrawGridBackground(false);
-
-        XAxis xl = mChart.getXAxis();
-        xl.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xl.setDrawAxisLine(true);
-        xl.setDrawGridLines(false);
-        CategoryBarChartXaxisFormatter xaxisFormatter = new CategoryBarChartXaxisFormatter(labels);
-        xl.setValueFormatter(xaxisFormatter);
-        xl.setGranularity(1);
-
-        YAxis yl = mChart.getAxisLeft();
-        yl.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        yl.setDrawGridLines(false);
-        yl.setEnabled(false);
-        yl.setAxisMinimum(0f);
-
-        YAxis yr = mChart.getAxisRight();
-        yr.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        yr.setDrawGridLines(false);
-        yr.setAxisMinimum(0f);*/
 
 
 
@@ -809,31 +774,10 @@ public class ShopActivity extends AppCompatActivity {
         yVals.add(new BarEntry(5, hist.getC5()));
 
 
-        /*
-        BarDataSet set1;
-        set1 = new BarDataSet(yVals, "DataSet 1");
-        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-        dataSets.add(set1);
-        BarData data = new BarData(dataSets);
-        data.setValueTextSize(10f);
-        data.setBarWidth(.9f);
-        mChart.setData(data);
-        mChart.getLegend().setEnabled(false);*/
-
-
-
-        /*
-        BarDataSet ratingSet = new BarDataSet(yVals, "productRating");
-        BarData data = new BarData(ratingSet);
-        data.setBarWidth(barWidth);
-
-
-        mChart.setData(data);*/
-
         HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.idHorizontalBarChart);
 
         BarDataSet set1;
-        set1 = new BarDataSet(yVals, "The year 2017");
+        set1 = new BarDataSet(yVals, "Ratings");
 
         set1.setColors(Color.parseColor("#F78B5D"), Color.parseColor("#FCB232"), Color.parseColor("#FDD930"), Color.parseColor("#ADD137"), Color.parseColor("#A0C25A"));
 
