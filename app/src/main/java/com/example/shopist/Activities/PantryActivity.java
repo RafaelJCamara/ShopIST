@@ -59,6 +59,7 @@ import com.example.shopist.Product.Product;
 import com.example.shopist.Utils.Other.ProdImage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 
 import org.w3c.dom.Text;
@@ -831,7 +832,7 @@ public class PantryActivity extends AppCompatActivity {
             }
         });
 
-        //Button barCodeButton = view.findViewById(R.id.)
+        Button barCodeButton = view.findViewById(R.id.barcodeScanner);
         barCodeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -998,6 +999,23 @@ public class PantryActivity extends AppCompatActivity {
                 filePath = getRealPathFromUri(imageReturnedIntent.getData(), PantryActivity.this);
                 addUploadLogic();
                 break;
+            case BARCODE:
+                Log.d("barcode","barcode camera.");
+                IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, imageReturnedIntent);
+                if(intentResult.getContents() != null){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
+                    builder.setTitle("Result");
+                    builder.setMessage(intentResult.getContents());
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
+                }else {
+                    Toast.makeText(getApplicationContext(), "Couldn't scan anything", Toast.LENGTH_SHORT).show();
+                }
         }
     }
 
