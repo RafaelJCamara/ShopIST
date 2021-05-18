@@ -3,6 +3,7 @@ package com.example.shopist.Activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -872,11 +873,16 @@ public class ShopActivity extends AppCompatActivity {
         EditText price = v.findViewById(R.id.productPriceField);
         EditText qty = v.findViewById(R.id.productQuantityField);
 
-        //Some locations may have comma instead of . in decimals
-        String price_val = price.getText().toString().replace(",",".");;
-
-        product.setPrice(Double.parseDouble(price_val));
         product.setQuantity(Long.parseLong(qty.getText().toString()));
+
+        if(TextUtils.isEmpty(price.getText()))
+            product.setPrice(0);
+        //Some locations may have comma instead of . in decimals
+        else {
+            String price_val = price.getText().toString().replace(",", ".");
+            product.setPrice(Double.parseDouble(price_val));
+        }
+
 
     }
     
