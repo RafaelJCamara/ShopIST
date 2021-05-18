@@ -9,20 +9,22 @@
 
     <com.github.mikephil.charting.charts.HorizontalBarChart
         android:id="@+id/idHorizontalBarChart"
-        android:layout_width="412dp"
-        android:layout_height="394dp"
-        android:layout_marginTop="48dp"
+        android:layout_width="408dp"
+        android:layout_height="360dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView17" />
+        app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/product_name"
         android:layout_width="217dp"
         android:layout_height="31dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Hist"
-        tools:layout_editor_absoluteX="33dp"
-        tools:layout_editor_absoluteY="35dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

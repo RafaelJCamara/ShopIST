@@ -756,8 +756,6 @@ public class ShopActivity extends AppCompatActivity {
     public void renderHist(ServerClassificationHistogram hist, View view){
         ArrayList<BarEntry> yVals = new ArrayList<>();
 
-
-
         yVals.add(new BarEntry(1, hist.getC1()));
         yVals.add(new BarEntry(2, hist.getC2()));
         yVals.add(new BarEntry(3, hist.getC3()));
@@ -766,6 +764,8 @@ public class ShopActivity extends AppCompatActivity {
 
 
         HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.idHorizontalBarChart);
+        TextView productNameText = view.findViewById(R.id.product_name);
+        productNameText.setText(hist.getProductName());
 
         BarDataSet set1;
         set1 = new BarDataSet(yVals, "Ratings");
