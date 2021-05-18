@@ -25,7 +25,7 @@ android {
             debuggable true
         }
         debug {
-            buildConfigField "String", "BASE_URL", "\"http://192.168.1.17:3000\""
+            buildConfigField "String", "BASE_URL", "\"http://192.168.1.65:3000\""
             buildConfigField "String", "CERTIFICATE_PASSWORD", "\"\""
         }
     }

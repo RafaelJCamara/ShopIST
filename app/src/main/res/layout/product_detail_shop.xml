@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -66,6 +67,30 @@
             app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 
         <TextView
+            android:id="@+id/productNeededText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:paddingVertical="10dp"
+            android:text="@string/needed"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/productNeededDetail"
+            app:layout_constraintEnd_toStartOf="@+id/productNeededDetail"
+            app:layout_constraintTop_toTopOf="@+id/productNeededDetail" />
+
+        <TextView
+            android:id="@+id/productNeededDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:paddingVertical="10dp"
+            android:text="@string/quantity"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <TextView
             android:id="@+id/productPriceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,11 +117,11 @@
                 android:id="@+id/productPriceField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="7"
-                android:inputType="numberDecimal"
                 android:digits="0123456789.,"
-                android:textAlignment="viewEnd"
-                android:importantForAutofill="no" />
+                android:ems="7"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:textAlignment="viewEnd" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -117,7 +142,6 @@
             android:orientation="horizontal"
             android:paddingHorizontal="10dp"
             android:paddingVertical="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
@@ -136,9 +160,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="2"
+                android:importantForAutofill="no"
                 android:inputType="numberSigned"
-                android:textAlignment="viewEnd"
-                android:importantForAutofill="no" />
+                android:textAlignment="viewEnd" />
 
             <Button
                 android:id="@+id/qtyPlus"
@@ -150,6 +174,36 @@
                 android:text="@string/plus"
                 android:textSize="24sp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/classificationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="@string/classification"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productNeededText" />
+
+        <RatingBar
+            android:id="@+id/submitionRatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="0.5"
+            app:layout_constraintEnd_toEndOf="@+id/classificationTextView"
+            app:layout_constraintStart_toStartOf="@+id/classificationTextView"
+            app:layout_constraintTop_toBottomOf="@+id/classificationTextView" />
+
+        <Button
+            android:id="@+id/submitProdClassification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_classification_button"
+            app:layout_constraintEnd_toEndOf="@+id/submitionRatingBar"
+            app:layout_constraintStart_toStartOf="@+id/submitionRatingBar"
+            app:layout_constraintTop_toBottomOf="@+id/submitionRatingBar" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
@@ -163,23 +217,8 @@
         app:iconGravity="textTop"
         app:iconPadding="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/divider4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider3" />
-
-    <Button
-        android:id="@+id/removeProductButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:backgroundTint="#F44336"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="@string/remove"
-        app:iconGravity="textTop"
-        app:iconPadding="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/divider4"
         app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <View
@@ -192,16 +231,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:id="@+id/divider4"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/productDetailSave"
-        app:layout_constraintStart_toEndOf="@+id/removeProductButton"
-        app:layout_constraintTop_toBottomOf="@+id/divider3"
-        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

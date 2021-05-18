@@ -71,5 +71,6 @@
     <string name="allowed_users">Utilizadores atualmente permitidos</string>
     <string name="remove_access_button">REMOVER ACCESSO</string>
     <string name="wait_time">Tempo de espera atual</string>
-
+    <string name="not_now">Agora não</string>
+    <string name="new_price_not_set">Para atualizar, deverá definir um preço</string>
 </resources>

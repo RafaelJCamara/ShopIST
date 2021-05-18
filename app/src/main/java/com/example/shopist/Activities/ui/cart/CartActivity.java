@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.cloudinary.utils.StringUtils;
 import com.example.shopist.Activities.ShopActivity;
 import com.example.shopist.Product.CartProduct;
 import com.example.shopist.Activities.LoginActivity;
@@ -107,9 +108,6 @@ public class CartActivity extends AppCompatActivity {
             qtyView.setText(s != null ? String.format("Item Qty: %d", s) : "");
             button.setVisibility(s == null ? View.INVISIBLE : View.VISIBLE);
         });
-        cartViewModel.getProductList().observe(this, s -> {
-            productListSettings();
-        });
 
         button.setOnClickListener(view -> { onCheckoutButtonPressed(view); });
 
@@ -151,7 +149,7 @@ public class CartActivity extends AppCompatActivity {
             Button remove = v.findViewById(R.id.removeProductButton);
 
             update.setOnClickListener(v1 -> {
-                parseProduct(view, cartProduct);
+                parseProduct(v, cartProduct);
                 updateProductInfo(v, cartProduct, (args) -> {
                     dialog.dismiss();
                 });
@@ -159,7 +157,6 @@ public class CartActivity extends AppCompatActivity {
 
             remove.setOnClickListener(v1 -> {
                 cartProduct.setQuantity(0);
-                parseProduct(view, cartProduct);
                 updateProductInfo(v, cartProduct, (args) -> {
                     dialog.dismiss();
                 });
@@ -253,31 +250,30 @@ public class CartActivity extends AppCompatActivity {
         //similar to when we click on a product inside a pantry list
         View view = getLayoutInflater().inflate(R.layout.select_pantry_to_checkout,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
-        builder.setView(view).show();
+        AlertDialog dialog = builder.setView(view).create();
+        dialog.show();
         TextView productName = view.findViewById(R.id.productNameCart);
         productName.setText(this.productList.get(index));
         Button nextButton = view.findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(index!=productList.size()-1){
-                    Log.d("checkout","Current index: "+index);
-                    index=index+1;
-                    Log.d("checkout","New index: "+index);
-                    //get form content
-                    showSelectionInterface();
-                }else{
-                    Log.d("checkout","End of all products bought.");
-                    index=0;
-                    //finished distribution
-                    //goto pantry list
-                    HashMap<String, CartContent> map = new HashMap<String,CartContent>();
-                    //choose what goes to which pantry
-                    CartContent cc = new CartContent(selectedPantries);
-                    map.put("checkout",cc);
-                    updateCheckoutAtServer(view, map);
-                }
+        nextButton.setOnClickListener(v -> {
+            if(index!=productList.size()-1){
+                Log.d("checkout","Current index: "+index);
+                index=index+1;
+                Log.d("checkout","New index: "+index);
+                //get form content
+                showSelectionInterface();
+            }else{
+                Log.d("checkout","End of all products bought.");
+                index=0;
+                //finished distribution
+                //goto pantry list
+                HashMap<String, CartContent> map = new HashMap<String,CartContent>();
+                //choose what goes to which pantry
+                CartContent cc = new CartContent(selectedPantries);
+                map.put("checkout",cc);
+                updateCheckoutAtServer(view, map);
             }
+            dialog.dismiss();
         });
         //add adapter settings
         adapterSettings(view);
@@ -302,7 +298,7 @@ public class CartActivity extends AppCompatActivity {
     * */
 
     public static void recordChange(String changedValue, String productName, String pantryListUuid){
-        ProductBought pb = new ProductBought(productName, Integer.valueOf(changedValue));
+        ProductBought pb = new ProductBought(productName, StringUtils.isBlank(changedValue) ? 0 : Integer.valueOf(changedValue));
         if(pantryAlreadyExists(pantryListUuid)){
             //pantry already exists
             for(int i=0;i!=selectedPantries.size();i++){

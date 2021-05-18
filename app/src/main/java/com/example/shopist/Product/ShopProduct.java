@@ -1,14 +1,15 @@
 package com.example.shopist.Product;
 
-public class ShopProduct extends Product {
+public class ShopProduct extends CartProduct {
 
     private int needed;
-    private float price;
     private double totalRating;
     private double nrRating;
 
-    public ShopProduct(String name, String description, int needed) {
-        super(name, description);
+    private float rating;
+
+    public ShopProduct(String name, String description, Double price, long quantity, int needed) {
+        super(name, description, price, quantity);
         this.needed = needed;
     }
 
@@ -16,12 +17,6 @@ public class ShopProduct extends Product {
 
     public void setNeeded(int needed) {
         this.needed = needed;
-    }
-
-    public float getPrice() { return price; }
-
-    public void setPrice(float price) {
-        this.price = price;
     }
 
     public double getNrRatings() { return nrRating; }
@@ -36,7 +31,10 @@ public class ShopProduct extends Product {
         this.totalRating = totalRating;
     }
 
-    public double getRating(){
-        return this.totalRating/this.nrRating;
+    public float getRating() { return this.rating; }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
+
 }

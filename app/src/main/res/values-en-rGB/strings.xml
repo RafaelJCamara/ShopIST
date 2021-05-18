@@ -72,4 +72,6 @@
     <string name="quantity">Quantity</string>
     <string name="update">Update</string>
     <string name="remove">Remove</string>
+    <string name="not_now">Not now</string>
+    <string name="new_price_not_set">To update, you must set a price</string>
 </resources>
