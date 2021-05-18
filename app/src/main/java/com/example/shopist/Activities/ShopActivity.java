@@ -20,6 +20,7 @@ import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.Product.ShopProduct;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ServerClassificationHistogram;
 import com.example.shopist.Server.ServerResponses.ServerProductClassification;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
@@ -180,6 +181,7 @@ public class ShopActivity extends AppCompatActivity {
 
         //Set product classification in view
         getClassificationFromServer(view, product);
+        //getClassificationHistFromServer(view, product);
         //updateProductRatingFrontend(view, product);
         //add save button
         Button saveProductInfoButton = view.findViewById(R.id.saveProductInfoAtStore);
@@ -309,7 +311,6 @@ public class ShopActivity extends AppCompatActivity {
 
     //Shopping product Classification
     public void getClassificationFromServer(View view, ShopProduct itemInfo){
-        //clean previous content
         String productId = getProductIdFromList(itemInfo);
         Call<ServerProductClassification> call = retrofitManager.accessRetrofitInterface().getProductRating(productId);
         call.enqueue(new Callback<ServerProductClassification>() {
@@ -333,6 +334,32 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
     }
+
+ /*   public void getClassificationHistFromServer(View view, ShopProduct itemInfo){
+        String productId = getProductIdFromList(itemInfo);
+        Call<ServerClassificationHistogram> call = retrofitManager.accessRetrofitInterface().getRatingHist(productId);
+        call.enqueue(new Callback<ServerClassificationHistogram>() {
+            @Override
+            public void onResponse(Call<ServerClassificationHistogram> call, Response<ServerClassificationHistogram> response) {
+                ServerClassificationHistogram classification = response.body();
+                TextView classificationText = view.findViewById(R.id.classificationTextView);
+
+                if(classification.getClassification()>0)
+                    classificationText.setText(String.format("%.1f", classification.getClassification()));
+                else
+                    classificationText.setText("Not rated yet");
+                //classificationText.setText(String.valueOf(classification.getClassification()));
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerClassificationHistogram> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+                Log.d("getServerClassification", "on failure");
+            }
+        });
+    }
+*/
 
     public void updateProductRating(ShopProduct itemInfo, String classification){
         HashMap<String,String> map = new HashMap<String,String>();
