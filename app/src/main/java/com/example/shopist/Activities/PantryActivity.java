@@ -96,9 +96,9 @@ public class PantryActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 10;
     String filePath;
     String currentUploadedPhoto;
-
-    String barcode ="";
+    
     View currentView;
+    EditText barcodeView;
 
     //testing purposes while we don't fix retriving the correct product info from server
     private ArrayList<ProdImage> productAndImage;
@@ -123,21 +123,6 @@ public class PantryActivity extends AppCompatActivity {
         handleProductListDialog();
         addUserAccessList();
     }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-
-        Log.d("OneResume", "barcode:" + barcode);
-        //View view = getLayoutInflater().inflate(R.layout.create_product,null);
-
-        //EditText edit1 = view.findViewById(R.id.productBarcode);
-        //edit1.setText("teste");
-
-//        EditText edit2 = (EditText) currentView.findViewById(R.id.productBarcode);
-//        edit2.setText("teste");
-    }
-
 
     /*
     ##########################
@@ -852,7 +837,8 @@ public class PantryActivity extends AppCompatActivity {
         });
 
         Button barCodeButton = view.findViewById(R.id.barcodeScanner);
-        TextView prodBarcode = view.findViewById(R.id.productBarcode);
+        EditText prodBarcode = view.findViewById(R.id.productBarcode);
+        barcodeView = prodBarcode;
         barCodeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -864,6 +850,7 @@ public class PantryActivity extends AppCompatActivity {
                 intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
                 intentIntegrator.setBeepEnabled(true);
                 intentIntegrator.initiateScan();
+                intentIntegrator.getMoreExtras();
 
             }
         });
@@ -1025,6 +1012,7 @@ public class PantryActivity extends AppCompatActivity {
             case BARCODE:
                 Log.d("barcode","barcode camera.");
                 IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, imageReturnedIntent);
+
                 if(intentResult.getContents() != null){
                     AlertDialog.Builder builder = new AlertDialog.Builder(PantryActivity.this);
                     builder.setTitle("Result");
@@ -1033,8 +1021,7 @@ public class PantryActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
                             dialog.dismiss();
-                            barcode = intentResult.getContents();
-                            Log.d("OneResume:", "onactivity" + barcode);
+                            barcodeView.setText(intentResult.getContents());
                         }
                     });
                     builder.show();
