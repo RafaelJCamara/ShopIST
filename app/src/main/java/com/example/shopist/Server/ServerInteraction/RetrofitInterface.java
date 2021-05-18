@@ -3,6 +3,7 @@ package com.example.shopist.Server.ServerInteraction;
 import com.example.shopist.Server.ServerResponses.AllProductShops;
 import com.example.shopist.Server.ServerResponses.ProductSuggestion;
 import com.example.shopist.Server.ServerResponses.ServerCart;
+import com.example.shopist.Server.ServerResponses.ServerClassificationHistogram;
 import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
@@ -101,6 +102,9 @@ public interface RetrofitInterface {
 
     @GET("/product/{productId}/getProductRating")
     Call<ServerProductClassification> getProductRating(@Path("productId") String productId);
+
+    @GET("/product/{productId}/getRatingHist")
+    Call<ServerClassificationHistogram> getRatingHist(@Path("productId") String productId);
 
     @GET("/product/{productName}/getUrl")
     Call<ServerProductImageUrl> getProductImageUrl(@Path("productName") String imageUrl);
