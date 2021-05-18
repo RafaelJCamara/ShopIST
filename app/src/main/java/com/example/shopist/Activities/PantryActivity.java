@@ -53,10 +53,12 @@ import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.UserAccess;
 import com.example.shopist.Utils.Other.Adapter;
 import com.example.shopist.Utils.CacheManager.ImageCacheManager;
+import com.example.shopist.Utils.Other.Capture;
 import com.example.shopist.Utils.Other.ItemListAdapter;
 import com.example.shopist.Product.Product;
 import com.example.shopist.Utils.Other.ProdImage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 
 import org.w3c.dom.Text;
@@ -100,6 +102,7 @@ public class PantryActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_CAMERA = 1;
     private static final int SELECT_FILE = 2;
+    private static final int BARCODE = 3;
 
 
     @Override
@@ -827,6 +830,21 @@ public class PantryActivity extends AppCompatActivity {
                 builder.cancel();
             }
         });
+
+        //Button barCodeButton = view.findViewById(R.id.)
+        barCodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentIntegrator intentIntegrator = new IntentIntegrator(PantryActivity.this);
+
+                intentIntegrator.setCaptureActivity(Capture.class);
+                intentIntegrator.setOrientationLocked(true);
+                intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
+                intentIntegrator.setBeepEnabled(true);
+                intentIntegrator.initiateScan();
+            }
+        });
+
     }
 
     public void handlePantryListProductCreation(View view){
