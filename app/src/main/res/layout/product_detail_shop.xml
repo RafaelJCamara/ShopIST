@@ -204,15 +204,19 @@
             app:layout_constraintStart_toStartOf="@+id/submitionRatingBar"
             app:layout_constraintTop_toBottomOf="@+id/submitionRatingBar" />
 
-        <Button
+        <ImageButton
             android:id="@+id/ratingHistButton"
-            android:layout_width="68dp"
-            android:layout_height="51dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="44dp"
-            android:text="Button"
+            android:layout_marginTop="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.36"
             app:layout_constraintStart_toEndOf="@+id/submitionRatingBar"
-            app:layout_constraintTop_toBottomOf="@+id/productNeededDetail" />
+            app:layout_constraintTop_toBottomOf="@+id/productNeededDetail"
+            app:layout_constraintVertical_bias="0.19999999"
+            app:srcCompat="@drawable/ic_bargraph" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

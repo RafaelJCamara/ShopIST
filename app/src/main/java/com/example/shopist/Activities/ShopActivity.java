@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -380,7 +381,7 @@ public class ShopActivity extends AppCompatActivity {
             getClassificationFromServer(view, shopProduct);
         });
 
-        Button ratingHistButton = view.findViewById(R.id.ratingHistButton);
+        ImageButton ratingHistButton = view.findViewById(R.id.ratingHistButton);
 
         ratingHistButton.setOnClickListener(v -> {
 
