@@ -375,7 +375,6 @@ public class ShopActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
 
             //update information in server
-            updateProductRating(shopProduct, productRating);
 
             updateProductRating(shopProduct, productRating);
             getClassificationFromServer(view, shopProduct);
@@ -384,16 +383,7 @@ public class ShopActivity extends AppCompatActivity {
         ImageButton ratingHistButton = view.findViewById(R.id.ratingHistButton);
 
         ratingHistButton.setOnClickListener(v -> {
-
             handleRatingHist(shopProduct);
-            //Classification of Shopping product
-            String productRating = String.valueOf(ratingBar.getRating());
-            Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
-
-            //update information in server
-
-            updateProductRating(shopProduct, productRating);
-            getClassificationFromServer(view, shopProduct);
         });
 
     }
