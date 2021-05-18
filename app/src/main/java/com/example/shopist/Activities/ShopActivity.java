@@ -1,6 +1,7 @@
 package com.example.shopist.Activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,17 @@ import com.example.shopist.Utils.Other.ItemListAdapter;
 import com.example.shopist.Utils.Other.SimpleCallback;
 import com.example.shopist.Utils.Other.Adapter;
 import com.example.shopist.Utils.Other.PublicInfoManager;
+import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -315,10 +327,9 @@ public class ShopActivity extends AppCompatActivity {
         RatingBar ratingBar;
         Button ratingButton;
 
+
         //Set product classification in view
         getClassificationFromServer(view, shopProduct);
-
-        getClassificationHistFromServer(view, shopProduct);
 
         //Set product name in view
         //TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
@@ -358,6 +369,22 @@ public class ShopActivity extends AppCompatActivity {
         ratingButton = view.findViewById(R.id.submitProdClassification);
 
         ratingButton.setOnClickListener(v -> {
+            //Classification of Shopping product
+            String productRating = String.valueOf(ratingBar.getRating());
+            Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
+
+            //update information in server
+            updateProductRating(shopProduct, productRating);
+
+            updateProductRating(shopProduct, productRating);
+            getClassificationFromServer(view, shopProduct);
+        });
+
+        Button ratingHistButton = view.findViewById(R.id.ratingHistButton);
+
+        ratingHistButton.setOnClickListener(v -> {
+
+            handleRatingHist(shopProduct);
             //Classification of Shopping product
             String productRating = String.valueOf(ratingBar.getRating());
             Toast.makeText(getApplicationContext(), productRating, Toast.LENGTH_LONG).show();
@@ -682,29 +709,6 @@ public class ShopActivity extends AppCompatActivity {
         });
     }
 
-    public void getClassificationHistFromServer(View view, ShopProduct itemInfo){
-        String productId = itemInfo.getId();
-        Call<ServerClassificationHistogram> call = retrofitManager.accessRetrofitInterface().getRatingHist(productId);
-        call.enqueue(new Callback<ServerClassificationHistogram>() {
-            @Override
-            public void onResponse(Call<ServerClassificationHistogram> call, Response<ServerClassificationHistogram> response) {
-                ServerClassificationHistogram classification = response.body();
-                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC0()));
-                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC1()));
-                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC2()));
-                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC3()));
-                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC4()));
-                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC5()));
-            }
-
-            @Override
-            public void onFailure(Call<ServerClassificationHistogram> call, Throwable t) {
-                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
-                Log.d("getServerClassification", "on failure");
-            }
-        });
-    }
-
 
     public void updateProductRating(ShopProduct itemInfo, String classification){
         HashMap<String,String> map = new HashMap<String,String>();
@@ -726,17 +730,195 @@ public class ShopActivity extends AppCompatActivity {
         });
     }
 
-    private void parseProduct(View v, ShopProduct product) {
-
-        EditText price = v.findViewById(R.id.productPriceField);
-        EditText qty = v.findViewById(R.id.productQuantityField);
-
-        product.setPrice(Double.parseDouble(price.getText().toString()));
-        product.setQuantity(Long.parseLong(qty.getText().toString()));
-
+    private void handleRatingHist(ShopProduct product){
+        View view = getLayoutInflater().inflate(R.layout.rating_histogram,null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
+        AlertDialog dialog = builder.setView(view).create();
+        dialog.show();
+        getClassificationHistFromServer(view, product);
     }
-    
-    //user prompt
+
+    public void getClassificationHistFromServer(View view, ShopProduct itemInfo){
+        String productId = itemInfo.getId();
+        Call<ServerClassificationHistogram> call = retrofitManager.accessRetrofitInterface().getRatingHist(productId);
+        call.enqueue(new Callback<ServerClassificationHistogram>() {
+            @Override
+            public void onResponse(Call<ServerClassificationHistogram> call, Response<ServerClassificationHistogram> response) {
+                ServerClassificationHistogram classification = response.body();
+                Log.d("getClassificationHistFromServer", "1" +String.valueOf(classification.getC1()));
+                Log.d("getClassificationHistFromServer", "2" +String.valueOf(classification.getC2()));
+                Log.d("getClassificationHistFromServer", "3" +String.valueOf(classification.getC3()));
+                Log.d("getClassificationHistFromServer", "4" +String.valueOf(classification.getC4()));
+                Log.d("getClassificationHistFromServer", "5" +String.valueOf(classification.getC5()));
+                renderHist(classification, view);
+            }
+
+            @Override
+            public void onFailure(Call<ServerClassificationHistogram> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+                Log.d("getServerClassification", "on failure");
+            }
+        });
+    }
+
+    public void renderHist(ServerClassificationHistogram hist, View view){
+        ArrayList<BarEntry> yVals = new ArrayList<>();
+        float barWidth = 9f;
+        float spaceForBar = 10f;
+
+        /*ArrayList<String> labels = new ArrayList<>();
+        labels.add("1 Star");
+        labels.add("2 Star");
+        labels.add("3 Star");
+        labels.add("4 Star");
+        labels.add("5 Star");
+
+        //Layout hist
+        HorizontalBarChart mChart = (HorizontalBarChart) view.findViewById(R.id.idHorizontalBarChart);
+        mChart.setDrawBarShadow(false);
+        mChart.setDrawValueAboveBar(true);
+        mChart.getDescription().setEnabled(false);
+        mChart.setPinchZoom(false);
+        mChart.setDrawGridBackground(false);
+
+        XAxis xl = mChart.getXAxis();
+        xl.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xl.setDrawAxisLine(true);
+        xl.setDrawGridLines(false);
+        CategoryBarChartXaxisFormatter xaxisFormatter = new CategoryBarChartXaxisFormatter(labels);
+        xl.setValueFormatter(xaxisFormatter);
+        xl.setGranularity(1);
+
+        YAxis yl = mChart.getAxisLeft();
+        yl.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        yl.setDrawGridLines(false);
+        yl.setEnabled(false);
+        yl.setAxisMinimum(0f);
+
+        YAxis yr = mChart.getAxisRight();
+        yr.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        yr.setDrawGridLines(false);
+        yr.setAxisMinimum(0f);*/
+
+
+
+        yVals.add(new BarEntry(1, hist.getC1()));
+        yVals.add(new BarEntry(2, hist.getC2()));
+        yVals.add(new BarEntry(3, hist.getC3()));
+        yVals.add(new BarEntry(4, hist.getC4()));
+        yVals.add(new BarEntry(5, hist.getC5()));
+
+
+        /*
+        BarDataSet set1;
+        set1 = new BarDataSet(yVals, "DataSet 1");
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(set1);
+        BarData data = new BarData(dataSets);
+        data.setValueTextSize(10f);
+        data.setBarWidth(.9f);
+        mChart.setData(data);
+        mChart.getLegend().setEnabled(false);*/
+
+
+
+        /*
+        BarDataSet ratingSet = new BarDataSet(yVals, "productRating");
+        BarData data = new BarData(ratingSet);
+        data.setBarWidth(barWidth);
+
+
+        mChart.setData(data);*/
+
+        HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.idHorizontalBarChart);
+
+        BarDataSet set1;
+        set1 = new BarDataSet(yVals, "The year 2017");
+
+        set1.setColors(Color.parseColor("#F78B5D"), Color.parseColor("#FCB232"), Color.parseColor("#FDD930"), Color.parseColor("#ADD137"), Color.parseColor("#A0C25A"));
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(set1);
+
+        BarData data = new BarData(dataSets);
+
+        // hide Y-axis
+        YAxis left = chart.getAxisLeft();
+        left.setDrawLabels(false);
+
+        // custom X-axis labels
+        String[] values = new String[] { "1 star", "2 stars", "3 stars", "4 stars", "5 stars"};
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+
+        chart.setData(data);
+
+        // custom description
+        Description description = new Description();
+        description.setText("Rating");
+        chart.setDescription(description);
+
+        // hide legend
+        chart.getLegend().setEnabled(false);
+
+        chart.animateY(1000);
+        chart.invalidate();
+    }
+
+    public class MyXAxisValueFormatter extends ValueFormatter {
+
+        private String[] mValues;
+
+        public MyXAxisValueFormatter(String[] values) {
+            this.mValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mValues[(int) value];
+        }
+    }
+
+        private ArrayList<BarEntry> getDataSet() {
+
+            ArrayList<BarEntry> valueSet1 = new ArrayList<>();
+
+            BarEntry v1e2 = new BarEntry(1, 4341f);
+            valueSet1.add(v1e2);
+            BarEntry v1e3 = new BarEntry(2, 3121f);
+            valueSet1.add(v1e3);
+            BarEntry v1e4 = new BarEntry(3, 5521f);
+            valueSet1.add(v1e4);
+            BarEntry v1e5 = new BarEntry(4, 10421f);
+            valueSet1.add(v1e5);
+            BarEntry v1e6 = new BarEntry(5, 27934f);
+            valueSet1.add(v1e6);
+
+            return valueSet1;
+        }
+
+    /*public class CategoryBarChartXaxisFormatter extends ValueFormatter {
+
+        ArrayList<String> mValues;
+
+        public CategoryBarChartXaxisFormatter(ArrayList<String> values) {
+            this.mValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            int val = (int) value;
+            String label = "";
+            if (val >= 0 && val < mValues.size()) {
+                label = mValues.get(val);
+            } else {
+                label = "";
+            }
+            return label;
+        }
+    }*/
+
+
     private void handleUserPromptDialog(ShopProduct product, SimpleCallback... callbacks){
         View view = getLayoutInflater().inflate(R.layout.user_prompt_price,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(ShopActivity.this);
@@ -749,6 +931,19 @@ public class ShopActivity extends AppCompatActivity {
         dialog.show();
         handleProductUpdateUserPrompt(view, product, dialog, callbacks);
     }
+
+    private void parseProduct(View v, ShopProduct product) {
+
+        EditText price = v.findViewById(R.id.productPriceField);
+        EditText qty = v.findViewById(R.id.productQuantityField);
+
+        product.setPrice(Double.parseDouble(price.getText().toString()));
+        product.setQuantity(Long.parseLong(qty.getText().toString()));
+
+    }
+    
+    //user prompt
+
 
     private void handleProductUpdateUserPrompt(View view, ShopProduct product, AlertDialog dialog, SimpleCallback... callbacks) {
 
