@@ -168,9 +168,11 @@
             android:id="@+id/barcodeScanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button"
-            tools:layout_editor_absoluteX="216dp"
-            tools:layout_editor_absoluteY="245dp" />
+            android:layout_marginStart="8dp"
+            android:text="Scan"
+            app:layout_constraintBottom_toBottomOf="@+id/productBarcode"
+            app:layout_constraintStart_toEndOf="@+id/productBarcode"
+            app:layout_constraintTop_toBottomOf="@+id/barcode" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
