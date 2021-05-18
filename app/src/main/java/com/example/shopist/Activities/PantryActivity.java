@@ -97,13 +97,16 @@ public class PantryActivity extends AppCompatActivity {
     String filePath;
     String currentUploadedPhoto;
 
+    String barcode ="";
+    View currentView;
+
     //testing purposes while we don't fix retriving the correct product info from server
     private ArrayList<ProdImage> productAndImage;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_CAMERA = 1;
     private static final int SELECT_FILE = 2;
-    private static final int BARCODE = 3;
+    private static final int BARCODE = 49374;
 
 
     @Override
@@ -119,6 +122,20 @@ public class PantryActivity extends AppCompatActivity {
 //        initCloudSettings();
         handleProductListDialog();
         addUserAccessList();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        Log.d("OneResume", "barcode:" + barcode);
+        //View view = getLayoutInflater().inflate(R.layout.create_product,null);
+
+        //EditText edit1 = view.findViewById(R.id.productBarcode);
+        //edit1.setText("teste");
+
+//        EditText edit2 = (EditText) currentView.findViewById(R.id.productBarcode);
+//        edit2.setText("teste");
     }
 
 
@@ -304,6 +321,8 @@ public class PantryActivity extends AppCompatActivity {
         builder.setView(view);
         AlertDialog alert = builder.create();
         alert.show();
+
+        currentView = view;
 
         handleBuyInShopsLogic(view, itemInfo, alert);
     }
@@ -833,16 +852,19 @@ public class PantryActivity extends AppCompatActivity {
         });
 
         Button barCodeButton = view.findViewById(R.id.barcodeScanner);
+        TextView prodBarcode = view.findViewById(R.id.productBarcode);
         barCodeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 IntentIntegrator intentIntegrator = new IntentIntegrator(PantryActivity.this);
 
+                intentIntegrator.addExtra("prodBarcode", prodBarcode);
                 intentIntegrator.setCaptureActivity(Capture.class);
                 intentIntegrator.setOrientationLocked(true);
                 intentIntegrator.setDesiredBarcodeFormats(intentIntegrator.ALL_CODE_TYPES);
                 intentIntegrator.setBeepEnabled(true);
                 intentIntegrator.initiateScan();
+
             }
         });
 
@@ -978,6 +1000,7 @@ public class PantryActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent imageReturnedIntent) {
+        Log.d("onActivityResult", String.valueOf(requestCode));
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         switch(requestCode) {
             case REQUEST_CAMERA:
@@ -1010,9 +1033,12 @@ public class PantryActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
                             dialog.dismiss();
+                            barcode = intentResult.getContents();
+                            Log.d("OneResume:", "onactivity" + barcode);
                         }
                     });
                     builder.show();
+
                 }else {
                     Toast.makeText(getApplicationContext(), "Couldn't scan anything", Toast.LENGTH_SHORT).show();
                 }
