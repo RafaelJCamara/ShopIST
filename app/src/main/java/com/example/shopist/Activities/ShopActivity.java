@@ -318,6 +318,8 @@ public class ShopActivity extends AppCompatActivity {
         //Set product classification in view
         getClassificationFromServer(view, shopProduct);
 
+        getClassificationHistFromServer(view, shopProduct);
+
         //Set product name in view
         //TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
         //productNameInStore.setText(shopProduct.getName());
@@ -680,21 +682,19 @@ public class ShopActivity extends AppCompatActivity {
         });
     }
 
- /*   public void getClassificationHistFromServer(View view, ShopProduct itemInfo){
-        String productId = getProductIdFromList(itemInfo);
+    public void getClassificationHistFromServer(View view, ShopProduct itemInfo){
+        String productId = itemInfo.getId();
         Call<ServerClassificationHistogram> call = retrofitManager.accessRetrofitInterface().getRatingHist(productId);
         call.enqueue(new Callback<ServerClassificationHistogram>() {
             @Override
             public void onResponse(Call<ServerClassificationHistogram> call, Response<ServerClassificationHistogram> response) {
                 ServerClassificationHistogram classification = response.body();
-                TextView classificationText = view.findViewById(R.id.classificationTextView);
-
-                if(classification.getClassification()>0)
-                    classificationText.setText(String.format("%.1f", classification.getClassification()));
-                else
-                    classificationText.setText("Not rated yet");
-                //classificationText.setText(String.valueOf(classification.getClassification()));
-
+                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC0()));
+                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC1()));
+                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC2()));
+                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC3()));
+                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC4()));
+                Log.d("getClassificationHistFromServer", String.valueOf(classification.getC5()));
             }
 
             @Override
@@ -704,7 +704,7 @@ public class ShopActivity extends AppCompatActivity {
             }
         });
     }
-*/
+
 
     public void updateProductRating(ShopProduct itemInfo, String classification){
         HashMap<String,String> map = new HashMap<String,String>();

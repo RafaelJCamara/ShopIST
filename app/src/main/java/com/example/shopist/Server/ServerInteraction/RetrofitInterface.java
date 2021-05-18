@@ -103,7 +103,7 @@ public interface RetrofitInterface {
     @GET("/product/{productId}/getProductRating")
     Call<ServerProductClassification> getProductRating(@Path("productId") String productId);
 
-    @GET("/product/{productId}/getRatingHist")
+    @GET("/product/{productId}/getProductRatingHist")
     Call<ServerClassificationHistogram> getRatingHist(@Path("productId") String productId);
 
     @GET("/product/{productName}/getUrl")
