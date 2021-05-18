@@ -21,6 +21,7 @@ import com.example.shopist.Activities.ui.cart.CartActivity;
 import com.example.shopist.Product.ShopProduct;
 import com.example.shopist.R;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
+import com.example.shopist.Server.ServerResponses.ServerProductClassification;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerShoppingProduct;
 import com.example.shopist.Server.ServerResponses.UserAccess;
@@ -312,6 +313,10 @@ public class ShopActivity extends AppCompatActivity {
 
         RatingBar ratingBar;
         Button ratingButton;
+
+        //Set product classification in view
+        getClassificationFromServer(view, shopProduct);
+
         //Set product name in view
         //TextView productNameInStore = view.findViewById(R.id.productNameAtStore);
         //productNameInStore.setText(shopProduct.getName());
@@ -357,7 +362,8 @@ public class ShopActivity extends AppCompatActivity {
             //update information in server
             updateProductRating(shopProduct, productRating);
 
-            updateProductRatingFrontend(view, shopProduct);
+            updateProductRating(shopProduct, productRating);
+            getClassificationFromServer(view, shopProduct);
         });
 
     }
@@ -368,7 +374,7 @@ public class ShopActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
                 //Toast.makeText(ShopActivity.this, itemInfo,Toast.LENGTH_SHORT).show();
-                ShopProduct product = getProductFromShoProductList(itemInfo);
+                ShopProduct product = getProductFromShopProductList(itemInfo);
                 if(product != null)
                     handleProductDetailDialog(product);
                 else
@@ -442,11 +448,6 @@ public class ShopActivity extends AppCompatActivity {
             ShopProduct sProduct = new ShopProduct(prod.getName(), prod.getDescription(), prod.getPrice(), prod.getQuantity(), prod.getNeeded());
             sProduct.setId(prod.getProductId());
             //sProduct.setRating(prod.getRating());
-            if(prod.getNrRatings()!=0) {
-                sProduct.setNrRating(prod.getNrRatings());
-                sProduct.setTotalRating(prod.getTotalRating());
-            }
-
             shopViewModel.getProductList().getValue().add(sProduct);
 
             String productInfo=prod.getName()+"; Needed:"+prod.getNeeded()+"; price:" + prod.getPrice();
@@ -480,7 +481,8 @@ public class ShopActivity extends AppCompatActivity {
         productNameInStore.setText(product.getName());
 
         //Set product classification in view
-        updateProductRatingFrontend(view, product);
+        getClassificationFromServer(view, product);
+        //updateProductRatingFrontend(view, product);
         //add save button
         Button saveProductInfoButton = view.findViewById(R.id.saveProductInfoAtStore);
         saveProductInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -516,8 +518,7 @@ public class ShopActivity extends AppCompatActivity {
 
                 //update information in server
                 updateProductRating(shopProduct, productRating);
-
-                updateProductRatingFrontend(view, product);
+                getClassificationFromServer(view, product);
             }
         });
     }
@@ -580,8 +581,6 @@ public class ShopActivity extends AppCompatActivity {
     private String getProductIdFromList(String itemInfo){
         String productId ="";
         for(ServerShoppingProduct prod:this.existingPantryProducts){
-            //String[] prodInfo = itemInfo.split(";");
-            //String[] productNeeded = prodInfo[1].trim().split(":");
 
             if(product.getName().equals(prod.getName()) &&
                     product.getNeeded()== prod.getNeeded()
@@ -589,6 +588,7 @@ public class ShopActivity extends AppCompatActivity {
                 productId+=prod.getProductId();
             }
         }
+        Log.d("getprodidfromlist:", productId);
         return productId;
     }*/
 
@@ -613,7 +613,7 @@ public class ShopActivity extends AppCompatActivity {
                 product = prod;
             }
         }
-        Log.d("getprodfromshoplist", product.getName() +" "+ product.getPrice() +" " +product.getRating() );
+        Log.d("getprodfromshoplist", product.getName() +" "+ product.getPrice() );
         return product;
         if(rate == 0)
             rateString = "no rating";
@@ -653,17 +653,35 @@ public class ShopActivity extends AppCompatActivity {
     }
 
     //Shopping product Classification
+    public void getClassificationFromServer(View view, ShopProduct shopProduct){
+        //clean previous content
+        String productId = shopProduct.getId();
+        Call<ServerProductClassification> call = retrofitManager.accessRetrofitInterface().getProductRating(productId);
+        call.enqueue(new Callback<ServerProductClassification>() {
+            @Override
+            public void onResponse(Call<ServerProductClassification> call, Response<ServerProductClassification> response) {
+                    ServerProductClassification classification = response.body();
+                    TextView classificationText = view.findViewById(R.id.classificationTextView);
+
+                    if(classification.getClassification()>0)
+                        classificationText.setText(String.format("%.1f", classification.getClassification()));
+                    else
+                        classificationText.setText("Not rated yet");
+                    //classificationText.setText(String.valueOf(classification.getClassification()));
+
+            }
+
+            @Override
+            public void onFailure(Call<ServerProductClassification> call, Throwable t) {
+                Toast.makeText(ShopActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_LONG).show();
+                Log.d("getServerClassification", "on failure");
+            }
+        });
+    }
 
     public void updateProductRating(ShopProduct itemInfo, String classification){
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("productRating", classification);
-
-        //this should just append after server response OK
-
-        double currentClassification = itemInfo.getTotalRating();
-        double totalClassifications = itemInfo.getNrRatings();
-        itemInfo.setTotalRating(Double.parseDouble(classification) + currentClassification);
-        itemInfo.setNrRating(totalClassifications+1);
 
         Call<Void> call = retrofitManager.accessRetrofitInterface().rateProductAtStore(itemInfo.getId(), map);
         call.enqueue(new Callback<Void>() {
@@ -690,28 +708,7 @@ public class ShopActivity extends AppCompatActivity {
         product.setQuantity(Long.parseLong(qty.getText().toString()));
 
     }
-
-    public void updateProductRatingFrontend(View view, ShopProduct shopProduct){
-        TextView classification = view.findViewById(R.id.classificationTextView);
-        //ShopProduct product = getProductFromShoProductList(itemInfo.getName());
-        if(shopProduct.getNrRatings()>0)
-            classification.setText(String.format("Current Clas.: %.1f", shopProduct.getRating()));
-        else
-            classification.setText("Not rated yet");
-
-
-        /*int i;
-        for(i=0; i<this.shopProductList.size(); i++){
-            if(this.shopProductList.get(i).getName().equals(itemInfo.getName())) {
-                //this.shopProductList.set(i, itemInfo);
-                Log.d("updateProductOnShopProductList", itemInfo.getName() +" "+ itemInfo.getPrice() +" " +itemInfo.getRating() );
-            }
-        }*/
-
-
-        //fillPantryProductList();
-    }
-
+    
     //user prompt
     private void handleUserPromptDialog(ShopProduct product, SimpleCallback... callbacks){
         View view = getLayoutInflater().inflate(R.layout.user_prompt_price,null);

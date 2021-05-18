@@ -7,6 +7,7 @@ import com.example.shopist.Server.ServerResponses.ServerData;
 import com.example.shopist.Server.ServerResponses.ServerInitCheckoutToken;
 import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerPantryList;
+import com.example.shopist.Server.ServerResponses.ServerProductClassification;
 import com.example.shopist.Server.ServerResponses.ServerProductImageUrl;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerUserList;
@@ -95,8 +96,11 @@ public interface RetrofitInterface {
     @POST("/product")
     Call<Void> createProduct(@Body HashMap<String,String> map);
 
-    @POST("/product/{productId}/rateProduct")
+    @POST("/product/{productId}/addProductRating")
     Call<Void> rateProductAtStore(@Path("productId") String productId, @Body HashMap<String,String> map);
+
+    @GET("/product/{productId}/getProductRating")
+    Call<ServerProductClassification> getProductRating(@Path("productId") String productId);
 
     @GET("/product/{productName}/getUrl")
     Call<ServerProductImageUrl> getProductImageUrl(@Path("productName") String imageUrl);
@@ -123,6 +127,7 @@ public interface RetrofitInterface {
 
     @POST("/store/updateProductPrice")
     Call<Void> updateProductPriceAtStore(@Body HashMap<String,String> map);
+
 
 
 

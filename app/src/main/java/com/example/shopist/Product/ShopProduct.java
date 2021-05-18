@@ -4,7 +4,7 @@ public class ShopProduct extends CartProduct {
 
     private int needed;
     private double totalRating;
-    private double nrRating;
+    private int nrRating;
 
     private float rating;
 
@@ -19,22 +19,5 @@ public class ShopProduct extends CartProduct {
         this.needed = needed;
     }
 
-    public double getNrRatings() { return nrRating; }
-
-    public double getTotalRating() { return totalRating; }
-
-    public void setNrRating(double nrRating) {
-        this.nrRating = nrRating;
-    }
-
-    public void setTotalRating(double totalRating) {
-        this.totalRating = totalRating;
-    }
-
-    public float getRating() { return this.rating; }
-
-    public void setRating(float rating) {
-        this.rating = rating;
-    }
 
 }
