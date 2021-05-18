@@ -872,7 +872,10 @@ public class ShopActivity extends AppCompatActivity {
         EditText price = v.findViewById(R.id.productPriceField);
         EditText qty = v.findViewById(R.id.productQuantityField);
 
-        product.setPrice(Double.parseDouble(price.getText().toString()));
+        //Some locations may have comma instead of . in decimals
+        String price_val = price.getText().toString().replace(",",".");;
+
+        product.setPrice(Double.parseDouble(price_val));
         product.setQuantity(Long.parseLong(qty.getText().toString()));
 
     }
