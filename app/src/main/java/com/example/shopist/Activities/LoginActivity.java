@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.shopist.R;
-import com.example.shopist.Server.ServerInteraction.RetrofitInterface;
 import com.example.shopist.Server.ServerInteraction.RetrofitManager;
 import com.example.shopist.Server.ServerResponses.ServerData;
 
@@ -20,8 +19,6 @@ import java.util.HashMap;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -31,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        retrofitManager = new RetrofitManager();
+        retrofitManager = new RetrofitManager(this);
         addSettings();
     }
 
@@ -76,13 +73,15 @@ public class LoginActivity extends AppCompatActivity {
                     loginSuccess(response);
                 } else if (response.code() == 404) {
                     //no matching credentials
-                    Toast.makeText(LoginActivity.this, "Wrong credentials!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Wrong credentials!!", Toast.LENGTH_SHORT).show();
+                } else if (response.code() == 401){
+                    Toast.makeText(getBaseContext(), "Problem connecting to server (check certificate)", Toast.LENGTH_SHORT).show();
                 }
             }
             //when the server fails to respond to our request
             @Override
             public void onFailure(Call<ServerData> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "SERVER ERROR! Please try again later.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -93,11 +92,12 @@ public class LoginActivity extends AppCompatActivity {
         ServerData userInfoServer = response.body();
 
         //create a new intent to main activity screen
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
 
-        //put user information into intent
+        //put cart information into intent
         intent.putExtra("username",userInfoServer.getName());
         intent.putExtra("email",userInfoServer.getEmail());
+        intent.putExtra("userId",userInfoServer.getUserId());
 
         //start activity targeted in the intent
         startActivity(intent);
@@ -105,9 +105,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkSignupOrigin(){
         //checks if we go to the login activity from a successful signup
-        if(getIntent()!=null){
+        if(getIntent()!=null && getIntent().getStringExtra("email") != null){
             //we came from signup
-            //this means we should fill the login fields with the user credentials
+            //this means we should fill the login fields with the cart credentials
             EditText emailComponent = findViewById(R.id.emailLogin);
             emailComponent.setText(getIntent().getStringExtra("email"));
 
@@ -136,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //go to main page activity
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivityNav.class);
                 startActivity(intent);
             }
         });

@@ -3,6 +3,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('D:\\OneDrive\\Faculdade\\MEIC-A\\Ano1\\Semestre2\\CMU\\Projecto\\ShopIST\\sign\\keystore.jks')
+            storePassword '5h0p_15T'
+            keyAlias 'signkey'
+            keyPassword '5h0p_15T'
+        }
+        release {
+            storeFile file('D:\\OneDrive\\Faculdade\\MEIC-A\\Ano1\\Semestre2\\CMU\\Projecto\\ShopIST\\sign\\keystore.jks')
+            storePassword '5h0p_15T'
+            keyAlias 'signkey'
+            keyPassword '5h0p_15T'
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -14,12 +28,20 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
     }
 
     buildTypes {
         release {
+            buildConfigField "String", "BASE_URL", "\"https://shopist.adetectivestory.com\""
+            buildConfigField "String", "CERTIFICATE_PASSWORD", "\"5h0p_15T\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+        debug {
+            buildConfigField "String", "BASE_URL", "\"http://192.168.1.65:3000\""
+            buildConfigField "String", "CERTIFICATE_PASSWORD", "\"\""
         }
     }
     compileOptions {
@@ -27,14 +49,31 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+repositories {
+    maven { url "https://jitpack.io" }
+}
 
 dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.navigation:navigation-fragment:2.2.2'
+    implementation 'androidx.navigation:navigation-ui:2.2.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation group: 'com.cloudinary', name: 'cloudinary-android', version: '1.30.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation project(':Termite-WifiP2P-API')
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
+    implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
+
+    implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
 }

@@ -1,3 +1,103 @@
 <resources>
+    <string name="Welcome">Welcome</string>
+    <string name="WelcomeMessage">Welcome to ShopIST</string>
+    <string name="login_button">LOGIN</string>
+    <string name="signup">Dont have an account? Signup here!</string>
+    <string name="start_without_login">"I just want to use the app."</string>
+    <string name="logout_button">LOGOUT</string>
+
+    <string name="signup_title">Signup to ShopIST</string>
+    <string name="username">username</string>
+    <string name="email">email</string>
+    <string name="password">password</string>
+    <string name="confirm_password">confirm password</string>
+    <string name="signup_button">SIGN UP</string>
+
     <string name="app_name">ShopIST</string>
+    <string name="title_activity_main2">MainActivity</string>
+    <string name="title_pantries">Pantries</string>
+    <string name="title_shopping">Shopping</string>
+    <string name="title_cart">Cart</string>
+    <string name="cart_checkout">Cart Checkout</string>
+    <string name="title_activity_cart">CartActivity</string>
+
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="get_button">GET</string>
+    <string name="title_shopping_lists">Shopping Lists</string>
+    <string name="empty_shopping_lists">There are no shopping lists. Try getting by id or creating a new one.</string>
+    <string name="empty_pantry_lists">There are no pantry lists. Try getting by id or creating a new one.</string>
+    <string name="title_pantry_lists">Pantry Lists</string>
+    <string name="enter_list_code_text">Enter the list code</string>
+    <string name="list_name_text">List name</string>
+    <string name="add_list_button">ADD LIST</string>
+    <string name="list_address">List Address</string>
+
+
+    <string name="go_to_cart_button">GO TO CART</string>
+
+
+    <string name="location">Address/Location</string>
+    <string name="create_list_button">CREATE LIST</string>
+
+    <string name="product_description">Product description</string>
+    <string name="stock">Stock</string>
+    <string name="needed">Needed</string>
+    <string name="available_shopping_lists">Available Shopping Lists:</string>
+    <string name="add_product_to_list">Select to add to list</string>
+    <string name="save_button">SAVE</string>
+    <string name="amount_consume">Amount to consume</string>
+    <string name="consume_button">CONSUME</string>
+    <string name="delete_product_button">DELETE PRODUCT</string>
+
+    <string name="create_product_title">Create Product</string>
+    <string name="product_name">Product Name</string>
+    <string name="Name">Name</string>
+    <string name="barcode">Barcode</string>
+    <string name="Product_stock">Product Stock</string>
+    <string name="Product_needed">Product Needed</string>
+    <string name="create_button">CREATE</string>
+    <string name="photo_button">PHOTO</string>
+
+    <string name="quantity_store">Quantity in store</string>
+    <string name="price_store">Price in store</string>
+    <string name="classification">Classification</string>
+    <string name="submit_classification_button">SUBMIT CLASSIFICATION</string>
+
+    <string name="template_suggestion_header">Shoppers who bought that product also bought:</string>
+    <string name="add_question">Do you want to add?</string>
+    <string name="yes_checkbox">Yes (if so, please fill the below field)</string>
+    <string name="amount_purchase_suggested">Amount to purchase</string>
+    <string name="no_checkox">No</string>
+
+    <string name="user_access_email">Enter user email</string>
+    <string name="save_access_button">SAVE ACCESS</string>
+    <string name="allowed_users">Current allowed users</string>
+    <string name="remove_access_button">REMOVE ACCESS</string>
+
+    <string name="wait_time">Current waiting time</string>
+
+    <!--
+    //buttons
+    -->
+    <string name="share_list_button">SHARE</string>
+    <string name="add_product_button">Add Product</string>
+    <string name="share_message">Hello there! Join my  %1$s list on ShopIST, by inserting the following code:  %2$s .</string>
+    <string name="cart">Cart</string>
+    <string name="quantity">Quantity</string>
+    <string name="todo">TODO</string>
+    <string name="minus">-</string>
+    <string name="plus">+</string>
+    <string name="euro">€</string>
+    <string name="update">Update</string>
+    <string name="remove">Remove</string>
+    <string name="title">Title</string>
+
+    <string name="user_prompt_price"> It seems this product dont have an associated price at this store.  Do you wish to add it now?  (this will make your cart price more precise)</string>
+    <string name="share_pantry_msg">Here is my pantry list from ShopIST! To add it, in your pantry, click ADD and insert the code. Good shopping!</string>
+    <string name="not_now">Not now</string>
+
+    <string name="new_price_not_set">To update, you must set a price</string>
 </resources>
