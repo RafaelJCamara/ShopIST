@@ -41,7 +41,7 @@ public class PantriesViewModel extends ViewModel {
     }
 
     public void addToPantryUUIDs(String uuid) {
-        this.pantryListContent.getValue().add(uuid);
+        this.uuids.getValue().add(uuid);
     }
 
     public void clearContent(){
