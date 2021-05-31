@@ -3,6 +3,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('D:\\OneDrive\\Faculdade\\MEIC-A\\Ano1\\Semestre2\\CMU\\Projecto\\ShopIST\\sign\\keystore.jks')
+            storePassword '5h0p_15T'
+            keyAlias 'signkey'
+            keyPassword '5h0p_15T'
+        }
+        release {
+            storeFile file('D:\\OneDrive\\Faculdade\\MEIC-A\\Ano1\\Semestre2\\CMU\\Projecto\\ShopIST\\sign\\keystore.jks')
+            storePassword '5h0p_15T'
+            keyAlias 'signkey'
+            keyPassword '5h0p_15T'
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -14,6 +28,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
     }
 
     buildTypes {
@@ -25,7 +40,7 @@ android {
             debuggable true
         }
         debug {
-            buildConfigField "String", "BASE_URL", "\"http://192.168.1.87:3000\""
+            buildConfigField "String", "BASE_URL", "\"http://192.168.1.65:3000\""
             buildConfigField "String", "CERTIFICATE_PASSWORD", "\"\""
         }
     }
