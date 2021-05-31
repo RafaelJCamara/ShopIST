@@ -28,6 +28,7 @@ import com.example.shopist.Server.ServerResponses.ServerListToken;
 import com.example.shopist.Server.ServerResponses.ServerShoppingList;
 import com.example.shopist.Server.ServerResponses.ServerUserList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,6 +48,8 @@ public class ShoppingFragment extends ListFragment {
 
     private AlertDialog dialog;
     private static final String LIST_BUNDLE_KEY = "shoppingListContent";
+
+    private ArrayList<String> uuids = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -104,6 +107,7 @@ public class ShoppingFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
+                itemInfo += " -> " + uuids.get(position);
                 openShoppingItemActivity(itemInfo);
             }
         });
@@ -184,7 +188,8 @@ public class ShoppingFragment extends ListFragment {
     public void renderShoppingGetList(ServerShoppingList list, String uuid) {
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
-        shoppingViewModel.addToShoppingListContent(finalListInfo);
+        shoppingViewModel.addToShoppingListContent(listName);//finalListInfo);
+        uuids.add(uuid);
         shoppingListSettings();
         Toast.makeText(root.getContext(), "List added with success!", Toast.LENGTH_LONG).show();
     }
@@ -193,6 +198,7 @@ public class ShoppingFragment extends ListFragment {
     public void fillExistingShoppingLists(){
         //clean previous content
         shoppingViewModel.clearContent();
+        uuids.clear();
         Call<ServerUserList> call = retrofitManager.accessRetrofitInterface().getUserCurrentShoppingLists(MainActivityNav.currentUserId);
         call.enqueue(new Callback<ServerUserList>() {
             @Override
@@ -211,7 +217,10 @@ public class ShoppingFragment extends ListFragment {
 
     private void renderCurrentLists(String[] currentLists){
         for(int i=0;i!=currentLists.length;i++){
-            shoppingViewModel.addToShoppingListContent(currentLists[i]);
+            //shoppingViewModel.addToShoppingListContent(currentLists[i]);
+            String[] split = currentLists[i].split(" -> ");
+            shoppingViewModel.addToShoppingListContent(split[0]);
+            uuids.add(split[1]);
         }
         shoppingListSettings();
         Toast.makeText(root.getContext(), "Current lists rendered with success!", Toast.LENGTH_LONG).show();
@@ -277,23 +286,25 @@ public class ShoppingFragment extends ListFragment {
     }
 
     public boolean hasShoppingListBeenCreatedByName(String listName){
-        for(String listInfo:shoppingViewModel.getShoppingListContent().getValue()){
+        return shoppingViewModel.getShoppingListContent().getValue().contains(listName);
+        /*for(String listInfo:shoppingViewModel.getShoppingListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[0].equals(listName)){
                 return true;
             }
         }
-        return false;
+        return false;*/
     }
 
     public boolean hasShoppingListBeenCreatedById(String listId){
-        for(String listInfo:shoppingViewModel.getShoppingListContent().getValue()){
+        return uuids.contains(listId);
+        /*for(String listInfo:shoppingViewModel.getShoppingListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[1].equals(listId)){
                 return true;
             }
         }
-        return false;
+        return false;*/
     }
 
     public void createShoppingListInServer(String listName, String listAddress){
@@ -323,7 +334,8 @@ public class ShoppingFragment extends ListFragment {
 
     public void renderCreateShoppingList(String token, String listName){
         String finalListInfo = listName+" -> "+token;
-        shoppingViewModel.addToShoppingListContent(finalListInfo);
+        shoppingViewModel.addToShoppingListContent(listName);//finalListInfo);
+        uuids.add(token);
         shoppingListSettings();
         Toast.makeText(root.getContext(), "List created with success!", Toast.LENGTH_LONG).show();
     }

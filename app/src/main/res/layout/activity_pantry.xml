@@ -31,6 +31,7 @@
             android:layout_marginTop="44dp"
             android:text="List Code"
             android:textSize="25dp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/listName" />
 

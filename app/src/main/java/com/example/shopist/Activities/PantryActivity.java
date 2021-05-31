@@ -71,6 +71,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -335,10 +336,10 @@ public class PantryActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.setHasFixedSize(true);
-        Adapter adapter = new Adapter(shopList);
+        Adapter adapter = new Adapter(shopList.stream().map(s -> { return s.split(" -> ")[0]; }).collect(Collectors.toList()));
         this.recyclerView.setAdapter(adapter);
 //        checkIfAlreayShopsExist(adapter, view, itemInfo, builder);
-        addSaveButtonLogic(adapter, view, itemInfo, builder);
+        addSaveButtonLogic(shopList, view, itemInfo, builder);
         addConsumeProductLogic(view, itemInfo);
         renderProductImage(view, itemInfo);
     }
@@ -464,16 +465,16 @@ public class PantryActivity extends AppCompatActivity {
                 });
     }
 
-    private void addSaveButtonLogic(Adapter adapter, View view, Product itemInfo, AlertDialog builder){
+    private void addSaveButtonLogic(ArrayList<String> adapter, View view, Product itemInfo, AlertDialog builder){
         Button saveButton = view.findViewById(R.id.productDetailSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<String> getSelectedShops = adapter.getSelectedShopping();
+                //ArrayList<String> getSelectedShops = adapter.getSelectedShopping();
 //                for(String s: getSelectedShops){
 //                    Toast.makeText(view.getContext(), s,Toast.LENGTH_SHORT).show();
 //                }
-                sendUpdateToServer(getSelectedShops, view, itemInfo, builder);
+                sendUpdateToServer(adapter/*getSelectedShops*/, view, itemInfo, builder);
             }
         });
     }

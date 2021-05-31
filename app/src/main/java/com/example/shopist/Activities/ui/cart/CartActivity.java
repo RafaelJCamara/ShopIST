@@ -281,6 +281,7 @@ public class CartActivity extends AppCompatActivity {
 
     private void adapterSettings(View view){
         ArrayList<String> currentPantries = (ArrayList<String>) PantriesFragment.pantriesViewModel.getPantryListContent().getValue();
+        ArrayList<String> currentPantryUUIDs = (ArrayList<String>) PantriesFragment.pantriesViewModel.getPantryUUIDs().getValue();
         this.recyclerView = view.findViewById(R.id.toPutProductsRV);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(view.getContext());
@@ -289,7 +290,7 @@ public class CartActivity extends AppCompatActivity {
 
         TextView textview = view.findViewById(R.id.productNameCart);
 
-        DistributeProductsAtCartAdapter adapter = new DistributeProductsAtCartAdapter(currentPantries, textview.getText().toString());
+        DistributeProductsAtCartAdapter adapter = new DistributeProductsAtCartAdapter(currentPantries, currentPantryUUIDs, textview.getText().toString());
         recyclerView.setAdapter(adapter);
     }
 

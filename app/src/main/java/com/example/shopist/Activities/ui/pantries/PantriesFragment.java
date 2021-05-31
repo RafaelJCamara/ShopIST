@@ -104,7 +104,9 @@ public class PantriesFragment extends ListFragment {
 
     private void renderCurrentLists(String[] currentLists){
         for(int i=0;i!=currentLists.length;i++){
-            pantriesViewModel.addToPantryListContent(currentLists[i]);
+            String[] split = currentLists[i].split(" -> ");
+            pantriesViewModel.addToPantryListContent(split[0]);
+            pantriesViewModel.addToPantryUUIDs(split[1]);
         }
         pantryListSettings();
         //Toast.makeText(root.getContext(), "Current lists rendered with success!", Toast.LENGTH_LONG).show();
@@ -164,13 +166,14 @@ public class PantriesFragment extends ListFragment {
     }
 
     public boolean hasListBeenAdded(String listId){
-        for(String listInfo: pantriesViewModel.getPantryListContent().getValue()){
+        return pantriesViewModel.getPantryUUIDs().getValue().contains(listId);
+        /*for(String listInfo: pantriesViewModel.getPantryListContent().getValue()){
             String[] listComponents = listInfo.split(" -> ");
             if(listComponents[1].equals(listId)){
                 return true;
             }
         }
-        return false;
+        return false; */
     }
 
     public void getPantryListFromServer(String listId){
@@ -195,7 +198,8 @@ public class PantriesFragment extends ListFragment {
     public void renderGetList(ServerPantryList list, String uuid) {
         String listName = list.getName();
         String finalListInfo = listName + " -> " + uuid;
-        pantriesViewModel.addToPantryListContent(finalListInfo);
+        pantriesViewModel.addToPantryListContent(listName);
+        pantriesViewModel.addToPantryUUIDs(uuid);//finalListInfo);
         pantryListSettings();
         Toast.makeText(root.getContext(), "List added with success!", Toast.LENGTH_LONG).show();
     }
@@ -211,6 +215,7 @@ public class PantriesFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String itemInfo = (String) parent.getAdapter().getItem(position);
+                itemInfo += " -> " + pantriesViewModel.getPantryUUIDs().getValue().get(position);
                 getShoppingListsFromServer(itemInfo);
             }
         });
@@ -334,10 +339,13 @@ public class PantriesFragment extends ListFragment {
 
     public boolean hasPantryListBeenCreated(String listName){
         for(String listInfo:pantriesViewModel.getPantryListContent().getValue()){
-            String[] listComponents = listInfo.split(" -> ");
-            if(listComponents[0].equals(listName)){
+            if(listInfo.equals(listName)) {
                 return true;
             }
+            /*String[] listComponents = listInfo.split(" -> ");
+            if(listComponents[0].equals(listName)){
+                return true;
+            }*/
         }
         return false;
     }
@@ -369,7 +377,8 @@ public class PantriesFragment extends ListFragment {
 
     public void renderCreatedPantryList(String token, String listName){
         String finalListInfo = listName+" -> "+token;
-        pantriesViewModel.addToPantryListContent(finalListInfo);
+        pantriesViewModel.addToPantryListContent(listName);//finalListInfo);
+        pantriesViewModel.addToPantryUUIDs(token);
         pantryListSettings();
         Toast.makeText(root.getContext(), "List created with success!", Toast.LENGTH_LONG).show();
     }

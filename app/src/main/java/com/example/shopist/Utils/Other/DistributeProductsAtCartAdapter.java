@@ -24,12 +24,14 @@ import java.util.List;
 
 public class DistributeProductsAtCartAdapter extends RecyclerView.Adapter<DistributeProductsAtCartAdapter.MyViewHolderCart> {
     private List<String> shopList;
+    private List<String> uuids;
 //    public static ArrayList<PantryInCartContent> selectedShopping;
     private String productInfo;
 
-    public DistributeProductsAtCartAdapter(List<String> shopList, String productInfo){
+    public DistributeProductsAtCartAdapter(List<String> shopList, List<String> uuids, String productInfo){
         Log.i("Beginning","*****adapter");
         this.shopList = shopList;
+        this.uuids = uuids;
         this.productInfo=productInfo;
 //        selectedShopping = new ArrayList<PantryInCartContent>();
         for(String s : shopList){
@@ -48,6 +50,7 @@ public class DistributeProductsAtCartAdapter extends RecyclerView.Adapter<Distri
     public void onBindViewHolder(@NonNull DistributeProductsAtCartAdapter.MyViewHolderCart holder, int position) {
         String s = shopList.get(position);
         holder.textView.setText(s);
+        holder.hiddenView.setText(uuids.get(position));
         Log.i("Message", "ShopList:" +s);
     }
 
@@ -59,11 +62,13 @@ public class DistributeProductsAtCartAdapter extends RecyclerView.Adapter<Distri
     public class MyViewHolderCart extends RecyclerView.ViewHolder{
 
         TextView textView;
+        TextView hiddenView;
         EditText editText;
 
         public MyViewHolderCart(@NonNull View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.pCartName);
+            hiddenView = (TextView) itemView.findViewById(R.id.pantry_uuid);
             editText = (EditText) itemView.findViewById(R.id.amountToGive);
 //            editText.setTag(textView.getText().toString()+"-number");
             editText.addTextChangedListener(new TextWatcher() {
@@ -82,7 +87,7 @@ public class DistributeProductsAtCartAdapter extends RecyclerView.Adapter<Distri
                     String pantryListInfo = textView.getText().toString();
                     String inputedValue = editText.getText().toString();
                     String productName = productInfo.split(" | ")[0];
-                    CartActivity.recordChange(inputedValue, productName, pantryListInfo.split("->")[1]);
+                    CartActivity.recordChange(inputedValue, productName, hiddenView.getText().toString());
                 }
             });
         }
